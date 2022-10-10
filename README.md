@@ -10,7 +10,6 @@ example.com/login (Page pour se connecter via google) LoginView.vue
 
 ## Front-End
 
-- Deploy Nuxt on App Engine: https://nuxtjs.org/deployments/google-appengine
+https://vuejs.org/guide/introduction.html
+https://v2.tailwindcss.com/
 
-Utils:
-- https://nuxtjs.org/docs/directory-structure/pages/
