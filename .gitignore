@@ -29,3 +29,6 @@ package-lock.json
 # Visual Studio
 .vs
 .vscode
+
+# Maven
+target/
