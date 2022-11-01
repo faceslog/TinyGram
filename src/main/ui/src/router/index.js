@@ -21,24 +21,23 @@ const router = createRouter({
       component: LoginView
     },
     {
-      path: "/:user",
-      name: "user",
-      component: UserView,
-    },
-    {
       path: "/addpost",
       name: "addpost",
       component: AddPostView
     },
     {
-      path: "/:user/:post",
+      path: "/community/:user",
+      name: "user",
+      component: UserView,
+    },
+    {
+      path: "/community/:user/:post",
       name: "post",
       component: PostView
     },
     {
       path: "/:catchAll(.*)",
       redirect: { path: "/login" }
-  
     }
   ]
 });
