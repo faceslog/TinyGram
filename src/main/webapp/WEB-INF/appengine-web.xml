@@ -3,10 +3,7 @@
   <threadsafe>false</threadsafe>
   <sessions-enabled>true</sessions-enabled>
   <runtime>java8</runtime>
-  <static-files>
-    <include path="/**.html"></include>
-    <include path="/**.js"></include>
-  </static-files>
+  <public-root>/dist</public-root>
   <system-properties>
     <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
   </system-properties>

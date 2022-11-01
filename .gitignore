@@ -25,6 +25,7 @@ hs_err_pid*
 # Node JS
 node_modules/
 package-lock.json
+dist/
 
 # Visual Studio
 .vs
