@@ -12,10 +12,9 @@ import com.google.api.server.spi.config.ApiNamespace;
      namespace = @ApiNamespace(ownerDomain = "helloworld.example.com",
                                ownerName   = "helloworld.example.com",
                                packagePath = ""))
-
 public class ScoreEndpoint {
 
-	@ApiMethod(name = "test", httpMethod = HttpMethod.GET)
+	@ApiMethod(httpMethod = HttpMethod.GET)
 	public StringThing test() {
 		return new StringThing("dans ton cul");
 	}

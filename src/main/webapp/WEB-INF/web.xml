@@ -13,10 +13,20 @@
 			<param-value>foo.ScoreEndpoint</param-value>
 		</init-param>
 	</servlet>
+	<filter>
+		<filter-name>BaseFilter</filter-name>
+		<filter-class>foo.BaseFilter</filter-class>
+	</filter>
 	<servlet-mapping>
 		<servlet-name>EndpointsServlet</servlet-name>
 		<url-pattern>/_ah/api/*</url-pattern>
 	</servlet-mapping>
+	<filter-mapping>
+		<filter-name>BaseFilter</filter-name>
+		<url-pattern>/login</url-pattern>
+		<url-pattern>/addpost</url-pattern>
+		<url-pattern>/community/*</url-pattern>
+	</filter-mapping>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
