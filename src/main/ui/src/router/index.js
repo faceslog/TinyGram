@@ -5,6 +5,7 @@ import HomeView from '@/views/HomeView.vue'
 import LoginView from '@/views/LoginView.vue'
 import PostView from '@/views/PostView.vue'
 import UserView from '@/views/UserView.vue'
+import AddPostView from '@/views/AddPostView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,6 +24,11 @@ const router = createRouter({
       path: "/:user",
       name: "user",
       component: UserView,
+    },
+    {
+      path: "/addpost",
+      name: "addpost",
+      component: AddPostView
     },
     {
       path: "/:user/:post",
