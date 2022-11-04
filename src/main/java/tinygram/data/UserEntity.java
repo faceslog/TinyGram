@@ -52,9 +52,15 @@ public final class UserEntity extends AbstractTypedEntity {
     public boolean follow(Key userKey) {
         KindException.ensure(KIND, userKey);
         if (getKey().equals(userKey)) {
-            //throw new IllegalArgumentException("Trying to follow itself.");
+            // throw new IllegalArgumentException("Trying to follow itself.");
         }
-        return getFollowing().add(userKey);
+        final Set<Key> following = getFollowing();
+        if (following.contains(userKey)) {
+            return false;
+        }
+        following.add(userKey);
+        setProperty(FIELD_FOLLOWING, following);
+        return true;
     }
 
     public boolean unfollow(UserEntity user) {
@@ -63,6 +69,12 @@ public final class UserEntity extends AbstractTypedEntity {
 
     public boolean unfollow(Key userKey) {
         KindException.ensure(KIND, userKey);
-        return getFollowing().remove(userKey);
+        final Set<Key> following = getFollowing();
+        if (!following.contains(userKey)) {
+            return false;
+        }
+        following.remove(userKey);
+        setProperty(FIELD_FOLLOWING, following);
+        return true;
     }
 }
