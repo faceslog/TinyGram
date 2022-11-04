@@ -10,19 +10,19 @@
 		<servlet-class>com.google.api.server.spi.EndpointsServlet</servlet-class>
 		<init-param>
 			<param-name>services</param-name>
-			<param-value>foo.ScoreEndpoint</param-value>
+			<param-value>tinygram.API</param-value>
 		</init-param>
 	</servlet>
 	<filter>
-		<filter-name>BaseFilter</filter-name>
-		<filter-class>foo.BaseFilter</filter-class>
+		<filter-name>RootFilter</filter-name>
+		<filter-class>tinygram.RootFilter</filter-class>
 	</filter>
 	<servlet-mapping>
 		<servlet-name>EndpointsServlet</servlet-name>
 		<url-pattern>/_ah/api/*</url-pattern>
 	</servlet-mapping>
 	<filter-mapping>
-		<filter-name>BaseFilter</filter-name>
+		<filter-name>RootFilter</filter-name>
 		<url-pattern>/login</url-pattern>
 		<url-pattern>/addpost</url-pattern>
 		<url-pattern>/community/*</url-pattern>
