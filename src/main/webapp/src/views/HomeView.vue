@@ -2,7 +2,7 @@
 
   <Header></Header>
 
-  <div class="relative bg-gray-200 h-full border-2 border-gray-200">    
+  <div class="relative bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 h-full border border-gray-200">    
     <div class="pt-6 h-full">
 
       <div class="max-w-4xl mx-auto">
