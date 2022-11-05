@@ -10,6 +10,8 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
+import tinygram.Util;
+
 public final class UserRepository {
 
     private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -19,8 +21,7 @@ public final class UserRepository {
     }
 
     public static UserEntity find(User user) {
-        // return find(user.getId());
-        return find("test");
+        return find(Util.DEBUG ? "test" : user.getId());
     }
 
     public static UserEntity find(String userId) {

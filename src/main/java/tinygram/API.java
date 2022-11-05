@@ -31,8 +31,8 @@ public class API {
     private static final Logger log = Logger.getLogger(API.class.getName());
 
     private UserEntity getUserData(User user) throws UnauthorizedException {
-        if (user == null) {
-            // throw new UnauthorizedException("Invalid credentials");
+        if (user == null && !Util.DEBUG) {
+            throw new UnauthorizedException("Invalid credentials");
         }
 
         log.info("Retrieving user data...");

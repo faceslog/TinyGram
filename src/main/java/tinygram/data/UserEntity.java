@@ -8,6 +8,8 @@ import com.google.api.server.spi.config.ApiTransformer;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
+import tinygram.Util;
+
 @ApiTransformer(UserTransformer.class)
 public final class UserEntity extends AbstractTypedEntity {
 
@@ -18,8 +20,7 @@ public final class UserEntity extends AbstractTypedEntity {
     public UserEntity(User user) {
         super();
 
-        // setProperty(FIELD_ID, user.getId());
-        setProperty(FIELD_ID, "test");
+        setProperty(FIELD_ID, Util.DEBUG ? "test" : user.getId());
         setProperty(FIELD_FOLLOWING, new HashSet<>());
     }
 
@@ -51,8 +52,8 @@ public final class UserEntity extends AbstractTypedEntity {
 
     public boolean follow(Key userKey) {
         KindException.ensure(KIND, userKey);
-        if (getKey().equals(userKey)) {
-            // throw new IllegalArgumentException("Trying to follow itself.");
+        if (getKey().equals(userKey) && !Util.DEBUG) {
+            throw new IllegalArgumentException("Trying to follow itself.");
         }
         final Set<Key> following = getFollowing();
         if (following.contains(userKey)) {
