@@ -32,7 +32,7 @@
           </div>
 
           <div class="profile-icon cursor-pointer">
-            <img alt="Profile picture" class="lg:h-6 lg:w-6 h-4 w-4 rounded-full" draggable="false" src="https://i.pinimg.com/originals/c2/4a/af/c24aaf49f7dc286dd0f7020a5bb820ac.png">
+            <img v-if="user" alt="Profile picture" class="lg:h-6 lg:w-6 h-4 w-4 rounded-full" draggable="false" :src="user.picture">
           </div>
         </div>
       </div>
@@ -45,8 +45,11 @@ export default {
   data()
   {
     return {
-      userId: null
+      user: null
     }
+  },
+  mounted()  {
+    this.user = this.$store.getters.getUser;
   }
 }
 </script>

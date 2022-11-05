@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import store from './store/store'
 import axios from 'axios'
 import googleLogin from 'vue3-google-login'
 
@@ -9,6 +10,7 @@ import './assets/index.css'
 const app = createApp(App)
 
 app.use(router)
+app.use(store)
 
 // Setup Axios
 const instance = axios.create({
