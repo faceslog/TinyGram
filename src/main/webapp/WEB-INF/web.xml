@@ -25,6 +25,7 @@
 		<filter-name>RootFilter</filter-name>
 		<url-pattern>/login</url-pattern>
 		<url-pattern>/addpost</url-pattern>
+		<url-pattern>/not-found</url-pattern>
 		<url-pattern>/users/*</url-pattern>
 		<url-pattern>/posts/*</url-pattern>
 	</filter-mapping>

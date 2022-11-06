@@ -6,6 +6,7 @@ import LoginView from '@/views/LoginView.vue'
 import PostView from '@/views/PostView.vue'
 import UserView from '@/views/UserView.vue'
 import AddPostView from '@/views/AddPostView.vue'
+import NotFoundView from '@/views/NotFoundView.vue'
 
 import store from '../store/store.js'
 
@@ -16,6 +17,11 @@ const router = createRouter({
       path: "/login",
       name: 'login',
       component: LoginView
+    },
+    {
+      path: "/not-found",
+      name: 'not-found',
+      component: NotFoundView
     },
     {
       path: '/',
@@ -51,7 +57,7 @@ const router = createRouter({
     },
     {
       path: "/:catchAll(.*)",
-      redirect: { path: "/login" }
+      redirect: { path: "/not-found" }
     }
   ]
 });

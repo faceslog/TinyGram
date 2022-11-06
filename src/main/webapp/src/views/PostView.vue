@@ -27,39 +27,34 @@ export default {
   data() {
     return {
       post: {
-        username: "Toto",
-        userpic: "https://i.pinimg.com/originals/c2/4a/af/c24aaf49f7dc286dd0f7020a5bb820ac.png",
-        location: "Université de Nantes",
-        likesCount: 1456,
+        username: "",
+        userpic: "",
+        location: "",
+        likesCount: 0,
         hasLiked: false,
-        timeStamp: Date.now(),
-        imgUrl: "https://images.unsplash.com/photo-1667144842815-1c740881a905?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1587&q=80",
+        imgUrl: "",
         postUrl: "",
-        description:"Salut c'est un test",
-        comments: [
-          {
-            username: "Didier",
-            content: "Wesh tu es trop bo"
-          },
-          {
-            username: "Rafa",
-            content: "Tu as quand des vacances"
-          }
-        ]
+        description:""
       }
     }
   },
   mounted(){
-    console.log("Ceci est le param: " + this.$route.params.post);
 
     this.$axios.get(`/posts?post=${this.$route.params.post}`).then(res => {
 
-      console.log(res);
-      
-    }).catch(err => {
-        console.log(err);
-    }); 
+      this.post.username = "Toto";
+      this.post.userpic = "https://i.pinimg.com/originals/c2/4a/af/c24aaf49f7dc286dd0f7020a5bb820ac.png";
+      this.post.location = "Université de Nantes";
+      this.post.hasLiked = false;
+      this.post.description = "Salut c'est un test";
 
+      this.post.likesCount = res.data.likecount;
+      this.post.imgUrl = res.data.image;
+      this.post.postUrl = res.data.key;
+            
+    }).catch(err => {
+      this.$router.push("/not-found");
+    }); 
   }
 }
 </script>
