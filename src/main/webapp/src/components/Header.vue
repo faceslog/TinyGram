@@ -28,7 +28,7 @@
             </svg>
           </router-link>
 
-          <router-link :to="'/community/' + id" class="profile-icon cursor-pointer">
+          <router-link :to="'/users/' + id" class="profile-icon cursor-pointer">
             <img alt="Profile picture" class="lg:h-6 lg:w-6 h-4 w-4 rounded-full" draggable="false" :src="user.picture">
           </router-link>
         </div>

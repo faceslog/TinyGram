@@ -56,7 +56,7 @@ export default {
 
       return regExp.test(this.url);
     },
-    post: async function() {
+    post: function() {
 
       if(this.isLoading) return;
 
@@ -78,19 +78,15 @@ export default {
 
       this.$axios.post(`/add?access_token=${token}&image=${this.url}`).then(res => {
 
-        console.log(res);
-        let userId = res.data.owner.key;
         let postId = res.data.key;
-
-        this.$router.push(`/community/${userId}/${postId}`);    
+        this.$router.push(`/posts/${postId}`);   
 
       }).catch(err => {
         this.isLoading = false;
         console.log(err);
         this.$swal('Failed to upload', 'Oops something went wrong', 'error');
       });
-
-    },
+    }
   }
 }
 </script>

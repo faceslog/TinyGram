@@ -75,7 +75,7 @@ public class API {
         return postEntity;
     }
 
-    @ApiMethod(httpMethod = HttpMethod.GET, path = "get/user")
+    @ApiMethod(httpMethod = HttpMethod.GET, path = "users")
     public UserEntity getUser(@Named("user") String user) throws EntityNotFoundException, UnauthorizedException {
         log.info("Retrieving user data...");
         final UserEntity userEntity = UserRepository.get(KeyFactory.stringToKey(user));
@@ -84,7 +84,7 @@ public class API {
         return userEntity;
     }
 
-    @ApiMethod(httpMethod = HttpMethod.GET, path = "get/post")
+    @ApiMethod(httpMethod = HttpMethod.GET, path = "posts")
     public PostEntity getPost(@Named("post") String post) throws EntityNotFoundException, UnauthorizedException {
         log.info("Retrieving post data...");
         final PostEntity postEntity = PostRepository.get(KeyFactory.stringToKey(post));
@@ -93,21 +93,21 @@ public class API {
         return postEntity;
     }
 
-    @ApiMethod(httpMethod = HttpMethod.GET, path = "get/feed/followed")
+    @ApiMethod(httpMethod = HttpMethod.GET, path = "feed/followed")
     public FeedResponse<PostEntity> getFeed(User user, @Nullable @Named("page") String page) throws EntityNotFoundException, UnauthorizedException {
         final UserEntity userEntity = getUserData(user);
 
         return PostRepository.findFromFollowed(userEntity, page);
     }
 
-    @ApiMethod(httpMethod = HttpMethod.GET, path = "get/feed/from")
+    @ApiMethod(httpMethod = HttpMethod.GET, path = "feed/from")
     public FeedResponse<PostEntity> getUserPosts(User user, @Nullable @Named("page") String page) throws EntityNotFoundException, UnauthorizedException {
         final UserEntity userEntity = getUserData(user);
 
         return PostRepository.findFrom(userEntity, page);
     }
 
-    @ApiMethod(httpMethod = HttpMethod.POST, path = "set/follow/ok")
+    @ApiMethod(httpMethod = HttpMethod.POST, path = "follow/ok")
     public void addFollower(User user, @Named("target") String target) throws EntityNotFoundException, UnauthorizedException {
         final UserEntity userEntity = getUserData(user);
 
@@ -124,7 +124,7 @@ public class API {
         }
     }
 
-    @ApiMethod(httpMethod = HttpMethod.POST, path = "set/follow/ko")
+    @ApiMethod(httpMethod = HttpMethod.POST, path = "follow/ko")
     public void removeFollower(User user, @Named("target") String target) throws EntityNotFoundException, UnauthorizedException {
         final UserEntity userEntity = getUserData(user);
 
@@ -141,7 +141,7 @@ public class API {
         }
     }
 
-    @ApiMethod(httpMethod = HttpMethod.POST, path = "set/like/ok")
+    @ApiMethod(httpMethod = HttpMethod.POST, path = "like/ok")
     public void addLike(User user, @Named("target") String post) throws EntityNotFoundException, UnauthorizedException {
         final UserEntity userEntity = getUserData(user);
 
@@ -158,7 +158,7 @@ public class API {
         }
     }
 
-    @ApiMethod(httpMethod = HttpMethod.POST, path = "set/like/ko")
+    @ApiMethod(httpMethod = HttpMethod.POST, path = "like/ko")
     public void removeLike(User user, @Named("target") String post) throws EntityNotFoundException, UnauthorizedException {
         final UserEntity userEntity = getUserData(user);
 

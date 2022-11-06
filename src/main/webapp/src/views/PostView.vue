@@ -24,8 +24,7 @@ export default {
     Header,
     PostCard
   },
-  data()
-  {
+  data() {
     return {
       post: {
         username: "Toto",
@@ -49,6 +48,18 @@ export default {
         ]
       }
     }
+  },
+  mounted(){
+    console.log("Ceci est le param: " + this.$route.params.post);
+
+    this.$axios.get(`/posts?post=${this.$route.params.post}`).then(res => {
+
+      console.log(res);
+      
+    }).catch(err => {
+        console.log(err);
+    }); 
+
   }
 }
 </script>

@@ -34,7 +34,7 @@ const router = createRouter({
       }
     },
     {
-      path: "/community/:user",
+      path: "/users/:user",
       name: "user",
       component: UserView,
       meta : {
@@ -42,7 +42,7 @@ const router = createRouter({
       }
     },
     {
-      path: "/community/:user/:post",
+      path: "/posts/:post",
       name: "post",
       component: PostView,
       meta : {
