@@ -11,7 +11,7 @@
           <input type="text" placeholder="Search" class="px-2 w-full h-full border text-sm bg-gray-200 rounded-sm" />
         </div>
 
-        <div class="icons flex justify-center p-2">
+        <div v-if="user" class="icons flex justify-center p-2">
 
           <router-link to="/" class="home-icon mr-6 cursor-pointer">
             <svg class="lg:h-6 lg:w-6 h-4 w-4" aria-label="Home" fill="#262626" viewBox="0 0 48 48">
@@ -31,9 +31,9 @@
             </svg>
           </div>
 
-          <div class="profile-icon cursor-pointer">
-            <img v-if="user" alt="Profile picture" class="lg:h-6 lg:w-6 h-4 w-4 rounded-full" draggable="false" :src="user.picture">
-          </div>
+          <router-link :to="'/community/' + user.sub" class="profile-icon cursor-pointer">
+            <img alt="Profile picture" class="lg:h-6 lg:w-6 h-4 w-4 rounded-full" draggable="false" :src="user.picture">
+          </router-link>
         </div>
       </div>
     </nav>
