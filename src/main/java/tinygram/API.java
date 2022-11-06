@@ -32,7 +32,7 @@ public class API {
 
     private UserEntity getUserData(User user) throws UnauthorizedException {
         if (user == null && !Util.DEBUG) {
-            throw new UnauthorizedException("Invalid credentials");
+            throw new UnauthorizedException("Invalid credentials.");
         }
 
         log.info("Retrieving user data...");
@@ -55,7 +55,12 @@ public class API {
         return userEntity;
     }
 
-    @ApiMethod(httpMethod = HttpMethod.GET, path = "add/{user}/{image}")
+    @ApiMethod(httpMethod = HttpMethod.GET, path = "auth")
+    public UserEntity test(User user) throws UnauthorizedException {
+        return getUserData(user);
+    }
+
+    @ApiMethod(httpMethod = HttpMethod.POST, path = "add")
     public PostEntity addPost(User user, @Named("image") String image) throws UnauthorizedException {
         final UserEntity userEntity = getUserData(user);
 
@@ -70,7 +75,7 @@ public class API {
         return postEntity;
     }
 
-    @ApiMethod(httpMethod = HttpMethod.GET, path = "get/user/{user}")
+    @ApiMethod(httpMethod = HttpMethod.GET, path = "get/user")
     public UserEntity getUser(@Named("user") String user) throws EntityNotFoundException, UnauthorizedException {
         log.info("Retrieving user data...");
         final UserEntity userEntity = UserRepository.get(KeyFactory.stringToKey(user));
@@ -79,7 +84,7 @@ public class API {
         return userEntity;
     }
 
-    @ApiMethod(httpMethod = HttpMethod.GET, path = "get/post/{post}")
+    @ApiMethod(httpMethod = HttpMethod.GET, path = "get/post")
     public PostEntity getPost(@Named("post") String post) throws EntityNotFoundException, UnauthorizedException {
         log.info("Retrieving post data...");
         final PostEntity postEntity = PostRepository.get(KeyFactory.stringToKey(post));
@@ -88,21 +93,21 @@ public class API {
         return postEntity;
     }
 
-    @ApiMethod(httpMethod = HttpMethod.GET, path = "get/feed/followed/{user}")
+    @ApiMethod(httpMethod = HttpMethod.GET, path = "get/feed/followed")
     public FeedResponse<PostEntity> getFeed(User user, @Nullable @Named("page") String page) throws EntityNotFoundException, UnauthorizedException {
         final UserEntity userEntity = getUserData(user);
 
         return PostRepository.findFromFollowed(userEntity, page);
     }
 
-    @ApiMethod(httpMethod = HttpMethod.GET, path = "get/feed/from/{user}")
+    @ApiMethod(httpMethod = HttpMethod.GET, path = "get/feed/from")
     public FeedResponse<PostEntity> getUserPosts(User user, @Nullable @Named("page") String page) throws EntityNotFoundException, UnauthorizedException {
         final UserEntity userEntity = getUserData(user);
 
         return PostRepository.findFrom(userEntity, page);
     }
 
-    @ApiMethod(httpMethod = HttpMethod.GET, path = "set/follow/ok/{user}/{target}")
+    @ApiMethod(httpMethod = HttpMethod.POST, path = "set/follow/ok")
     public void addFollower(User user, @Named("target") String target) throws EntityNotFoundException, UnauthorizedException {
         final UserEntity userEntity = getUserData(user);
 
@@ -119,7 +124,7 @@ public class API {
         }
     }
 
-    @ApiMethod(httpMethod = HttpMethod.GET, path = "set/follow/ko/{user}/{target}")
+    @ApiMethod(httpMethod = HttpMethod.POST, path = "set/follow/ko")
     public void removeFollower(User user, @Named("target") String target) throws EntityNotFoundException, UnauthorizedException {
         final UserEntity userEntity = getUserData(user);
 
@@ -136,7 +141,7 @@ public class API {
         }
     }
 
-    @ApiMethod(httpMethod = HttpMethod.GET, path = "set/like/ok/{user}/{post}")
+    @ApiMethod(httpMethod = HttpMethod.POST, path = "set/like/ok")
     public void addLike(User user, @Named("target") String post) throws EntityNotFoundException, UnauthorizedException {
         final UserEntity userEntity = getUserData(user);
 
@@ -153,7 +158,7 @@ public class API {
         }
     }
 
-    @ApiMethod(httpMethod = HttpMethod.GET, path = "set/like/ko/{user}/{post}")
+    @ApiMethod(httpMethod = HttpMethod.POST, path = "set/like/ko")
     public void removeLike(User user, @Named("target") String post) throws EntityNotFoundException, UnauthorizedException {
         final UserEntity userEntity = getUserData(user);
 
