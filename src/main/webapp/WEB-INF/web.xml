@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
+	http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+	version="3.1">
+	<servlet>
+		<servlet-name>EndpointsServlet</servlet-name>
+		<servlet-class>com.google.api.server.spi.EndpointsServlet</servlet-class>
+		<init-param>
+			<param-name>services</param-name>
+			<param-value>tinygram.API</param-value>
+		</init-param>
+	</servlet>
+	<filter>
+		<filter-name>RootFilter</filter-name>
+		<filter-class>tinygram.RootFilter</filter-class>
+	</filter>
+	<servlet-mapping>
+		<servlet-name>EndpointsServlet</servlet-name>
+		<url-pattern>/_ah/api/*</url-pattern>
+	</servlet-mapping>
+	<filter-mapping>
+		<filter-name>RootFilter</filter-name>
+		<url-pattern>/login</url-pattern>
+		<url-pattern>/addpost</url-pattern>
+		<url-pattern>/users/*</url-pattern>
+		<url-pattern>/posts/*</url-pattern>
+	</filter-mapping>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+</web-app>
