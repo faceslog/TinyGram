@@ -38,7 +38,7 @@
 
                 <div class="mt-4">
                   <div class="text-[#4267B2] flex items-center justify-center w-full">
-                    <GoogleLogin :callback="callback"/>
+                    <GoogleLogin :callback="login"/>
                   </div>
                 </div>
               </div>
@@ -57,10 +57,18 @@
   </div>
 </template>
 
-
 <script>
-const callback = (response) => {
-  console.log("Handle the response", response);
+export default {
+  data()
+  {
+    return {
+    }
+  },
+  methods: {
+    login: function(response) {    
+      this.$store.dispatch('setToken', response.credential);
+      this.$router.push("/");
+    }
+  }
 }
-
 </script>

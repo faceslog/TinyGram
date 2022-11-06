@@ -11,7 +11,7 @@
           <input type="text" placeholder="Search" class="px-2 w-full h-full border text-sm bg-gray-200 rounded-sm" />
         </div>
 
-        <div class="icons flex justify-center p-2">
+        <div v-if="user" class="icons flex justify-center p-2">
 
           <router-link to="/" class="home-icon mr-6 cursor-pointer">
             <svg class="lg:h-6 lg:w-6 h-4 w-4" aria-label="Home" fill="#262626" viewBox="0 0 48 48">
@@ -19,21 +19,18 @@
             </svg>
           </router-link>
 
-          <div class="mr-6">
-            <svg class="lg:h-6 lg:w-6 h-4 w-4" aria-label="Direct" fill="#262626" viewBox="0 0 48 48">
-              <path d="M47.8 3.8c-.3-.5-.8-.8-1.3-.8h-45C.9 3.1.3 3.5.1 4S0 5.2.4 5.7l15.9 15.6 5.5 22.6c.1.6.6 1 1.2 1.1h.2c.5 0 1-.3 1.3-.7l23.2-39c.4-.4.4-1 .1-1.5zM5.2 6.1h35.5L18 18.7 5.2 6.1zm18.7 33.6l-4.4-18.4L42.4 8.6 23.9 39.7z"></path>
+          <router-link to="/addpost" class="mr-6">
+            <svg class="lg:h-6 lg:w-6 h-4 w-4" x="0px" y="0px" viewBox="0 0 384.97 384.97">
+              <g id="Upload">
+                <path d="M372.939,264.641c-6.641,0-12.03,5.39-12.03,12.03v84.212H24.061v-84.212c0-6.641-5.39-12.03-12.03-12.03 S0,270.031,0,276.671v96.242c0,6.641,5.39,12.03,12.03,12.03h360.909c6.641,0,12.03-5.39,12.03-12.03v-96.242 C384.97,270.019,379.58,264.641,372.939,264.641z"/>
+                <path d="M117.067,103.507l63.46-62.558v235.71c0,6.641,5.438,12.03,12.151,12.03c6.713,0,12.151-5.39,12.151-12.03V40.95 l63.46,62.558c4.74,4.704,12.439,4.704,17.179,0c4.74-4.704,4.752-12.319,0-17.011l-84.2-82.997 c-4.692-4.656-12.584-4.608-17.191,0L99.888,86.496c-4.752,4.704-4.74,12.319,0,17.011 C104.628,108.211,112.327,108.211,117.067,103.507z"/>
+              </g>
             </svg>
-          </div>
+          </router-link>
 
-          <div class="mr-6">
-            <svg class="lg:h-6 lg:w-6 h-4 w-4" aria-label="Activity Feed" fill="#262626" viewBox="0 0 48 48">
-              <path d="M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"></path>
-            </svg>
-          </div>
-
-          <div class="profile-icon cursor-pointer">
-            <img alt="Profile picture" class="lg:h-6 lg:w-6 h-4 w-4 rounded-full" draggable="false" src="https://i.pinimg.com/originals/c2/4a/af/c24aaf49f7dc286dd0f7020a5bb820ac.png">
-          </div>
+          <router-link :to="'/community/' + user.sub" class="profile-icon cursor-pointer">
+            <img alt="Profile picture" class="lg:h-6 lg:w-6 h-4 w-4 rounded-full" draggable="false" :src="user.picture">
+          </router-link>
         </div>
       </div>
     </nav>
@@ -45,8 +42,11 @@ export default {
   data()
   {
     return {
-      userId: null
+      user: null
     }
+  },
+  mounted()  {
+    this.user = this.$store.getters.getUser;
   }
 }
 </script>

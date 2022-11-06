@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import store from './store/store'
 import axios from 'axios'
 import googleLogin from 'vue3-google-login'
 
@@ -9,6 +10,7 @@ import './assets/index.css'
 const app = createApp(App)
 
 app.use(router)
+app.use(store)
 
 // Setup Axios
 const instance = axios.create({
@@ -20,7 +22,7 @@ app.config.globalProperties.axios = instance;
 // Setup Google Login Btn
 
 app.use(googleLogin, {
-    clientId: '266339239467-9ssi0u1qmbqt5ahb1f40gj0no10ch4e9.apps.googleusercontent.com'
+    clientId: '666928071557-7tupn0nhb8v6cg13vsjtlreg61b6akob.apps.googleusercontent.com'
 });
 // ---------------------------
 app.mount('#app')

@@ -7,6 +7,8 @@ import PostView from '@/views/PostView.vue'
 import UserView from '@/views/UserView.vue'
 import AddPostView from '@/views/AddPostView.vue'
 
+import store from '../store/store.js'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -58,8 +60,9 @@ router.beforeEach((to, from, next) => {
 
   if(to.matched.some(record => record.meta.requiresAuth)) {
     
-    if(localStorage.getItem("token")) {
+    if(store.getters.getToken != null) {
       next();
+      return;
     }
       
     next({ path: '/login' });
