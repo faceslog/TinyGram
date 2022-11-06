@@ -8,7 +8,7 @@
         </div>
 
         <div class="md:w-3/12 w-5/12 md:mx-0 mx-auto">
-          <input type="text" placeholder="Search" class="px-2 w-full h-full border text-sm bg-gray-200 rounded-sm" />
+          <input type="text" placeholder="Search" class="px-2 w-full h-full border text-sm bg-gray-200 rounded-sm" disabled/>
         </div>
 
         <div v-if="user" class="icons flex justify-center p-2">
@@ -28,7 +28,7 @@
             </svg>
           </router-link>
 
-          <router-link :to="'/community/' + user.sub" class="profile-icon cursor-pointer">
+          <router-link :to="'/community/' + id" class="profile-icon cursor-pointer">
             <img alt="Profile picture" class="lg:h-6 lg:w-6 h-4 w-4 rounded-full" draggable="false" :src="user.picture">
           </router-link>
         </div>
@@ -42,11 +42,13 @@ export default {
   data()
   {
     return {
-      user: null
+      user: null,
+      id: null
     }
   },
   mounted()  {
-    this.user = this.$store.getters.getUser;
+    this.user = this.$store.getters.getDecodedToken;
+    this.id = this.$store.getters.getId;
   }
 }
 </script>

@@ -5,13 +5,17 @@ import { decodeCredential } from 'vue3-google-login';
 const store = createStore({
     state() {
         return {
-            token: null
+            token: null,
+            id: null
         }
     },
     // ways to change our state (must by synchronous) store.commit("SET_USER", user)
     mutations: {
         SET_TOKEN(state, token) {
             state.token = token;
+        },
+        SET_ID(state, id) {
+            state.id = id;
         }
     },
     // ways to call mutations (can be asynchronous) store.dispatch("setUser", user)
@@ -23,10 +27,19 @@ const store = createStore({
         findToken(context) {
             let token = sessionStorage.getItem("user_token");
             context.commit('SET_TOKEN', token);
+        },
+        // User ID (since the user id is != from the google ID) to avoid making multiple get to the api
+        setId(context, id) {
+            sessionStorage.setItem("user_id", id);
+            context.commit('SET_ID', id);
+        },
+        findId(context) {
+            let id = sessionStorage.getItem("user_id");
+            context.commit('SET_ID', id);
         }
     },
     getters: {
-        getUser(state) {
+        getDecodedToken(state) {
             
             if(state.token == null)
                 store.dispatch('findToken');
@@ -44,6 +57,13 @@ const store = createStore({
                 store.dispatch('findToken');
 
             return state.token;
+        },
+        getId(state) {
+
+            if(state.id == null)
+                store.dispatch('findId');
+
+            return state.id;
         }
     }
 });

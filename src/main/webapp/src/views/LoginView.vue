@@ -65,9 +65,21 @@ export default {
     }
   },
   methods: {
-    login: function(response) {    
+    login: function(response) { 
+
       this.$store.dispatch('setToken', response.credential);
-      this.$router.push("/");
+
+      // Authentifie avec le backend
+      this.$axios.get(`/auth?access_token=${response.credential}`).then(res => {
+
+        this.$store.dispatch('setId', res.data.key);  
+        this.$router.push("/");
+        
+      })
+      .catch(err => { 
+        console.log(err); 
+        this.$swal('Login Error', 'Oops Login Failed ...', 'error');
+      });
     }
   }
 }
