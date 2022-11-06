@@ -88,7 +88,7 @@ public final class PostEntity extends AbstractTypedEntity {
         return getLikes().remove(userKey);
     }
 
-    public int getLikeCount() {
+    public long getLikeCount() {
         return getProperty(FIELD_LIKE_COUNT);
     }
 }

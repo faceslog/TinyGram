@@ -8,7 +8,7 @@ public class PostTransformer extends TypedEntityTransformer<PostEntity, PostTran
         public final UserEntity owner;
         public final Date date;
         public final String image;
-        public final int likecount;
+        public final long likecount;
 
         public Response(PostEntity entity) {
             super(entity);
