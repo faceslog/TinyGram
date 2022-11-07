@@ -76,7 +76,15 @@ public final class PostEntity extends AbstractTypedEntity {
         if (getOwner().getKey().equals(userKey)) {
             throw new IllegalArgumentException("Trying to like its own post.");
         }
-        return getLikes().add(userKey);
+        final Set<Key> likes = getLikes();
+        if (likes.contains(userKey)) {
+            return false;
+        }
+        likes.add(userKey);
+        final long likeCount = getLikeCount() + 1;
+        setProperty(FIELD_LIKES, likes);
+        setProperty(FIELD_LIKE_COUNT, likeCount);
+        return true;
     }
 
     public boolean unlike(UserEntity user) {
@@ -85,7 +93,15 @@ public final class PostEntity extends AbstractTypedEntity {
 
     public boolean unlike(Key userKey) {
         KindException.ensure(UserEntity.KIND, userKey);
-        return getLikes().remove(userKey);
+        final Set<Key> likes = getLikes();
+        if (!likes.contains(userKey)) {
+            return false;
+        }
+        likes.remove(userKey);
+        final long likeCount = getLikeCount() - 1;
+        setProperty(FIELD_LIKES, likes);
+        setProperty(FIELD_LIKE_COUNT, likeCount);
+        return true;
     }
 
     public long getLikeCount() {
