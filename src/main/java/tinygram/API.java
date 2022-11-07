@@ -142,7 +142,7 @@ public class API {
     }
 
     @ApiMethod(httpMethod = HttpMethod.POST, path = "like/ok")
-    public void addLike(User user, @Named("target") String post) throws EntityNotFoundException, UnauthorizedException {
+    public void addLike(User user, @Named("postId") String post) throws EntityNotFoundException, UnauthorizedException {
         final UserEntity userEntity = getUserData(user);
 
         log.info("Retrieving post data...");
@@ -159,7 +159,7 @@ public class API {
     }
 
     @ApiMethod(httpMethod = HttpMethod.POST, path = "like/ko")
-    public void removeLike(User user, @Named("target") String post) throws EntityNotFoundException, UnauthorizedException {
+    public void removeLike(User user, @Named("postId") String post) throws EntityNotFoundException, UnauthorizedException {
         final UserEntity userEntity = getUserData(user);
 
         log.info("Retrieving post data...");

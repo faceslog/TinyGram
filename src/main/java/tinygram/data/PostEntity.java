@@ -73,9 +73,11 @@ public final class PostEntity extends AbstractTypedEntity {
 
     public boolean like(Key userKey) {
         KindException.ensure(UserEntity.KIND, userKey);
-        if (getOwner().getKey().equals(userKey)) {
-            throw new IllegalArgumentException("Trying to like its own post.");
-        }
+        /* Sur insta un utilisateur peut like ses propres posts
+            if (getOwner().getKey().equals(userKey)) {
+                throw new IllegalArgumentException("Trying to like its own post.");
+            }
+        */
         final Set<Key> likes = getLikes();
         if (likes.contains(userKey)) {
             return false;

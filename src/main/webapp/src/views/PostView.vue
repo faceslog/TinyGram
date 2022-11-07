@@ -2,7 +2,7 @@
 
   <Header></Header>
 
-  <div class="relative bg-gray-200 h-full border-2 border-gray-200">    
+  <div class="relative h-full border-2 border-gray-200 bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100">    
     <div class="pt-6 h-full">
 
       <div class="max-w-4xl mx-auto">
@@ -33,7 +33,7 @@ export default {
         likesCount: 0,
         hasLiked: false,
         imgUrl: "",
-        postUrl: "",
+        postId: "",
         description:""
       }
     }
@@ -50,7 +50,7 @@ export default {
 
       this.post.likesCount = res.data.likecount;
       this.post.imgUrl = res.data.image;
-      this.post.postUrl = res.data.key;
+      this.post.postId = res.data.key;
             
     }).catch(err => {
       this.$router.push("/not-found");
