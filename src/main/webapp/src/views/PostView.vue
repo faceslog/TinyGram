@@ -33,7 +33,7 @@ export default {
         likesCount: 0,
         hasLiked: false,
         imgUrl: "",
-        postUrl: "",
+        postId: "",
         description:""
       }
     }
@@ -50,7 +50,7 @@ export default {
 
       this.post.likesCount = res.data.likecount;
       this.post.imgUrl = res.data.image;
-      this.post.postUrl = res.data.key;
+      this.post.postId = res.data.key;
             
     }).catch(err => {
       this.$router.push("/not-found");
