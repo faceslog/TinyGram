@@ -1,6 +1,6 @@
 package tinygram.data;
 
-public final class PrimitiveResponse {
+public class PrimitiveResponse {
     public static class String {
         public java.lang.String value;
     

@@ -3,7 +3,7 @@ package tinygram.data;
 import com.google.api.server.spi.config.Transformer;
 import com.google.appengine.api.datastore.KeyFactory;
 
-public abstract class TypedEntityTransformer<TFrom extends TypedEntity, TTo extends TypedEntityTransformer.Response> implements Transformer<TFrom, TTo> {
+public interface TypedEntityTransformer<TFrom extends TypedEntity, TTo extends TypedEntityTransformer.Response> extends Transformer<TFrom, TTo> {
 
     public static abstract class Response {
         public final String key;
@@ -14,7 +14,7 @@ public abstract class TypedEntityTransformer<TFrom extends TypedEntity, TTo exte
     }
 
     @Override
-    public TFrom transformFrom(TTo in) {
-        return null;
+    default TFrom transformFrom(TTo in) {
+        throw new IllegalStateException("Undefined entity deserialization.");
     }
 }

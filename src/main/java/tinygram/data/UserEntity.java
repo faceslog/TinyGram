@@ -1,81 +1,40 @@
 package tinygram.data;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
 
-import com.google.api.server.spi.auth.common.User;
-import com.google.api.server.spi.config.ApiTransformer;
-import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
-import tinygram.Util;
+public interface UserEntity extends TypedEntity {
 
-@ApiTransformer(UserTransformer.class)
-public final class UserEntity extends AbstractTypedEntity {
+    static final String KIND = "User";
 
-    protected static final String KIND = "User";
-    protected static final String FIELD_ID = "id";
-    protected static final String FIELD_FOLLOWING = "following";
-
-    public UserEntity(User user) {
-        super();
-
-        setProperty(FIELD_ID, Util.DEBUG ? "test" : user.getId());
-        setProperty(FIELD_FOLLOWING, new HashSet<>());
-    }
-
-    public UserEntity(Entity raw) {
-        super(raw);
-    }
+    static final String FIELD_ID = "__id__";
+    static final String FIELD_FOLLOWING = "following";
 
     @Override
-    public String getKind() {
+    default String getKind() {
         return KIND;
     }
 
-    protected Set<Key> getFollowing() {
-        final Set<Key> following = getProperty(FIELD_FOLLOWING);
-        return following == null ? new HashSet<>() : following;
-    }
+    Collection<Key> getFollowing();
 
-    public boolean follows(UserEntity user) {
+    default boolean follows(UserEntity user) {
         return follows(user.getKey());
     }
 
-    public boolean follows(Key userKey) {
+    default boolean follows(Key userKey) {
         return getFollowing().contains(userKey);
     }
 
-    public boolean follow(UserEntity user) {
+    default boolean follow(UserEntity user) {
         return follow(user.getKey());
     }
 
-    public boolean follow(Key userKey) {
-        KindException.ensure(KIND, userKey);
-        if (getKey().equals(userKey) && !Util.DEBUG) {
-            throw new IllegalArgumentException("Trying to follow itself.");
-        }
-        final Set<Key> following = getFollowing();
-        if (following.contains(userKey)) {
-            return false;
-        }
-        following.add(userKey);
-        setProperty(FIELD_FOLLOWING, following);
-        return true;
-    }
+    boolean follow(Key userKey);
 
-    public boolean unfollow(UserEntity user) {
+    default boolean unfollow(UserEntity user) {
         return unfollow(user.getKey());
     }
 
-    public boolean unfollow(Key userKey) {
-        KindException.ensure(KIND, userKey);
-        final Set<Key> following = getFollowing();
-        if (!following.contains(userKey)) {
-            return false;
-        }
-        following.remove(userKey);
-        setProperty(FIELD_FOLLOWING, following);
-        return true;
-    }
+    boolean unfollow(Key userKey);
 }

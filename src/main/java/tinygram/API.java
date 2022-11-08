@@ -13,6 +13,8 @@ import com.google.api.server.spi.config.Nullable;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
 
+import tinygram.data.BasePostRepository;
+import tinygram.data.BaseUserRepository;
 import tinygram.data.FeedResponse;
 import tinygram.data.PostEntity;
 import tinygram.data.PostRepository;
@@ -30,64 +32,49 @@ public class API {
 
     private static final Logger log = Logger.getLogger(API.class.getName());
 
-    private UserEntity getUserData(User user) throws UnauthorizedException {
-        if (user == null && !Util.DEBUG) {
-            throw new UnauthorizedException("Invalid credentials.");
-        }
-
+    private UserRepository buildRepository(User user) throws UnauthorizedException {
         log.info("Retrieving user data...");
-        UserEntity userEntity = UserRepository.find(user);
-        if (userEntity != null) {
-            log.info("User data retrieved.");
-            return userEntity;
-        }
+        final UserRepository userRepository = new BaseUserRepository(user);
+        log.info("User data retrieved.");
 
-        log.info("Missing user data.");
-
-        log.info("Creating user data...");
-        userEntity = new UserEntity(user);
-        log.info("User data successfully created.");
-
-        log.info("Registering user...");
-        Util.withinTransaction(userEntity::persist);
-        log.info("User successfully registered.");
-
-        return userEntity;
+        return userRepository;
     }
 
     @ApiMethod(httpMethod = HttpMethod.GET, path = "auth")
     public UserEntity test(User user) throws UnauthorizedException {
-        return getUserData(user);
+        return buildRepository(user).getCurrentUser();
     }
 
     @ApiMethod(httpMethod = HttpMethod.POST, path = "add")
     public PostEntity addPost(User user, @Named("image") String image) throws UnauthorizedException {
-        final UserEntity userEntity = getUserData(user);
-
-        log.info("Creating new post...");
-        final PostEntity postEntity = new PostEntity(userEntity, image);
-        log.info("Post successfully created.");
+        final UserRepository userRepository = buildRepository(user);
+        final PostRepository postRepository = new BasePostRepository(userRepository);
 
         log.info("Registering post...");
-        Util.withinTransaction(postEntity::persist);
+        final PostEntity postEntity = postRepository.register(userRepository.getCurrentUser(), image);
         log.info("Post successfully registered.");
 
         return postEntity;
     }
 
     @ApiMethod(httpMethod = HttpMethod.GET, path = "users")
-    public UserEntity getUser(@Named("user") String user) throws EntityNotFoundException, UnauthorizedException {
+    public UserEntity getUser(User user, @Named("user") String targetUserKey) throws EntityNotFoundException, UnauthorizedException {
+        final UserRepository userRepository = buildRepository(user);
+
         log.info("Retrieving user data...");
-        final UserEntity userEntity = UserRepository.get(KeyFactory.stringToKey(user));
+        final UserEntity userEntity = userRepository.get(KeyFactory.stringToKey(targetUserKey));
         log.info("User data successfully retrieved.");
 
         return userEntity;
     }
 
     @ApiMethod(httpMethod = HttpMethod.GET, path = "posts")
-    public PostEntity getPost(@Named("post") String post) throws EntityNotFoundException, UnauthorizedException {
+    public PostEntity getPost(User user, @Named("post") String targetPostKey) throws EntityNotFoundException, UnauthorizedException {
+        final UserRepository userRepository = buildRepository(user);
+        final PostRepository postRepository = new BasePostRepository(userRepository);
+
         log.info("Retrieving post data...");
-        final PostEntity postEntity = PostRepository.get(KeyFactory.stringToKey(post));
+        final PostEntity postEntity = postRepository.get(KeyFactory.stringToKey(targetPostKey));
         log.info("Post data successfully retrieved.");
 
         return postEntity;
@@ -95,29 +82,33 @@ public class API {
 
     @ApiMethod(httpMethod = HttpMethod.GET, path = "feed/followed")
     public FeedResponse<PostEntity> getFeed(User user, @Nullable @Named("page") String page) throws EntityNotFoundException, UnauthorizedException {
-        final UserEntity userEntity = getUserData(user);
+        final UserRepository userRepository = buildRepository(user);
+        final PostRepository postRepository = new BasePostRepository(userRepository);
 
-        return PostRepository.findFromFollowed(userEntity, page);
+        return postRepository.findFromFollowed(userRepository.getCurrentUser(), page);
     }
 
     @ApiMethod(httpMethod = HttpMethod.GET, path = "feed/from")
     public FeedResponse<PostEntity> getUserPosts(User user, @Nullable @Named("page") String page) throws EntityNotFoundException, UnauthorizedException {
-        final UserEntity userEntity = getUserData(user);
+        final UserRepository userRepository = buildRepository(user);
+        final PostRepository postRepository = new BasePostRepository(userRepository);
 
-        return PostRepository.findFrom(userEntity, page);
+        return postRepository.findFrom(userRepository.getCurrentUser(), page);
     }
 
     @ApiMethod(httpMethod = HttpMethod.POST, path = "follow/ok")
     public void addFollower(User user, @Named("target") String target) throws EntityNotFoundException, UnauthorizedException {
-        final UserEntity userEntity = getUserData(user);
+        final UserRepository userRepository = buildRepository(user);
 
         log.info("Retrieving target data...");
-        final UserEntity targetEntity = UserRepository.get(KeyFactory.stringToKey(target));
+        final UserEntity targetEntity = userRepository.get(KeyFactory.stringToKey(target));
         log.info("Target data successfully retrieved.");
 
+        final UserEntity currentUserEntity = userRepository.getCurrentUser();
+
         log.info("Following target...");
-        if (userEntity.follow(targetEntity)) {
-            Util.withinTransaction(userEntity::persist);
+        if (currentUserEntity.follow(targetEntity)) {
+            Util.withinTransaction(currentUserEntity::persist);
             log.info("Target successfully followed.");
         } else {
             log.info("Target already followed.");
@@ -126,15 +117,17 @@ public class API {
 
     @ApiMethod(httpMethod = HttpMethod.POST, path = "follow/ko")
     public void removeFollower(User user, @Named("target") String target) throws EntityNotFoundException, UnauthorizedException {
-        final UserEntity userEntity = getUserData(user);
+        final UserRepository userRepository = buildRepository(user);
 
         log.info("Retrieving target data...");
-        final UserEntity targetEntity = UserRepository.get(KeyFactory.stringToKey(target));
+        final UserEntity targetEntity = userRepository.get(KeyFactory.stringToKey(target));
         log.info("Target data successfully retrieved.");
 
+        final UserEntity currentUserEntity = userRepository.getCurrentUser();
+
         log.info("Unfollowing target...");
-        if (userEntity.unfollow(targetEntity)) {
-            Util.withinTransaction(userEntity::persist);
+        if (currentUserEntity.unfollow(targetEntity)) {
+            Util.withinTransaction(currentUserEntity::persist);
             log.info("Target successfully unfollowed.");
         } else {
             log.info("Target already not followed.");
@@ -143,14 +136,15 @@ public class API {
 
     @ApiMethod(httpMethod = HttpMethod.POST, path = "like/ok")
     public void addLike(User user, @Named("postId") String post) throws EntityNotFoundException, UnauthorizedException {
-        final UserEntity userEntity = getUserData(user);
+        final UserRepository userRepository = buildRepository(user);
+        final PostRepository postRepository = new BasePostRepository(userRepository);
 
         log.info("Retrieving post data...");
-        final PostEntity postEntity = PostRepository.get(KeyFactory.stringToKey(post));
+        final PostEntity postEntity = postRepository.get(KeyFactory.stringToKey(post));
         log.info("Post data successfully retrieved.");
 
         log.info("Adding like...");
-        if (postEntity.like(userEntity)) {
+        if (postEntity.like(userRepository.getCurrentUser())) {
             Util.withinTransaction(postEntity::persist);
             log.info("Like successfully added.");
         } else {
@@ -160,14 +154,15 @@ public class API {
 
     @ApiMethod(httpMethod = HttpMethod.POST, path = "like/ko")
     public void removeLike(User user, @Named("postId") String post) throws EntityNotFoundException, UnauthorizedException {
-        final UserEntity userEntity = getUserData(user);
+        final UserRepository userRepository = buildRepository(user);
+        final PostRepository postRepository = new BasePostRepository(userRepository);
 
         log.info("Retrieving post data...");
-        final PostEntity postEntity = PostRepository.get(KeyFactory.stringToKey(post));
+        final PostEntity postEntity = postRepository.get(KeyFactory.stringToKey(post));
         log.info("Post data successfully retrieved.");
 
         log.info("Removing like...");
-        if (postEntity.unlike(userEntity)) {
+        if (postEntity.unlike(userRepository.getCurrentUser())) {
             Util.withinTransaction(postEntity::persist);
             log.info("Like successfully removed.");
         } else {
