@@ -8,7 +8,7 @@ public interface UserEntity extends TypedEntity {
 
     static final String KIND = "User";
 
-    static final String FIELD_ID = "__id__";
+    static final String FIELD_ID = "id";
     static final String FIELD_FOLLOWING = "following";
 
     @Override

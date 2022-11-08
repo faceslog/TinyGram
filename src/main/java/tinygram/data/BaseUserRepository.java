@@ -1,7 +1,6 @@
 package tinygram.data;
 
 import com.google.api.server.spi.auth.common.User;
-import com.google.appengine.api.datastore.DatastoreFailureException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -17,22 +16,19 @@ public class BaseUserRepository implements UserRepository {
 
     private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-    private final UserProvider userProvider;
+    private UserProvider userProvider;
 
     public BaseUserRepository(User user) {
         if (user == null && !Util.DEBUG) {
             throw new IllegalArgumentException("Missing user credentials.");
         }
 
+        userProvider = new UndefinedUserProvider();
+
         UserEntity entity = find(user);
 
         if (entity == null) {
-            register(user);
-
-            entity = find(user);
-            if (entity == null) {
-                throw new DatastoreFailureException("Could not retrieve newly registered user data.");
-            }
+            entity = register(user);
         }
 
         userProvider = new BaseUserProvider(entity);

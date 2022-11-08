@@ -13,13 +13,10 @@ import tinygram.Util;
 @ApiTransformer(BaseUserTransformer.class)
 public class BaseUserEntity extends UserAwareEntity implements UserEntity {
 
-    protected static final String KIND = "User";
-    protected static final String FIELD_ID = "__id__";
-    protected static final String FIELD_FOLLOWING = "following";
-
     public BaseUserEntity(User user) {
         super(new UndefinedUserProvider(), Util.DEBUG ? "test" : user.getId());
 
+        setProperty(FIELD_ID, Util.DEBUG ? "test" : user.getId());
         setProperty(FIELD_FOLLOWING, new HashSet<>());
 
         setUserProvider(new BaseUserProvider(this));
