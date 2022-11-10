@@ -4,12 +4,17 @@ public class BaseUserTransformer implements TypedEntityTransformer<BaseUserEntit
 
     public static class Response extends TypedEntityTransformer.Response {
 
-        public final boolean followed;
+        public final Boolean followed;
 
         public Response(BaseUserEntity entity) {
             super(entity);
 
-            followed = entity.getUserProvider().get().follows(entity);
+            UserEntity baseUser = null;
+            try {
+                baseUser = entity.getUserProvider().get();
+            } catch (final IllegalStateException e) {}
+
+            followed = baseUser == null ? null : baseUser.follows(entity);
         }
     }
 
