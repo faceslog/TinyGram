@@ -16,7 +16,7 @@
     <servlet-class>com.google.api.server.spi.EndpointsServlet</servlet-class>
     <init-param>
       <param-name>services</param-name>
-      <param-value>tinygram.API</param-value>
+      <param-value>tinygram.api.InstAPI, tinygram.api.UserAPI, tinygram.api.PostAPI</param-value>
     </init-param>
   </servlet>
 
