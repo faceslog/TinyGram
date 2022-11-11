@@ -1,17 +1,15 @@
-package tinygram.data;
+package tinygram.datastore;
 
 import java.util.Collection;
 import java.util.HashSet;
 
 import com.google.api.server.spi.auth.common.User;
-import com.google.api.server.spi.config.ApiTransformer;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
 import tinygram.Util;
 
-@ApiTransformer(BaseUserTransformer.class)
-public class BaseUserEntity extends UserAwareEntity implements UserEntity {
+class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
 
     public BaseUserEntity(User user) {
         super(new UndefinedUserProvider(), Util.DEBUG ? "test" : user.getId());

@@ -14,11 +14,11 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
 
 import tinygram.Util;
-import tinygram.data.BasePostRepository;
-import tinygram.data.FeedResponse;
-import tinygram.data.PostEntity;
-import tinygram.data.PostRepository;
-import tinygram.data.UserRepository;
+import tinygram.datastore.BasePostRepository;
+import tinygram.datastore.FeedResponse;
+import tinygram.datastore.PostEntity;
+import tinygram.datastore.PostRepository;
+import tinygram.datastore.UserRepository;
 
 @ApiReference(InstAPI.class)
 @ApiClass

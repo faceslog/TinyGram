@@ -1,15 +1,13 @@
-package tinygram.data;
+package tinygram.datastore;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 
-import com.google.api.server.spi.config.ApiTransformer;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
-@ApiTransformer(BasePostTransformer.class)
-public class BasePostEntity extends UserAwareEntity implements PostEntity {
+class BasePostEntity extends AbstractUserAwareEntity implements PostEntity {
 
     protected static final String KIND = "Post";
 

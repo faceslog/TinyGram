@@ -1,4 +1,4 @@
-package tinygram.data;
+package tinygram.datastore;
 
 import java.util.Objects;
 

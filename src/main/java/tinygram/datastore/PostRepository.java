@@ -1,4 +1,4 @@
-package tinygram.data;
+package tinygram.datastore;
 
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;

@@ -1,4 +1,4 @@
-package tinygram.data;
+package tinygram.datastore;
 
 import com.google.api.server.spi.auth.common.User;
 import com.google.appengine.api.datastore.DatastoreService;

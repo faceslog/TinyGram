@@ -1,24 +1,24 @@
-package tinygram.data;
+package tinygram.datastore;
 
 import java.util.Objects;
 
 import com.google.appengine.api.datastore.Entity;
 
-public abstract class UserAwareEntity extends AbstractTypedEntity {
+public abstract class AbstractUserAwareEntity extends AbstractTypedEntity implements UserAware {
 
     private UserProvider userProvider;
 
-    public UserAwareEntity(UserProvider userProvider) {
+    public AbstractUserAwareEntity(UserProvider userProvider) {
         setUserProvider(userProvider);
     }
 
-    public UserAwareEntity(UserProvider userProvider, String keyName) {
+    public AbstractUserAwareEntity(UserProvider userProvider, String keyName) {
         super(keyName);
 
         setUserProvider(userProvider);
     }
 
-    public UserAwareEntity(UserProvider userProvider, Entity raw) {
+    public AbstractUserAwareEntity(UserProvider userProvider, Entity raw) {
         super(raw);
 
         setUserProvider(userProvider);
@@ -28,7 +28,7 @@ public abstract class UserAwareEntity extends AbstractTypedEntity {
         this.userProvider = Objects.requireNonNull(userProvider);
     }
 
-    protected UserProvider getUserProvider() {
+    public UserProvider getUserProvider() {
         return userProvider;
     }
 }

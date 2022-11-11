@@ -13,8 +13,8 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
 
 import tinygram.Util;
-import tinygram.data.UserEntity;
-import tinygram.data.UserRepository;
+import tinygram.datastore.UserEntity;
+import tinygram.datastore.UserRepository;
 
 @ApiReference(InstAPI.class)
 @ApiClass

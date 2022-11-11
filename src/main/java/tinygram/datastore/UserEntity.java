@@ -1,10 +1,10 @@
-package tinygram.data;
+package tinygram.datastore;
 
 import java.util.Collection;
 
 import com.google.appengine.api.datastore.Key;
 
-public interface UserEntity extends TypedEntity {
+public interface UserEntity extends TypedEntity, UserAware {
 
     static final String KIND = "User";
 

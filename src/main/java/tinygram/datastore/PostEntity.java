@@ -1,11 +1,11 @@
-package tinygram.data;
+package tinygram.datastore;
 
 import java.util.Collection;
 import java.util.Date;
 
 import com.google.appengine.api.datastore.Key;
 
-public interface PostEntity extends TypedEntity {
+public interface PostEntity extends TypedEntity, UserAware {
 
     static final String KIND = "Post";
 

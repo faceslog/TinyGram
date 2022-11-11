@@ -1,4 +1,4 @@
-package tinygram.data;
+package tinygram.datastore;
 
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;

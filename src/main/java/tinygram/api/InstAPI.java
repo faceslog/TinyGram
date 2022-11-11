@@ -9,21 +9,19 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.response.UnauthorizedException;
 
-import tinygram.data.BaseUserRepository;
-import tinygram.data.BaseUserTransformer;
-import tinygram.data.UserEntity;
-import tinygram.data.UserRepository;
+import tinygram.api.config.PostTransformer;
+import tinygram.api.config.UserTransformer;
+import tinygram.datastore.BaseUserRepository;
+import tinygram.datastore.UserEntity;
+import tinygram.datastore.UserRepository;
 
-/**
- * 
- */
 @Api(
     name         = InstAPI.NAME,
     title        = "InstAPI",
     description  = "Lets you manage the TinyGram datastore",
     audiences    = "666928071557-7tupn0nhb8v6cg13vsjtlreg61b6akob.apps.googleusercontent.com",
     clientIds    = "666928071557-7tupn0nhb8v6cg13vsjtlreg61b6akob.apps.googleusercontent.com",
-    transformers = { BaseUserTransformer.class })
+    transformers = { UserTransformer.class, PostTransformer.class })
 @ApiClass
 public class InstAPI {
 

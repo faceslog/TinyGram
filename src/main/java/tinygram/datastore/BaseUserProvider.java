@@ -1,4 +1,4 @@
-package tinygram.data;
+package tinygram.datastore;
 
 public class BaseUserProvider implements UserProvider {
 
