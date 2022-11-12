@@ -2,7 +2,7 @@ package tinygram.api.config;
 
 import tinygram.datastore.UserEntity;
 
-public class BaseUserResponse extends TypedEntityTransformer.Response<UserEntity> {
+public class BaseUserResponse extends AuthUserResponse {
 
     public final boolean followed;
 
