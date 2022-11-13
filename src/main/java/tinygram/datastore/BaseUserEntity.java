@@ -18,7 +18,7 @@ class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
         setProperty(FIELD_NAME, name);
         setProperty(FIELD_IMAGE, image);
         setProperty(FIELD_FOLLOWERS, new HashSet<>());
-        setProperty(FIELD_FOLLOWER_COUNT, 0);
+        setProperty(FIELD_FOLLOWER_COUNT, 0l);
 
         setUserProvider(new BaseUserProvider(this));
     }
@@ -100,6 +100,7 @@ class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
 
     @Override
     public long getFollowerCount() {
-        return getProperty(FIELD_FOLLOWER_COUNT);
+        final Long object = getProperty(FIELD_FOLLOWER_COUNT);
+        return object;
     }
 }
