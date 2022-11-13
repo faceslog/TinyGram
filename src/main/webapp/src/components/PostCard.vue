@@ -9,7 +9,6 @@
                 
                 <div class="user-name-and-place flex flex-col">
                   <span class="text-base font-bold">{{ post.username }}</span>
-                  <span v-if="post.location" class="text-sm font-light text-gray-900">{{ post.location }}</span>
                 </div>
             </div>
 
@@ -86,7 +85,7 @@
             <div class="bottom border-t pt-3 mt-3">
                 <div class="wrapper flex">
                   <input type="text" class="text-sm h-10 w-full outline-none focus:outline-none" placeholder="Add a comment">
-                  <button class="text-blue-500 opacity-75 w-2/12 text-right font-bold">Post</button>
+                  <button class="text-blue-500 opacity-75 w-2/12 text-right font-bold" disabled>Post</button>
                 </div>
 
             </div>
@@ -100,30 +99,31 @@ export default {
     props: {
         post: Object 
     },
+    mounted(){
+        let token = this.$store.getters.getToken;
+        this.$axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    },
     methods: {
         toggleLike: async function() {
             // Si par défaut le post n'est pas like on incrémente
-
-            let token = this.$store.getters.getToken;
-
             if(!this.post.hasLiked)
-                this.like(token, this.post.postId);
+                this.like(this.post.postId);
             else
-                this.unlike(token, this.post.postId);
+                this.unlike(this.post.postId);
         },
-        like: async function(token, postId) {
+        like: async function(postId) {
             
             this.post.likesCount++;
             this.post.hasLiked = true;
 
-            await this.$axios.post(`/like/ok?access_token=${token}&postId=${postId}`);
+            await this.$axios.put(`/post/${postId}`, { liked: true });
         },
-        unlike: async function(token, postId) {
+        unlike: async function(postId) {
 
             this.post.likesCount--;
             this.post.hasLiked = false;
 
-            await this.$axios.post(`/like/ko?access_token=${token}&postId=${postId}`);
+            await this.$axios.put(`/post/${postId}`, { liked: false });
         }
     }
 }

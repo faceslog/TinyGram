@@ -29,32 +29,39 @@ export default {
       post: {
         username: "",
         userpic: "",
-        location: "",
         likesCount: 0,
         hasLiked: false,
         imgUrl: "",
         postId: "",
         description:""
-      }
+      },
     }
   },
-  mounted(){
+  async mounted(){
 
-    this.$axios.get(`/posts?post=${this.$route.params.post}`).then(res => {
+    let token = this.$store.getters.getToken;
+    let postId = this.$route.params.post;
 
-      this.post.username = "Toto";
-      this.post.userpic = "https://i.pinimg.com/originals/c2/4a/af/c24aaf49f7dc286dd0f7020a5bb820ac.png";
-      this.post.location = "Université de Nantes";
-      this.post.hasLiked = false;
-      this.post.description = "Salut c'est un test";
+    this.$axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-      this.post.likesCount = res.data.likecount;
-      this.post.imgUrl = res.data.image;
-      this.post.postId = res.data.key;
-            
-    }).catch(err => {
+    try {
+
+      let res = await this.$axios.get(`/post/${postId}`);
+      
+      let user = await this.$axios.get(res.data._links.owner);
+
+      this.post.username = user.data.result.name;
+      this.post.userpic = user.data.result.image;
+
+      this.post.likesCount = +res.data.result.likecount;
+      this.post.hasLiked = res.data.result.liked;
+      this.post.imgUrl = res.data.result.image;
+      this.post.postId = res.data.result.key;
+      this.post.description = res.data.result.description;
+
+    } catch(err)  {
       this.$router.push("/not-found");
-    }); 
+    }
   }
 }
 </script>

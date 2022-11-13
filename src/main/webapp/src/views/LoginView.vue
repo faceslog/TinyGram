@@ -68,15 +68,22 @@ export default {
     login: function(response) { 
 
       this.$store.dispatch('setToken', response.credential);
+      let decodedData = this.$store.getters.getDecodedToken;
+      
+      let data = {
+        name: decodedData.name,
+        image: decodedData.picture
+      }
 
-      // Authentifie avec le backend
-      this.$axios.get(`/auth?access_token=${response.credential}`).then(res => {
+      this.$axios.defaults.headers.common['Authorization'] = `Bearer ${response.credential}`;
 
-        this.$store.dispatch('setId', res.data.key);  
-        this.$router.push("/");
+      this.$axios.post("/user", data).then(res => {
         
-      })
-      .catch(err => { 
+        this.$store.dispatch('setUser', res.data.result); 
+        this.$router.push("/");
+
+      }).catch(err => {
+
         console.log(err); 
         this.$swal('Login Error', 'Oops Login Failed ...', 'error');
       });

@@ -9,7 +9,7 @@
       <div class="p-4 text-center ">
         <div class="relative text-center mt-8">
           <button class="rounded-full"  id="user-menu">
-            <img class="lg:h-40 lg:w-40 h-20 w-20 rounded-full" :src="user.userpic"   alt="profile pic"/>
+            <img class="lg:h-40 lg:w-40 h-20 w-20 rounded-full" :src="user.userpic" alt="profile pic"/>
           </button>
         </div>
       </div>
