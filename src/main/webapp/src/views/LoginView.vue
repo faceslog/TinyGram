@@ -72,9 +72,8 @@ export default {
       // Authentifie avec le backend
       this.$axios.get(`/auth?access_token=${response.credential}`).then(res => {
 
-        console.log(res);
         this.$store.dispatch('setId', res.data.key);  
-        // this.$router.push("/");
+        this.$router.push("/");
         
       })
       .catch(err => { 
