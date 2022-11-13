@@ -6,11 +6,12 @@ import com.google.appengine.api.datastore.Key;
 
 import tinygram.datastore.PostEntity;
 
-public class BasePostResponse extends TypedEntityTransformer.Response<PostEntity> {
+public class BasePostResponse extends EntityResponse<PostEntity> {
 
     public final Key owner;
     public final Date date;
     public final String image;
+    public final String description;
     public final long likecount;
     public final boolean liked;
 
@@ -20,7 +21,8 @@ public class BasePostResponse extends TypedEntityTransformer.Response<PostEntity
         owner = entity.getOwner();
         date = entity.getDate();
         image = entity.getImage();
+        description = entity.getDescription();
         likecount = entity.getLikeCount();
-        liked = entity.likedBy(entity.getUserProvider().getKey());
+        liked = entity.likedBy(entity.getUserProvider().get());
     }
 }

@@ -12,6 +12,7 @@ public interface PostEntity extends TypedEntity, UserAware {
     static final String FIELD_OWNER = "owner";
     static final String FIELD_DATE = "date";
     static final String FIELD_IMAGE = "image";
+    static final String FIELD_DESCRIPTION = "description";
     static final String FIELD_LIKES = "likes";
     static final String FIELD_LIKE_COUNT = "likecount";
 
@@ -26,6 +27,12 @@ public interface PostEntity extends TypedEntity, UserAware {
 
     String getImage();
 
+    void setImage(String image);
+
+    String getDescription();
+
+    void setDescription(String description);
+
     Collection<Key> getLikes();
 
     default boolean likedBy(UserEntity user) {
@@ -36,17 +43,17 @@ public interface PostEntity extends TypedEntity, UserAware {
         return getLikes().contains(userKey);
     }
 
-    default boolean like(UserEntity user) {
-        return like(user.getKey());
+    default boolean addLike(UserEntity user) {
+        return addLike(user.getKey());
     }
 
-    boolean like(Key userKey);
+    boolean addLike(Key userKey);
 
-    default boolean unlike(UserEntity user) {
-        return unlike(user.getKey());
+    default boolean removeLike(UserEntity user) {
+        return removeLike(user.getKey());
     }
 
-    boolean unlike(Key userKey);
+    boolean removeLike(Key userKey);
 
     long getLikeCount();
 }

@@ -9,32 +9,47 @@ public interface UserEntity extends TypedEntity, UserAware {
     static final String KIND = "User";
 
     static final String FIELD_ID = "id";
-    static final String FIELD_FOLLOWING = "following";
+    static final String FIELD_NAME = "name";
+    static final String FIELD_IMAGE = "image";
+    static final String FIELD_FOLLOWERS = "followers";
+    static final String FIELD_FOLLOWER_COUNT = "followercount";
 
     @Override
     default String getKind() {
         return KIND;
     }
 
-    Collection<Key> getFollowing();
+    String getId();
 
-    default boolean follows(UserEntity user) {
-        return follows(user.getKey());
+    String getName();
+
+    void setName(String name);
+
+    String getImage();
+
+    void setImage(String image);
+
+    Collection<Key> getFollowers();
+
+    default boolean followedBy(UserEntity user) {
+        return followedBy(user.getKey());
     }
 
-    default boolean follows(Key userKey) {
-        return getFollowing().contains(userKey);
+    default boolean followedBy(Key userKey) {
+        return getFollowers().contains(userKey);
     }
 
-    default boolean follow(UserEntity user) {
-        return follow(user.getKey());
+    default boolean addFollow(UserEntity user) {
+        return addFollow(user.getKey());
     }
 
-    boolean follow(Key userKey);
+    boolean addFollow(Key userKey);
 
-    default boolean unfollow(UserEntity user) {
-        return unfollow(user.getKey());
+    default boolean removeFollow(UserEntity user) {
+        return removeFollow(user.getKey());
     }
 
-    boolean unfollow(Key userKey);
+    boolean removeFollow(Key userKey);
+
+    long getFollowerCount();
 }

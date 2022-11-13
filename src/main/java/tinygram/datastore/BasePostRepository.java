@@ -1,17 +1,9 @@
 package tinygram.datastore;
 
-import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
-
-import tinygram.Util;
 
 public class BasePostRepository implements PostRepository {
 
@@ -23,7 +15,17 @@ public class BasePostRepository implements PostRepository {
         this.userProvider = new BaseUserProvider(userRepository.getCurrentUser());
     }
 
-    private FetchOptions getFeedOptions(String page) {
+    @Override
+    public PostEntity register(UserEntity owner, String image, String description) {
+        return new BasePostEntity(userProvider, owner, image, description);
+    }
+
+    @Override
+    public PostEntity get(Key key) throws EntityNotFoundException {
+        return new BasePostEntity(userProvider, datastore.get(key));
+    }
+
+    /*private FetchOptions getFeedOptions(String page) {
         final FetchOptions fetchOptions = FetchOptions.Builder.withLimit(10);
 
         if (page != null) {
@@ -31,20 +33,6 @@ public class BasePostRepository implements PostRepository {
         }
 
         return fetchOptions;
-    }
-
-    @Override
-    public PostEntity register(UserEntity owner, String image) {
-        final PostEntity entity = new BasePostEntity(userProvider, owner, image);
-
-        Util.withinTransaction(entity::persist);
-
-        return entity;
-    }
-
-    @Override
-    public PostEntity get(Key key) throws EntityNotFoundException {
-        return new BasePostEntity(userProvider, datastore.get(key));
     }
 
     @Override
@@ -61,5 +49,5 @@ public class BasePostRepository implements PostRepository {
                 .setFilter(new FilterPredicate("owner", FilterOperator.IN, user.getFollowing())));
 
         return new FeedResponse<>(entity -> new BasePostEntity(userProvider, entity), query.asQueryResultList(getFeedOptions(page)));
-    }
+    }*/
 }

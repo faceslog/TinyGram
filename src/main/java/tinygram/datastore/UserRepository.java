@@ -8,7 +8,9 @@ public interface UserRepository {
 
     UserEntity getCurrentUser();
 
-    UserEntity register(User user);
+    void setCurrentUser(UserEntity userEntity);
+
+    UserEntity register(User user, String name, String image);
 
     UserEntity get(Key key) throws EntityNotFoundException;
 

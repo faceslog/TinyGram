@@ -17,12 +17,13 @@ class BasePostEntity extends AbstractUserAwareEntity implements PostEntity {
     protected static final String FIELD_LIKES = "likes";
     protected static final String FIELD_LIKE_COUNT = "likecount";
 
-    public BasePostEntity(UserProvider userProvider, UserEntity owner, String image) {
+    public BasePostEntity(UserProvider userProvider, UserEntity owner, String image, String description) {
         super(userProvider);
 
         setProperty(FIELD_OWNER, owner.getKey());
         setProperty(FIELD_DATE, new Date());
         setProperty(FIELD_IMAGE, image);
+        setProperty(FIELD_DESCRIPTION, description);
         setProperty(FIELD_LIKES, new HashSet<>());
         setProperty(FIELD_LIKE_COUNT, 0);
     }
@@ -47,13 +48,28 @@ class BasePostEntity extends AbstractUserAwareEntity implements PostEntity {
     }
 
     @Override
+    public void setImage(String image) {
+        setProperty(FIELD_IMAGE, image);
+    }
+
+    @Override
+    public String getDescription() {
+        return getProperty(FIELD_DESCRIPTION);
+    }
+
+    @Override
+    public void setDescription(String description) {
+        setProperty(FIELD_DESCRIPTION, description);
+    }
+
+    @Override
     public Collection<Key> getLikes() {
         final Collection<Key> likes = getProperty(FIELD_LIKES);
         return likes == null ? new HashSet<>() : likes;
     }
 
     @Override
-    public boolean like(Key userKey) {
+    public boolean addLike(Key userKey) {
         KindException.ensure(UserEntity.KIND, userKey);
         /* Sur insta un utilisateur peut like ses propres posts
             if (getOwner().getKey().equals(userKey)) {
@@ -76,7 +92,7 @@ class BasePostEntity extends AbstractUserAwareEntity implements PostEntity {
     }
 
     @Override
-    public boolean unlike(Key userKey) {
+    public boolean removeLike(Key userKey) {
         KindException.ensure(UserEntity.KIND, userKey);
 
         final Collection<Key> likes = getLikes();

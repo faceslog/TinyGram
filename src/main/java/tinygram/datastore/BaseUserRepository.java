@@ -10,7 +10,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
-import tinygram.Util;
+import tinygram.Config;
 
 public class BaseUserRepository implements UserRepository {
 
@@ -18,20 +18,12 @@ public class BaseUserRepository implements UserRepository {
 
     private UserProvider userProvider;
 
-    public BaseUserRepository(User user) {
-        if (user == null && !Util.DEBUG) {
-            throw new IllegalArgumentException("Missing user credentials.");
-        }
-
+    public BaseUserRepository() {
         userProvider = new UndefinedUserProvider();
+    }
 
-        UserEntity entity = find(user);
-
-        if (entity == null) {
-            entity = register(user);
-        }
-
-        userProvider = new BaseUserProvider(entity);
+    public BaseUserRepository(UserEntity userEntity) {
+        setCurrentUser(userEntity);
     }
 
     @Override
@@ -40,12 +32,13 @@ public class BaseUserRepository implements UserRepository {
     }
 
     @Override
-    public UserEntity register(User user) {
-        final UserEntity entity = new BaseUserEntity(user);
+    public void setCurrentUser(UserEntity userEntity) {
+        userProvider = new BaseUserProvider(userEntity);
+    }
 
-        Util.withinTransaction(entity::persist);
-
-        return entity;
+    @Override
+    public UserEntity register(User user, String name, String image) {
+        return new BaseUserEntity(user, name, image);
     }
 
     @Override
@@ -55,7 +48,7 @@ public class BaseUserRepository implements UserRepository {
 
     @Override
     public UserEntity find(User user) {
-        return find(Util.DEBUG ? "test" : user.getId());
+        return find(Config.DEBUG ? "test" : user.getId());
     }
 
     @Override

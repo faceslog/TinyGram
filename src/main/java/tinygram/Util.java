@@ -10,8 +10,6 @@ import com.google.appengine.api.datastore.Transaction;
 
 public class Util {
 
-    public static final boolean DEBUG = false;
-
     private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
     public static <T, U> U withinTransaction(Function<T, U> action, T arg) {
@@ -38,4 +36,6 @@ public class Util {
     public static <T> T extractProperty(Entity entity, String propertyName) {
         return (T) entity.getProperty(propertyName);
     }
+
+    private Util() {}
 }

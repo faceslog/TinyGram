@@ -1,16 +1,24 @@
 package tinygram.api.config;
 
+import tinygram.api.UserApiSchema;
 import tinygram.datastore.UserEntity;
 
-public class UserTransformer implements TypedEntityTransformer<UserEntity> {
+public class UserTransformer implements EntityTransformer<UserEntity> {
 
     @Override
-    public Response<UserEntity> transformTo(UserEntity entity) {
+    public ResourceResponse<UserEntity> transformTo(UserEntity entity) {
+        EntityResponse<UserEntity> entityResponse;
         try {
             entity.getUserProvider().get();
+            entityResponse = new BaseUserResponse(entity);
         } catch (final IllegalStateException e) {
-            return new AuthUserResponse(entity);
+            entityResponse = new AuthUserResponse(entity);
         }
-        return new BaseUserResponse(entity);
+
+        final ResourceResponse<UserEntity> resourceResponse = new ResourceResponse<>(entityResponse);
+
+        resourceResponse.addLink("self", UserApiSchema.getPath(entity));
+
+        return resourceResponse;
     }
 }

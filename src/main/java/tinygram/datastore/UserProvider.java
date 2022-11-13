@@ -10,4 +10,12 @@ public interface UserProvider extends Supplier<UserEntity> {
     default Key getKey() {
         return get().getKey();
     }
+
+    default boolean exists() {
+        try {
+            return get() != null;
+        } catch (final IllegalStateException e) {
+            return false;
+        }
+    }
 }

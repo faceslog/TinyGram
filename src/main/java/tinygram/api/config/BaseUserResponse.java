@@ -9,7 +9,6 @@ public class BaseUserResponse extends AuthUserResponse {
     public BaseUserResponse(UserEntity entity) {
         super(entity);
 
-        final UserEntity baseUser = entity.getUserProvider().get();
-        followed = baseUser.follows(entity);
+        followed = entity.followedBy(entity.getUserProvider().get());
     }
 }
