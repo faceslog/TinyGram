@@ -1,16 +1,16 @@
 <template>
   <nav class="border-b py-3 sticky top-0 bg-white z-50">
-    <div class="container mx-auto flex justify-between">
+    <div v-if="user" class="container mx-auto flex justify-between">
 
       <div class="px-2 hidden md:block">
-        <h1 class="font-bold lg:text-2xl text-lg">TinyGram</h1>
+        <h1 class="lg:text-2xl text-base">Greetings, {{ user.name }} 😄</h1>
       </div>
 
       <div class="md:w-3/12 w-5/12 md:mx-0 mx-auto">
         <input type="text" placeholder="Search" class="px-2 w-full h-full border text-sm bg-gray-200 rounded-sm" disabled/>
       </div>
 
-      <div v-if="user" class="icons flex justify-center p-2">
+      <div class="icons flex justify-center p-2">
 
         <router-link to="/" class="home-icon mr-6 cursor-pointer">
           <svg class="lg:h-6 lg:w-6 h-4 w-4" aria-label="Home" fill="#262626" viewBox="0 0 48 48">
@@ -28,13 +28,12 @@
         </router-link>
 
         <router-link :to="'/users/' + id" class="profile-icon cursor-pointer">
-          <img alt="Profile picture" class="lg:h-6 lg:w-6 h-4 w-4 rounded-full" draggable="false" :src="user.picture">
+          <img alt="Profile picture" class="lg:h-6 lg:w-6 h-4 w-4 rounded-full" draggable="false" :src="user.image">
         </router-link>
       </div>
     </div>
   </nav>
 </template>
-
 
 <script>
 export default {
@@ -46,8 +45,8 @@ export default {
     }
   },
   mounted()  {
-    this.user = this.$store.getters.getDecodedToken;
-    this.id = this.$store.getters.getId;
+    this.user = this.$store.getters.getUser;
+    this.id = this.$store.getters.getUserId;
   }
 }
 </script>

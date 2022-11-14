@@ -8,11 +8,7 @@
 
       <div class="">
         <div>
-          <input v-model="url" type="text" class="focus:outline-none border-b w-full pb-2 border-sky-400 placeholder-gray-500"  placeholder="Url"/>
-        </div>
-
-        <div>
-          <input v-model="location" type="text" class="focus:outline-none border-b w-full pb-2 border-sky-400 placeholder-gray-500 my-8"  placeholder="Location (Optional)" maxlength="80"/>
+          <input v-model="url" type="text" class="focus:outline-none border-b w-full pb-2 border-sky-400 placeholder-gray-500 mb-4"  placeholder="Url"/>
         </div>
 
         <div>
@@ -43,7 +39,6 @@ export default {
   data()  {
     return {
       url: '',
-      location: '',
       description: '',
       hasAgreed: false,
       isLoading: false
@@ -73,17 +68,23 @@ export default {
       // Toggle loading to true to prevent spamming the post button
       this.isLoading = true;
 
+      let data = {
+        image: this.url,
+        description: this.description
+      }
+
       let token = this.$store.getters.getToken;
-      this.url = encodeURI(this.url);
+      this.$axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-      this.$axios.post(`/add?access_token=${token}&image=${this.url}`).then(res => {
+      this.$axios.post("/post", data).then(res => {
 
-        let postId = res.data.key;
+        let postId = res.data.result.key;
         this.$router.push(`/posts/${postId}`);   
 
       }).catch(err => {
-        this.isLoading = false;
+
         console.log(err);
+        this.isLoading = false;
         this.$swal('Failed to upload', 'Oops something went wrong', 'error');
       });
     }

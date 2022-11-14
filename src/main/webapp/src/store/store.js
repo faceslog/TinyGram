@@ -6,7 +6,7 @@ const store = createStore({
     state() {
         return {
             token: null,
-            id: null
+            user: null // { image: "", key: "ahJnfnRpbnlpbnN0YS0zNjYzMTRyHwsSBFVzZXIiFTExNzU0MDQzMzk4NjU5MTM4ODQ4Nww", name: "Kyle Crane" }
         }
     },
     // ways to change our state (must by synchronous) store.commit("SET_USER", user)
@@ -14,8 +14,8 @@ const store = createStore({
         SET_TOKEN(state, token) {
             state.token = token;
         },
-        SET_ID(state, id) {
-            state.id = id;
+        SET_USER(state, user) {
+            state.user = user;
         }
     },
     // ways to call mutations (can be asynchronous) store.dispatch("setUser", user)
@@ -28,14 +28,14 @@ const store = createStore({
             let token = sessionStorage.getItem("user_token");
             context.commit('SET_TOKEN', token);
         },
-        // User ID (since the user id is != from the google ID) to avoid making multiple get to the api
-        setId(context, id) {
-            sessionStorage.setItem("user_id", id);
-            context.commit('SET_ID', id);
+        // User to avoid making multiple get to the api
+        setUser(context, user) {
+            sessionStorage.setItem("user", JSON.stringify({ name: user.name, image: user.image, key: user.key }));
+            context.commit('SET_USER', user);
         },
-        findId(context) {
-            let id = sessionStorage.getItem("user_id");
-            context.commit('SET_ID', id);
+        findUser(context) {
+            let user = sessionStorage.getItem("user");
+            context.commit('SET_USER', JSON.parse(user));
         }
     },
     getters: {
@@ -58,12 +58,19 @@ const store = createStore({
 
             return state.token;
         },
-        getId(state) {
+        getUserId(state) {
 
-            if(state.id == null)
-                store.dispatch('findId');
+            if(state.user == null)
+                store.dispatch('findUser');
 
-            return state.id;
+            return state.user.key;
+        },
+        getUser(state) {
+
+            if(state.user == null)
+                store.dispatch('findUser');
+
+            return state.user;
         }
     }
 });
