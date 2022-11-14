@@ -1,6 +1,7 @@
 package tinygram.api;
 
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 
 import tinygram.datastore.UserEntity;
 
@@ -20,7 +21,7 @@ public final class UserApiSchema {
     }
 
     public static ApiPath getPath(Key key) {
-        return new BaseApiPath(ABSOLUTE_PATH, key);
+        return new BaseApiPath(InstApiSchema.PATH, RELATIVE_PATH + "/" + KeyFactory.keyToString(key));
     }
 
     private UserApiSchema() {}

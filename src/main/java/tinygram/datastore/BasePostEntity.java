@@ -25,7 +25,7 @@ class BasePostEntity extends AbstractUserAwareEntity implements PostEntity {
         setProperty(FIELD_IMAGE, image);
         setProperty(FIELD_DESCRIPTION, description);
         setProperty(FIELD_LIKES, new HashSet<>());
-        setProperty(FIELD_LIKE_COUNT, 0);
+        setProperty(FIELD_LIKE_COUNT, 0l);
     }
 
     public BasePostEntity(UserProvider userProvider, Entity raw) {
@@ -111,6 +111,7 @@ class BasePostEntity extends AbstractUserAwareEntity implements PostEntity {
 
     @Override
     public long getLikeCount() {
-        return getProperty(FIELD_LIKE_COUNT);
+        final Long object = getProperty(FIELD_LIKE_COUNT);
+        return object;
     }
 }
