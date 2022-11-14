@@ -2,13 +2,13 @@ package tinygram.api.config;
 
 import java.util.Date;
 
-import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 
 import tinygram.datastore.PostEntity;
 
 public class BasePostResponse extends EntityResponse<PostEntity> {
 
-    public final Key owner;
+    public final String owner;
     public final Date date;
     public final String image;
     public final String description;
@@ -18,7 +18,7 @@ public class BasePostResponse extends EntityResponse<PostEntity> {
     public BasePostResponse(PostEntity entity) {
         super(entity);
 
-        owner = entity.getOwner();
+        owner = KeyFactory.keyToString(entity.getOwner());
         date = entity.getDate();
         image = entity.getImage();
         description = entity.getDescription();

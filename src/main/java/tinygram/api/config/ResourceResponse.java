@@ -17,7 +17,7 @@ public class ResourceResponse<T extends TypedEntity> {
     }
 
     public boolean addLink(String name, ApiPath path) {
-        return addLink(name, path.getAbsolute());
+        return addLink(name, path.getRelative());
     }
 
     public boolean addLink(String name, String url) {
