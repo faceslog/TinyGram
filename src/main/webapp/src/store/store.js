@@ -6,7 +6,7 @@ const store = createStore({
     state() {
         return {
             token: null,
-            user: null // { followercount: "0", image: "", key: "ahJnfnRpbnlpbnN0YS0zNjYzMTRyHwsSBFVzZXIiFTExNzU0MDQzMzk4NjU5MTM4ODQ4Nww", name: "Kyle Crane" }
+            user: null // { image: "", key: "ahJnfnRpbnlpbnN0YS0zNjYzMTRyHwsSBFVzZXIiFTExNzU0MDQzMzk4NjU5MTM4ODQ4Nww", name: "Kyle Crane" }
         }
     },
     // ways to change our state (must by synchronous) store.commit("SET_USER", user)
@@ -30,7 +30,7 @@ const store = createStore({
         },
         // User to avoid making multiple get to the api
         setUser(context, user) {
-            sessionStorage.setItem("user", JSON.stringify(user));
+            sessionStorage.setItem("user", JSON.stringify({ name: user.name, image: user.image, key: user.key }));
             context.commit('SET_USER', user);
         },
         findUser(context) {

@@ -2,14 +2,14 @@
 
   <Header></Header>
 
-  <div class="bg-gray-100 h-auto lg:px-48">
+  <div class="bg-gray-100 h-screen lg:px-48">
     
     <!-- Profile header -->
     <div class="flex">
       <div class="p-4 text-center ">
         <div class="relative text-center mt-8">
           <button class="rounded-full"  id="user-menu">
-            <img class="lg:h-40 lg:w-40 h-20 w-20 rounded-full" :src="user.userpic" alt="profile pic"/>
+            <img class="lg:h-40 lg:w-40 h-20 w-20 rounded-full" :src="user.image" alt="profile pic"/>
           </button>
         </div>
       </div>
@@ -37,8 +37,11 @@
         </div>
 
         <div class="flex pt-4 pl-4 text-black text-sm">
-          <button class="bg-gray-200 hover:bg-blue-500 font-semibold hover:text-white py-1 px-6 border border-gray-300 hover:border-transparent rounded mr-2">Follow</button>
-          <button class="bg-gray-200 hover:bg-blue-500 font-semibold hover:text-white py-1 px-6 border border-gray-300 hover:border-transparent rounded">Message</button>
+          <div v-if="!isItself">
+            <button v-if="user.isFollowed" class="bg-gray-200 hover:bg-blue-500 font-semibold hover:text-white py-1 px-6 border border-gray-300 hover:border-transparent rounded mr-2">Unfollow</button>
+            <button v-else class="bg-gray-200 hover:bg-blue-500 font-semibold hover:text-white py-1 px-6 border border-gray-300 hover:border-transparent rounded mr-2">Follow</button>
+            <button class="bg-gray-200 hover:bg-blue-500 font-semibold hover:text-white py-1 px-6 border border-gray-300 hover:border-transparent rounded">Message</button>
+          </div>
         </div>
       </div>
     </div>
@@ -67,47 +70,68 @@ export default {
   components: {
     Header
   },
-  data()
-  {
+  data()  {
     return {
       user: {
         username: "Toto",
-        userpic: "https://i.pinimg.com/originals/c2/4a/af/c24aaf49f7dc286dd0f7020a5bb820ac.png",
-        followingCount: 144,
-        followersCount: 126,
-        bio: "Coucou c'est une bio test"
+        image: "",
+        followingCount: 0,
+        followersCount: 0,
+        isFollowed: false,
+        key: "azertyuiop",
+        bio: "Welcome to my profile !"        
       },
       posts: [
         {
-          imgUrl: "https://images.unsplash.com/photo-1667144842815-1c740881a905?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1587&q=80",
-          postUrl: ""
-        },
-        {
-          imgUrl: "https://images.unsplash.com/photo-1667144842815-1c740881a905?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1587&q=80",
-          postUrl: ""
-        },
-        {
-          imgUrl: "https://images.unsplash.com/photo-1667144842815-1c740881a905?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1587&q=80",
-          postUrl: ""
-        },
-        {
-          imgUrl: "https://images.unsplash.com/photo-1667144842815-1c740881a905?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1587&q=80",
-          postUrl: ""
-        },
-        {
-          imgUrl: "https://images.unsplash.com/photo-1667144842815-1c740881a905?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1587&q=80",
-          postUrl: ""
-        },
-        {
-          imgUrl: "https://images.unsplash.com/photo-1667144842815-1c740881a905?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1587&q=80",
-          postUrl: ""
-        },
-        {
-          imgUrl: "https://images.unsplash.com/photo-1667144842815-1c740881a905?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1587&q=80",
+          imgUrl: "https://cdn0.matrimonio.com.co/usr/2/1/0/2/cfb_315540.jpg",
           postUrl: ""
         }
       ]
     }
+  },
+  async mounted() {
+    let token = this.$store.getters.getToken;
+    this.$axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+    const userId = this.$route.params.user;
+
+    try {
+      await this.loadUserInfo(userId);
+    } catch(err) {
+      this.$router.push("/not-found");
+    }
+  },
+  methods: {
+    loadUserInfo: async function(userId) {
+
+      let res = await this.$axios.get(`/user/${userId}`);
+
+      this.user.username = res.data.result.name;
+      this.user.followersCount = +res.data.result.followercount;
+      this.user.followingCount = +res.data.result.followingcount;
+      this.user.image = res.data.result.image;
+      this.user.isFollowed = res.data.result.followed;
+      this.user.key = res.data.result.key;
+    },
+    follow: async function() {
+
+      this.user.followersCount++;
+      this.user.isFollowed = true;
+
+      await this.$axios.put(`/user/${this.user.key}`, { followed: true });      
+    },
+    unfollow: async function() {
+
+      this.user.followersCount--;
+      this.user.isFollowed = false;
+
+      await this.$axios.put(`/user/${this.user.key}`, { followed: false });
+    }
+  },
+  computed: {
+    isItself: function() {
+      return this.$store.getters.getUserId == this.user.key;
+    }  
   }
 }
 </script>
