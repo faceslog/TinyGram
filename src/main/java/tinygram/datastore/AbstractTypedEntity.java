@@ -29,9 +29,9 @@ public abstract class AbstractTypedEntity implements TypedEntity {
     }
 
     public AbstractTypedEntity(Entity raw) {
-        Objects.requireNonNull(raw);
-        KindException.ensure(getKind(), raw);
         this.raw = Objects.requireNonNull(raw);
+        KindException.ensure(getKind(), raw);
+        relatedEntities = new HashSet<>();
     }
 
     @Override
