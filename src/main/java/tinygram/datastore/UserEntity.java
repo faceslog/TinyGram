@@ -14,6 +14,7 @@ public interface UserEntity extends TypedEntity, UserAware {
     static final String FIELD_FOLLOWERS = "followers";
     static final String FIELD_FOLLOWER_COUNT = "followercount";
     static final String FIELD_FOLLOWING_COUNT = "followingcount";
+    static final String FIELD_POST_COUNT = "postcount";
 
     @Override
     default String getKind() {
@@ -51,4 +52,8 @@ public interface UserEntity extends TypedEntity, UserAware {
     void decrementFollowing();
 
     long getFollowingCount();
+
+    void incrementPostCount();
+
+    long getPostCount();
 }

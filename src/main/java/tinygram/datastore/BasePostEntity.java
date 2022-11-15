@@ -19,6 +19,9 @@ class BasePostEntity extends AbstractUserAwareEntity implements PostEntity {
         setProperty(FIELD_LIKES, new HashSet<>());
         setProperty(FIELD_LIKE_COUNT, 0l);
 
+        owner.incrementPostCount();
+        addRelatedEntity(owner);
+
         final FeedRepository feedRepository = new BaseFeedRepository();
 
         for (final Key follower : owner.getFollowers()) {
@@ -70,11 +73,10 @@ class BasePostEntity extends AbstractUserAwareEntity implements PostEntity {
     @Override
     public boolean addLike(Key userKey) {
         KindException.ensure(UserEntity.KIND, userKey);
-        /* Sur insta un utilisateur peut like ses propres posts
-            if (getOwner().getKey().equals(userKey)) {
-                throw new IllegalArgumentException("Trying to like its own post.");
-            }
-        */
+        // Sur Instagram, un utilisateur peut like ses propres posts.
+        // if (getOwner().getKey().equals(userKey)) {
+        //     throw new IllegalArgumentException("Trying to like its own post.");
+        // }
 
         final Collection<Key> likes = getLikes();
         if (likes.contains(userKey)) {

@@ -8,6 +8,7 @@ public class AuthUserResponse extends EntityResponse<UserEntity> {
     public final String image;
     public final long followercount;
     public final long followingcount;
+    public final long postcount;
 
     public AuthUserResponse(UserEntity entity) {
         super(entity);
@@ -16,5 +17,6 @@ public class AuthUserResponse extends EntityResponse<UserEntity> {
         image = entity.getImage();
         followercount = entity.getFollowerCount();
         followingcount = entity.getFollowingCount();
+        postcount = entity.getPostCount();
     }
 }
