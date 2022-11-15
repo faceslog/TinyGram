@@ -54,9 +54,9 @@ public interface UserEntity extends TypedEntity, UserAware {
 
     long getFollowerCount();
 
-    long getFollowingCount();
-
     void incrementFollowing();
 
     void decrementFollowing();
+
+    long getFollowingCount();
 }

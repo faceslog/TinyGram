@@ -1,6 +1,7 @@
 package tinygram.api;
 
 import tinygram.datastore.UserEntity;
+import tinygram.datastore.UserProvider;
 
 public class UserUpdater implements EntityUpdater<UserEntity> {
     
@@ -9,23 +10,33 @@ public class UserUpdater implements EntityUpdater<UserEntity> {
     public Boolean followed;
 
     @Override
-    public UserEntity update(UserEntity userEntity) {
+    public UserEntity update(UserEntity entity) {
         if (name != null) {
-            userEntity.setName(name);
+            entity.setName(name);
         }
 
         if (image != null) {
-            userEntity.setImage(image);
+            entity.setImage(image);
         }
 
-        if (followed != null && userEntity.getUserProvider().exists()) {
+        final UserProvider userProvider = entity.getUserProvider();
+        if (followed != null && userProvider.exists()) {
+            final UserEntity currentUser = userProvider.get();
+
+            // Doesn't scale, but a user should not be able to spam follow hundreds of people.
             if (followed) {
-                userEntity.addFollow(userEntity.getUserProvider().get());
+                if (entity.addFollow(currentUser)) {
+                    currentUser.incrementFollowing();
+                    currentUser.persist();
+                }
             } else {
-                userEntity.removeFollow(userEntity.getUserProvider().get());
+                if (entity.removeFollow(currentUser)) {
+                    currentUser.decrementFollowing();
+                    currentUser.persist();
+                }
             }
         }
 
-        return userEntity;
+        return entity;
     }
 }

@@ -5,7 +5,6 @@ import java.util.HashSet;
 
 import com.google.api.server.spi.auth.common.User;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 
 import tinygram.Config;
@@ -79,18 +78,6 @@ class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
         setProperty(FIELD_FOLLOWERS, following);
         setProperty(FIELD_FOLLOWER_COUNT, followerCount);
 
-        // Don't scale but an user should not be able to spam follow hundreds of people
-        try {
-
-            final UserEntity user = new BaseUserRepository().get(userKey);
-            user.incrementFollowing();
-            user.persist();
-
-        } catch(EntityNotFoundException e) {
-            throw new IllegalStateException("Missing User", e);
-        }
-        // --------------
-
         return true;
     }
 
@@ -109,18 +96,6 @@ class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
         setProperty(FIELD_FOLLOWERS, following);
         setProperty(FIELD_FOLLOWER_COUNT, followerCount);
 
-        // Don't scale but an user should not be able to spam follow hundreds of people
-        try {
-
-            final UserEntity user = new BaseUserRepository().get(userKey);
-            user.decrementFollowing();
-            user.persist();
-
-        } catch(EntityNotFoundException e) {
-            throw new IllegalStateException("Missing User", e);
-        }
-        // --------------
-
         return true;
     }
 
@@ -128,11 +103,6 @@ class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
     public long getFollowerCount() {
         final Long object = getProperty(FIELD_FOLLOWER_COUNT);
         return object;
-    }
-
-    @Override
-    public long getFollowingCount() {
-        return getProperty(FIELD_FOLLOWING_COUNT);
     }
 
     @Override
@@ -145,5 +115,11 @@ class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
     public void decrementFollowing() {
         final Long followingCount = getProperty(FIELD_FOLLOWING_COUNT);
         setProperty(FIELD_FOLLOWING_COUNT, followingCount - 1);
+    }
+
+    @Override
+    public long getFollowingCount() {
+        final Long object = getProperty(FIELD_FOLLOWING_COUNT);
+        return object;
     }
 }
