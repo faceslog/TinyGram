@@ -1,7 +1,7 @@
 <template>
     <div class="feed-item border border-gray-400 rounded bg-white">
         <!-- Post Header -->
-        <div class="border-b p-2 flex justify-between items-center cursor-pointer">  
+        <router-link :to="'/users/' + userId" class="border-b p-2 flex justify-between items-center cursor-pointer">  
             <div class="left flex flex-row items-center">
                 <div class="user-img h-10 w-10 border rounded-full overflow-hidden mr-4">
                   <img alt="profile" draggable="false" :src="post.userpic">
@@ -19,7 +19,7 @@
                     <circle clip-rule="evenodd" cx="40" cy="24" fill-rule="evenodd" r="4.5"></circle>
                 </svg>
             </div>
-        </div>
+        </router-link>
 
             
         <div class="">
@@ -99,8 +99,16 @@ export default {
     props: {
         post: Object 
     },
-    mounted(){
+    data() {
+        return {
+            userId: ""
+        }
+    },
+    mounted() {
+        
         let token = this.$store.getters.getToken;
+        this.userId = this.$store.getters.getUserId;
+
         this.$axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     },
     methods: {
