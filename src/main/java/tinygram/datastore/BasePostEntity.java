@@ -9,14 +9,6 @@ import com.google.appengine.api.datastore.Key;
 
 class BasePostEntity extends AbstractUserAwareEntity implements PostEntity {
 
-    protected static final String KIND = "Post";
-
-    protected static final String FIELD_OWNER = "owner";
-    protected static final String FIELD_DATE = "date";
-    protected static final String FIELD_IMAGE = "image";
-    protected static final String FIELD_LIKES = "likes";
-    protected static final String FIELD_LIKE_COUNT = "likecount";
-
     public BasePostEntity(UserProvider userProvider, UserEntity owner, String image, String description) {
         super(userProvider);
 
