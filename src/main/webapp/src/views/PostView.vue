@@ -4,7 +4,6 @@
 
   <div class="relative min-h-screen h-full border-2 border-gray-200 bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100">    
     <div class="pt-6 h-full">
-
       <div class="max-w-4xl mx-auto">
         <!-- FEED HERE -->
         <div class="mx-auto w-4/5 mb-4">
@@ -29,6 +28,7 @@ export default {
       post: {
         username: "",
         userpic: "",
+        userkey: "",
         likesCount: 0,
         hasLiked: false,
         imgUrl: "",
@@ -52,6 +52,7 @@ export default {
 
       this.post.username = user.data.result.name;
       this.post.userpic = user.data.result.image;
+      this.post.userkey = user.data.result.key;
 
       this.post.likesCount = +res.data.result.likecount;
       this.post.hasLiked = res.data.result.liked;
