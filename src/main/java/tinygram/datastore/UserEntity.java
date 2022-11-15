@@ -40,17 +40,9 @@ public interface UserEntity extends TypedEntity, UserAware {
         return getFollowers().contains(userKey);
     }
 
-    default boolean addFollow(UserEntity user) {
-        return addFollow(user.getKey());
-    }
+    boolean addFollow(UserEntity user);
 
-    boolean addFollow(Key userKey);
-
-    default boolean removeFollow(UserEntity user) {
-        return removeFollow(user.getKey());
-    }
-
-    boolean removeFollow(Key userKey);
+    boolean removeFollow(UserEntity user);
 
     long getFollowerCount();
 

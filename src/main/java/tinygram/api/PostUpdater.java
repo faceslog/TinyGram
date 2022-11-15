@@ -31,7 +31,6 @@ public class PostUpdater implements EntityUpdater<PostEntity> {
             }
         }
 
-        entity.persist();
         return entity;
     }
 }

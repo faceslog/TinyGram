@@ -22,7 +22,7 @@ public class UserApi {
 
     private static final Logger log = Logger.getLogger(UserApi.class.getName());
 
-    public static UserRepository buildUserRepository(User user) throws UnauthorizedException {
+    public static UserRepository buildRepository(User user) throws UnauthorizedException {
         if (user == null && !Config.DEBUG) {
             throw new IllegalArgumentException("Missing user credentials.");
         }
@@ -62,7 +62,8 @@ public class UserApi {
         }
 
         userEntity = userRepository.register(user, "", "");
-        Util.withinTransaction(userUpdater::update, userEntity);
+        userUpdater.update(userEntity);
+        Util.withinTransaction(userEntity::persist);
         log.info("User successfully registered.");
 
         return userEntity;
@@ -73,7 +74,7 @@ public class UserApi {
         path       = UserApiSchema.RELATIVE_PATH + UserApiSchema.KEY_ARGUMENT_SUFFIX,
         httpMethod = HttpMethod.GET)
     public UserEntity getUser(User user, @Named(UserApiSchema.KEY_ARGUMENT_NAME) String targetUserKey) throws EntityNotFoundException, UnauthorizedException {
-        final UserRepository userRepository = buildUserRepository(user);
+        final UserRepository userRepository = buildRepository(user);
 
         log.info("Retrieving user data...");
         final UserEntity userEntity = userRepository.get(KeyFactory.stringToKey(targetUserKey));
@@ -87,14 +88,15 @@ public class UserApi {
         path       = UserApiSchema.RELATIVE_PATH + UserApiSchema.KEY_ARGUMENT_SUFFIX,
         httpMethod = HttpMethod.PUT)
     public UserEntity putUser(User user, @Named(UserApiSchema.KEY_ARGUMENT_NAME) String userKey, UserUpdater userUpdater) throws EntityNotFoundException, UnauthorizedException {
-        final UserRepository userRepository = buildUserRepository(user);
+        final UserRepository userRepository = buildRepository(user);
 
         log.info("Retrieving target user data...");
         final UserEntity userEntity = userRepository.get(KeyFactory.stringToKey(userKey));
         log.info("Target user data successfully retrieved.");
 
         log.info("Updating target user data...");
-        Util.withinTransaction(userUpdater::update, userEntity);
+        userUpdater.update(userEntity);
+        Util.withinTransaction(userEntity::persist);
         log.info("Target user data successfully updated.");
 
         return userEntity;

@@ -22,17 +22,22 @@ public class PostApi {
 
     private static final Logger log = Logger.getLogger(PostApi.class.getName());
 
+    public static PostRepository buildRepository(UserRepository userRepository) throws UnauthorizedException {
+        return new BasePostRepository(userRepository);
+    }
+
     @ApiMethod(
         name       = PostApiSchema.RESOURCE_NAME + ".post",
         path       = PostApiSchema.RELATIVE_PATH,
         httpMethod = HttpMethod.POST)
     public PostEntity postPost(User user, PostUpdater postUpdater) throws UnauthorizedException {
-        final UserRepository userRepository = UserApi.buildUserRepository(user);
-        final PostRepository postRepository = new BasePostRepository(userRepository);
+        final UserRepository userRepository = UserApi.buildRepository(user);
+        final PostRepository postRepository = buildRepository(userRepository);
 
         log.info("Registering post...");
         final PostEntity postEntity = postRepository.register(userRepository.getCurrentUser(), "", "");
-        Util.withinTransaction(postUpdater::update, postEntity);
+        postUpdater.update(postEntity);
+        Util.withinTransaction(postEntity::persist);
         log.info("Post successfully registered.");
 
         return postEntity;
@@ -43,8 +48,8 @@ public class PostApi {
         path       = PostApiSchema.RELATIVE_PATH + PostApiSchema.KEY_ARGUMENT_SUFFIX,
         httpMethod = HttpMethod.GET)
     public PostEntity getPost(User user, @Named(PostApiSchema.KEY_ARGUMENT_NAME) String postKey) throws EntityNotFoundException, UnauthorizedException {
-        final UserRepository userRepository = UserApi.buildUserRepository(user);
-        final PostRepository postRepository = new BasePostRepository(userRepository);
+        final UserRepository userRepository = UserApi.buildRepository(user);
+        final PostRepository postRepository = buildRepository(userRepository);
 
         log.info("Retrieving post data...");
         final PostEntity postEntity = postRepository.get(KeyFactory.stringToKey(postKey));
@@ -58,15 +63,16 @@ public class PostApi {
         path       = PostApiSchema.RELATIVE_PATH + PostApiSchema.KEY_ARGUMENT_SUFFIX,
         httpMethod = HttpMethod.PUT)
     public PostEntity putPost(User user, @Named(PostApiSchema.KEY_ARGUMENT_NAME) String postKey, PostUpdater postUpdater) throws EntityNotFoundException, UnauthorizedException {
-        final UserRepository userRepository = UserApi.buildUserRepository(user);
-        final PostRepository postRepository = new BasePostRepository(userRepository);
+        final UserRepository userRepository = UserApi.buildRepository(user);
+        final PostRepository postRepository = buildRepository(userRepository);
 
         log.info("Retrieving post data...");
         final PostEntity postEntity = postRepository.get(KeyFactory.stringToKey(postKey));
         log.info("Post data successfully retrieved.");
 
         log.info("Updating post data...");
-        Util.withinTransaction(postUpdater::update, postEntity);
+        postUpdater.update(postEntity);
+        Util.withinTransaction(postEntity::persist);
         log.info("Post data successfully updated.");
 
         return postEntity;
@@ -78,7 +84,7 @@ public class PostApi {
         httpMethod = HttpMethod.GET)
     public FeedResponse<PostEntity> getFeed(User user, @Nullable @Named("page") String page) throws EntityNotFoundException, UnauthorizedException {
         final UserRepository userRepository = InstApi.buildUserRepository(user);
-        final PostRepository postRepository = new BasePostRepository(userRepository);
+        final PostRepository postRepository = buildRepository(userRepository);
 
         return postRepository.findFromFollowed(userRepository.getCurrentUser(), page);
     }
@@ -89,7 +95,7 @@ public class PostApi {
         httpMethod = HttpMethod.GET)
     public FeedResponse<PostEntity> getUserPosts(User user, @Nullable @Named("page") String page) throws EntityNotFoundException, UnauthorizedException {
         final UserRepository userRepository = InstApi.buildUserRepository(user);
-        final PostRepository postRepository = new BasePostRepository(userRepository);
+        final PostRepository postRepository = buildRepository(userRepository);
 
         return postRepository.findFrom(userRepository.getCurrentUser(), page);
     }*/

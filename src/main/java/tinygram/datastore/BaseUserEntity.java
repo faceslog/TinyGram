@@ -60,14 +60,15 @@ class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
     }
 
     @Override
-    public boolean addFollow(Key userKey) {
-        KindException.ensure(KIND, userKey);
+    public boolean addFollow(UserEntity user) {
+        KindException.ensure(KIND, user);
 
-        if (getKey().equals(userKey) && !Config.DEBUG) {
+        if (getKey().equals(user.getKey()) && !Config.DEBUG) {
             throw new IllegalArgumentException("Trying to follow itself.");
         }
 
         final Collection<Key> following = getFollowers();
+        final Key userKey = user.getKey();
         if (following.contains(userKey)) {
             return false;
         }
@@ -78,14 +79,18 @@ class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
         setProperty(FIELD_FOLLOWERS, following);
         setProperty(FIELD_FOLLOWER_COUNT, followerCount);
 
+        user.incrementFollowing();
+        addRelatedEntity(user);
+
         return true;
     }
 
     @Override
-    public boolean removeFollow(Key userKey) {
-        KindException.ensure(KIND, userKey);
+    public boolean removeFollow(UserEntity user) {
+        KindException.ensure(KIND, user);
 
         final Collection<Key> following = getFollowers();
+        final Key userKey = user.getKey();
         if (!following.contains(userKey)) {
             return false;
         }
@@ -95,6 +100,9 @@ class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
 
         setProperty(FIELD_FOLLOWERS, following);
         setProperty(FIELD_FOLLOWER_COUNT, followerCount);
+
+        user.decrementFollowing();
+        addRelatedEntity(user);
 
         return true;
     }

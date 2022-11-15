@@ -1,6 +1,8 @@
 package tinygram.datastore;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -14,13 +16,16 @@ public abstract class AbstractTypedEntity implements TypedEntity {
     private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
     private final Entity raw;
+    private Set<TypedEntity> relatedEntities;
 
     public AbstractTypedEntity() {
         raw = new Entity(getKind());
+        relatedEntities = new HashSet<>();
     }
 
     public AbstractTypedEntity(String keyName) {
         raw = new Entity(getKind(), keyName);
+        relatedEntities = new HashSet<>();
     }
 
     public AbstractTypedEntity(Entity raw) {
@@ -42,8 +47,16 @@ public abstract class AbstractTypedEntity implements TypedEntity {
         raw.setProperty(propertyName, value);
     }
 
+    protected boolean addRelatedEntity(TypedEntity entity) {
+        return relatedEntities.add(entity);
+    }
+
     @Override
     public void persist() {
         datastore.put(raw);
+
+        final Set<TypedEntity> toPersist = relatedEntities;
+        relatedEntities = new HashSet<>();
+        toPersist.forEach(TypedEntity::persist);
     }
 }

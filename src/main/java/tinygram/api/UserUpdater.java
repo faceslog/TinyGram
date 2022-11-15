@@ -25,19 +25,12 @@ public class UserUpdater implements EntityUpdater<UserEntity> {
 
             // Doesn't scale, but a user should not be able to spam follow hundreds of people.
             if (followed) {
-                if (entity.addFollow(currentUser)) {
-                    currentUser.incrementFollowing();
-                    currentUser.persist();
-                }
+                entity.addFollow(currentUser);
             } else {
-                if (entity.removeFollow(currentUser)) {
-                    currentUser.decrementFollowing();
-                    currentUser.persist();
-                }
+                entity.removeFollow(currentUser);
             }
         }
 
-        entity.persist();
         return entity;
     }
 }
