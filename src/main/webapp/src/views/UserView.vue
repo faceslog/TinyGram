@@ -65,6 +65,8 @@
           </div>
         </div>
       </div>
+
+      <div v-if="!hasReachEOF" class="text-lg text-center text-gray-800 font-bold mb-3">Loading ...</div>
     </div>
   </div>
 </template>
@@ -91,6 +93,7 @@ export default {
       },
       posts: [],
       isLoadingFeed: false,
+      hasReachEOF: false,
       nextFeedUrl: ""
     }
   },
@@ -129,7 +132,10 @@ export default {
       this.isLoadingFeed = true;
 
       let res = await this.$axios.get(this.nextFeedUrl);
-      let promises = res.data.result.map(post => this.loadPost(post._links.self))
+      let promises = res.data.result.map(post => this.loadPost(post._links.self));
+
+      if(promises.length <= 0)
+        this.hasReachEOF = true;
       
       await Promise.all(promises);
 
