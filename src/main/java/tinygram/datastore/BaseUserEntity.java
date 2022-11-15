@@ -83,6 +83,15 @@ class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
         user.incrementFollowing();
         addRelatedEntity(user);
 
+        final PostRepository postRepository = new BasePostRepository(getUserProvider());
+        final PostEntity latestPost = postRepository.findLatest(this);
+
+        if (latestPost != null) {
+            final FeedRepository feedRepository = new BaseFeedRepository();
+            final FeedNodeEntity feedNode = feedRepository.register(user, latestPost);
+            addRelatedEntity(feedNode);
+        }
+
         return true;
     }
 
