@@ -59,4 +59,20 @@ public abstract class AbstractTypedEntity implements TypedEntity {
         relatedEntities = new HashSet<>();
         toPersist.forEach(TypedEntity::persist);
     }
+
+    @Override
+    public int hashCode() {
+        return getKey().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object == this || object instanceof TypedEntity &&
+                ((TypedEntity) object).getKey().equals(getKey());
+    }
+
+    @Override
+    public String toString() {
+        return raw.toString();
+    }
 }

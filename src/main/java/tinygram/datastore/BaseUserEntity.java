@@ -63,7 +63,7 @@ class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
     public boolean addFollow(UserEntity user) {
         KindException.ensure(KIND, user);
 
-        if (getKey().equals(user.getKey()) && !Config.DEBUG) {
+        if (equals(user) && !Config.DEBUG) {
             throw new IllegalArgumentException("Trying to follow itself.");
         }
 
