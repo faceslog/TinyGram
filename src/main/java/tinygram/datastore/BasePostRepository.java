@@ -24,30 +24,4 @@ public class BasePostRepository implements PostRepository {
     public PostEntity get(Key key) throws EntityNotFoundException {
         return new BasePostEntity(userProvider, datastore.get(key));
     }
-
-    /*private FetchOptions getFeedOptions(String page) {
-        final FetchOptions fetchOptions = FetchOptions.Builder.withLimit(10);
-
-        if (page != null) {
-            fetchOptions.startCursor(Cursor.fromWebSafeString(page));
-        }
-
-        return fetchOptions;
-    }
-
-    @Override
-    public FeedResponse<PostEntity> findFrom(UserEntity user, String page) {
-        final PreparedQuery query = datastore.prepare(new Query("Post")
-                .setFilter(new FilterPredicate("owner", FilterOperator.EQUAL, user.getKey())));
-
-        return new FeedResponse<>(entity -> new BasePostEntity(userProvider, entity), query.asQueryResultList(getFeedOptions(page)));
-    }
-
-    @Override
-    public FeedResponse<PostEntity> findFromFollowed(UserEntity user, String page) {
-        final PreparedQuery query = datastore.prepare(new Query("Post")
-                .setFilter(new FilterPredicate("owner", FilterOperator.IN, user.getFollowing())));
-
-        return new FeedResponse<>(entity -> new BasePostEntity(userProvider, entity), query.asQueryResultList(getFeedOptions(page)));
-    }*/
 }

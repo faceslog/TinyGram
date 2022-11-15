@@ -22,7 +22,7 @@ public class PostApi {
 
     private static final Logger log = Logger.getLogger(PostApi.class.getName());
 
-    public static PostRepository buildRepository(UserRepository userRepository) throws UnauthorizedException {
+    public static PostRepository buildRepository(UserRepository userRepository) {
         return new BasePostRepository(userRepository);
     }
 
@@ -77,26 +77,4 @@ public class PostApi {
 
         return postEntity;
     }
-
-    /*@ApiMethod(
-        name       = "feed.followed",
-        path       = "feed/followed",
-        httpMethod = HttpMethod.GET)
-    public FeedResponse<PostEntity> getFeed(User user, @Nullable @Named("page") String page) throws EntityNotFoundException, UnauthorizedException {
-        final UserRepository userRepository = InstApi.buildUserRepository(user);
-        final PostRepository postRepository = buildRepository(userRepository);
-
-        return postRepository.findFromFollowed(userRepository.getCurrentUser(), page);
-    }
-
-    @ApiMethod(
-        name       = "feed.user",
-        path       = "feed/from",
-        httpMethod = HttpMethod.GET)
-    public FeedResponse<PostEntity> getUserPosts(User user, @Nullable @Named("page") String page) throws EntityNotFoundException, UnauthorizedException {
-        final UserRepository userRepository = InstApi.buildUserRepository(user);
-        final PostRepository postRepository = buildRepository(userRepository);
-
-        return postRepository.findFrom(userRepository.getCurrentUser(), page);
-    }*/
 }

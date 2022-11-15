@@ -18,6 +18,13 @@ class BasePostEntity extends AbstractUserAwareEntity implements PostEntity {
         setProperty(FIELD_DESCRIPTION, description);
         setProperty(FIELD_LIKES, new HashSet<>());
         setProperty(FIELD_LIKE_COUNT, 0l);
+
+        final FeedRepository feedRepository = new BaseFeedRepository();
+
+        for (final Key follower : owner.getFollowers()) {
+            final FeedNodeEntity feedNode = feedRepository.register(follower, this);
+            addRelatedEntity(feedNode);
+        }
     }
 
     public BasePostEntity(UserProvider userProvider, Entity raw) {

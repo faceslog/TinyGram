@@ -1,4 +1,5 @@
 deploy: build
+	@gcloud datastore indexes create src/main/webapp/WEB-INF/index.yaml --quiet
 	@gcloud endpoints services deploy target/openapi-docs/openapi.json
 	@mvn appengine:deploy
 

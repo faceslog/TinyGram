@@ -4,14 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import tinygram.api.ApiPath;
-import tinygram.datastore.TypedEntity;
 
-public class ResourceResponse<T extends TypedEntity> {
+public class ResourceResponse<T> {
 
-    public final EntityResponse<T> result;
+    public final T result;
     public final Map<String, String> _links;
 
-    public ResourceResponse(EntityResponse<T> result) {
+    public ResourceResponse(T result) {
         this.result = result;
         _links = new HashMap<>();
     }
