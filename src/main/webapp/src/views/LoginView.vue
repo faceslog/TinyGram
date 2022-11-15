@@ -76,9 +76,10 @@ export default {
       }
 
       this.$axios.defaults.headers.common['Authorization'] = `Bearer ${response.credential}`;
-
+      
       this.$axios.post("/user", data).then(res => {
         
+        this.$swal('Welcome !', 'Loading Data ...', 'success');
         this.$store.dispatch('setUser', res.data.result); 
         this.$router.push("/");
 

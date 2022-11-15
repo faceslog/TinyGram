@@ -2,7 +2,7 @@
   
   <Header></Header>
     
-  <div class="w-full h-screen bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 p-4 flex items-center justify-center" >
+  <div class="w-full min-h-screen h-full bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 p-4 flex items-center justify-center" >
     <div class="bg-white py-6 px-10 sm:max-w-md w-full ">
       <div class="sm:text-3xl text-2xl font-semibold text-center text-sky-600  mb-12">Post your Picture (Dev)</div>
 

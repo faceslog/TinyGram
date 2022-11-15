@@ -2,7 +2,7 @@
 
   <Header></Header>
 
-  <div class="relative h-full border-2 border-gray-200 bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100">    
+  <div class="relative min-h-screen h-full border-2 border-gray-200 bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100">    
     <div class="pt-6 h-full">
 
       <div class="max-w-4xl mx-auto">

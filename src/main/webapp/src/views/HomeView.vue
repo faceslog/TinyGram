@@ -2,7 +2,7 @@
 
   <Header></Header>
 
-  <div class="relative bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 h-screen border border-gray-200">    
+  <div class="relative bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 min-h-screen h-full border border-gray-200">    
     <div class="pt-6 h-full">
 
       <div class="max-w-4xl mx-auto">
@@ -25,11 +25,16 @@ export default {
     Header,
     PostCard
   },
-  data()
-  {
+  data()  {
     return {
-      posts: []
+      posts: [],
+      nextFeedUrl: "",
+      isLoadingFeed: false
     }
+  },
+  async mounted()  {
+    let token = this.$store.getters.getToken;
+    this.$axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   }
 }
 </script>
