@@ -37,6 +37,7 @@ public class UserUpdater implements EntityUpdater<UserEntity> {
             }
         }
 
+        entity.persist();
         return entity;
     }
 }

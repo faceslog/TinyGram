@@ -1,6 +1,8 @@
 package tinygram.api;
 
 import tinygram.datastore.PostEntity;
+import tinygram.datastore.UserEntity;
+import tinygram.datastore.UserProvider;
 
 public class PostUpdater implements EntityUpdater<PostEntity> {
 
@@ -9,23 +11,27 @@ public class PostUpdater implements EntityUpdater<PostEntity> {
     public Boolean liked;
 
     @Override
-    public PostEntity update(PostEntity postEntity) {
+    public PostEntity update(PostEntity entity) {
         if (image != null) {
-            postEntity.setImage(image);
+            entity.setImage(image);
         }
 
         if (description != null) {
-            postEntity.setDescription(description);
+            entity.setDescription(description);
         }
 
-        if (liked != null && postEntity.getUserProvider().exists()) {
+        final UserProvider userProvider = entity.getUserProvider();
+        if (liked != null && userProvider.exists()) {
+            final UserEntity currentUser = userProvider.get();
+
             if (liked) {
-                postEntity.addLike(postEntity.getUserProvider().get());
+                entity.addLike(currentUser);
             } else {
-                postEntity.removeLike(postEntity.getUserProvider().get());
+                entity.removeLike(currentUser);
             }
         }
 
-        return postEntity;
+        entity.persist();
+        return entity;
     }
 }

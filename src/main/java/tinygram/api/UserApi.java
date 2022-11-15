@@ -62,9 +62,7 @@ public class UserApi {
         }
 
         userEntity = userRepository.register(user, "", "");
-        userUpdater.update(userEntity);
-
-        Util.withinTransaction(userEntity::persist);
+        Util.withinTransaction(userUpdater::update, userEntity);
         log.info("User successfully registered.");
 
         return userEntity;
@@ -96,8 +94,7 @@ public class UserApi {
         log.info("Target user data successfully retrieved.");
 
         log.info("Updating target user data...");
-        userUpdater.update(userEntity);
-        Util.withinTransaction(userEntity::persist);
+        Util.withinTransaction(userUpdater::update, userEntity);
         log.info("Target user data successfully updated.");
 
         return userEntity;

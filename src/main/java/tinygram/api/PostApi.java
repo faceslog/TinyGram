@@ -32,9 +32,7 @@ public class PostApi {
 
         log.info("Registering post...");
         final PostEntity postEntity = postRepository.register(userRepository.getCurrentUser(), "", "");
-        postUpdater.update(postEntity);
-
-        Util.withinTransaction(postEntity::persist);
+        Util.withinTransaction(postUpdater::update, postEntity);
         log.info("Post successfully registered.");
 
         return postEntity;
@@ -68,8 +66,7 @@ public class PostApi {
         log.info("Post data successfully retrieved.");
 
         log.info("Updating post data...");
-        postUpdater.update(postEntity);
-        Util.withinTransaction(postEntity::persist);
+        Util.withinTransaction(postUpdater::update, postEntity);
         log.info("Post data successfully updated.");
 
         return postEntity;
