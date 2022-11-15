@@ -38,9 +38,9 @@
 
         <div class="flex pt-4 pl-4 text-black text-sm">
           <div v-if="!isItself">
-            <button v-if="user.isFollowed" class="bg-gray-200 hover:bg-blue-500 font-semibold hover:text-white py-1 px-6 border border-gray-300 hover:border-transparent rounded mr-2">Unfollow</button>
-            <button v-else class="bg-gray-200 hover:bg-blue-500 font-semibold hover:text-white py-1 px-6 border border-gray-300 hover:border-transparent rounded mr-2">Follow</button>
-            <button class="bg-gray-200 hover:bg-blue-500 font-semibold hover:text-white py-1 px-6 border border-gray-300 hover:border-transparent rounded">Message</button>
+            <button @click="unfollow" v-if="user.isFollowed" class="bg-gray-200 hover:bg-blue-500 font-semibold hover:text-white py-1 px-6 border border-gray-300 hover:border-transparent rounded mr-2">Unfollow</button>
+            <button @click="follow" v-else class="bg-gray-200 hover:bg-blue-500 font-semibold hover:text-white py-1 px-6 border border-gray-300 hover:border-transparent rounded mr-2">Follow</button>
+            <button disabled class="bg-gray-200 hover:bg-blue-500 font-semibold hover:text-white py-1 px-6 border border-gray-300 hover:border-transparent rounded">Message</button>
           </div>
         </div>
       </div>
