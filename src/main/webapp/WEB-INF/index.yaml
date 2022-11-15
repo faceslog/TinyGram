@@ -4,3 +4,8 @@ indexes:
   - name: owner
   - name: date
     direction: desc
+- kind: FeedNode
+  properties:
+  - name: user
+  - name: date
+    direction: desc
