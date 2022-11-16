@@ -1,4 +1,4 @@
-package tinygram.data;
+package tinygram.datastore;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;

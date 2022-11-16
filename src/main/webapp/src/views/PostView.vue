@@ -2,9 +2,8 @@
 
   <Header></Header>
 
-  <div class="relative bg-gray-200 h-full border-2 border-gray-200">    
+  <div class="relative min-h-screen h-full border-2 border-gray-200 bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100">
     <div class="pt-6 h-full">
-
       <div class="max-w-4xl mx-auto">
         <!-- FEED HERE -->
         <div class="mx-auto w-4/5 mb-4">
@@ -27,39 +26,43 @@ export default {
   data() {
     return {
       post: {
-        username: "Toto",
-        userpic: "https://i.pinimg.com/originals/c2/4a/af/c24aaf49f7dc286dd0f7020a5bb820ac.png",
-        location: "Université de Nantes",
-        likesCount: 1456,
+        username: "",
+        userpic: "",
+        userkey: "",
+        likesCount: 0,
         hasLiked: false,
-        timeStamp: Date.now(),
-        imgUrl: "https://images.unsplash.com/photo-1667144842815-1c740881a905?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1587&q=80",
-        postUrl: "",
-        description:"Salut c'est un test",
-        comments: [
-          {
-            username: "Didier",
-            content: "Wesh tu es trop bo"
-          },
-          {
-            username: "Rafa",
-            content: "Tu as quand des vacances"
-          }
-        ]
-      }
+        imgUrl: "",
+        postId: "",
+        description:""
+      },
     }
   },
-  mounted(){
-    console.log("Ceci est le param: " + this.$route.params.post);
+  async mounted(){
 
-    this.$axios.get(`/posts?post=${this.$route.params.post}`).then(res => {
+    let token = this.$store.getters.getToken;
+    let postId = this.$route.params.post;
 
-      console.log(res);
-      
-    }).catch(err => {
-        console.log(err);
-    }); 
+    this.$axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
+    try {
+
+      let res = await this.$axios.get(`/post/${postId}`);
+
+      let user = await this.$axios.get(res.data._links.owner);
+
+      this.post.username = user.data.result.name;
+      this.post.userpic = user.data.result.image;
+      this.post.userkey = user.data.result.key;
+
+      this.post.likesCount = +res.data.result.likecount;
+      this.post.hasLiked = res.data.result.liked;
+      this.post.imgUrl = res.data.result.image;
+      this.post.postId = res.data.result.key;
+      this.post.description = res.data.result.description;
+
+    } catch(err)  {
+      this.$router.push("/not-found");
+    }
   }
 }
 </script>
