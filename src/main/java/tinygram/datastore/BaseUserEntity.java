@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import com.google.api.server.spi.auth.common.User;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 
 class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
@@ -74,7 +75,7 @@ class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
         }
 
         following.add(userKey);
-        final long followerCount = getFollowerCount() + 1;
+        final long followerCount = getFollowerCount() + 1l;
 
         setProperty(FIELD_FOLLOWERS, following);
         setProperty(FIELD_FOLLOWER_COUNT, followerCount);
@@ -105,7 +106,7 @@ class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
         }
 
         following.remove(userKey);
-        final long followerCount = getFollowerCount() - 1;
+        final long followerCount = getFollowerCount() - 1l;
 
         setProperty(FIELD_FOLLOWERS, following);
         setProperty(FIELD_FOLLOWER_COUNT, followerCount);
@@ -125,13 +126,13 @@ class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
     @Override
     public void incrementFollowing() {
         final Long followingCount = getProperty(FIELD_FOLLOWING_COUNT);
-        setProperty(FIELD_FOLLOWING_COUNT, followingCount + 1);
+        setProperty(FIELD_FOLLOWING_COUNT, followingCount + 1l);
     }
 
     @Override
     public void decrementFollowing() {
         final Long followingCount = getProperty(FIELD_FOLLOWING_COUNT);
-        setProperty(FIELD_FOLLOWING_COUNT, followingCount - 1);
+        setProperty(FIELD_FOLLOWING_COUNT, followingCount - 1l);
     }
 
     @Override
@@ -143,7 +144,13 @@ class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
     @Override
     public void incrementPostCount() {
         final Long postCount = getProperty(FIELD_POST_COUNT);
-        setProperty(FIELD_POST_COUNT, postCount + 1);
+        setProperty(FIELD_POST_COUNT, postCount + 1l);
+    }
+
+    @Override
+    public void decrementPostCount() {
+        final Long postCount = getProperty(FIELD_POST_COUNT);
+        setProperty(FIELD_POST_COUNT, postCount - 1l);
     }
 
     @Override
@@ -154,14 +161,23 @@ class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
 
     @Override
     public void forget() {
+        final UserRepository userRepository = new BaseUserRepository();
+        final PostRepository postRepository = new BasePostRepository(getUserProvider());
         final FeedRepository feedRepository = new BaseFeedRepository();
-        final Iterator<FeedNodeEntity> feedNodeIterator = feedRepository.findAllOfUser(this);
 
+        try {
+            for (final Key followerKey : getFollowers()) {
+                final UserEntity follower = userRepository.get(followerKey);
+                follower.decrementFollowing();
+            }
+        } catch (final EntityNotFoundException e) {
+            throw new IllegalStateException(e);
+        }
+
+        final Iterator<FeedNodeEntity> feedNodeIterator = feedRepository.findAllOfUser(this);
         feedNodeIterator.forEachRemaining(FeedNodeEntity::forget);
 
-        final PostRepository postRepository = new BasePostRepository(getUserProvider());
         final Iterator<PostEntity> postIterator = postRepository.findAll(this);
-
         postIterator.forEachRemaining(PostEntity::forget);
 
         super.forget();

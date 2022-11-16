@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 
 class BasePostEntity extends AbstractUserAwareEntity implements PostEntity {
@@ -85,7 +86,7 @@ class BasePostEntity extends AbstractUserAwareEntity implements PostEntity {
         }
 
         likes.add(userKey);
-        final long likeCount = getLikeCount() + 1;
+        final long likeCount = getLikeCount() + 1l;
 
         setProperty(FIELD_LIKES, likes);
         setProperty(FIELD_LIKE_COUNT, likeCount);
@@ -103,7 +104,7 @@ class BasePostEntity extends AbstractUserAwareEntity implements PostEntity {
         }
 
         likes.remove(userKey);
-        final long likeCount = getLikeCount() - 1;
+        final long likeCount = getLikeCount() - 1l;
 
         setProperty(FIELD_LIKES, likes);
         setProperty(FIELD_LIKE_COUNT, likeCount);
@@ -119,9 +120,17 @@ class BasePostEntity extends AbstractUserAwareEntity implements PostEntity {
 
     @Override
     public void forget() {
+        final UserRepository userRepository = new BaseUserRepository();
         final FeedRepository feedRepository = new BaseFeedRepository();
-        final Iterator<FeedNodeEntity> feedNodeIterator = feedRepository.findAllOfPost(this);
 
+        try {
+            final UserEntity owner = userRepository.get(getOwner());
+            owner.decrementPostCount();
+        } catch (final EntityNotFoundException e) {
+            throw new IllegalStateException(e);
+        }
+
+        final Iterator<FeedNodeEntity> feedNodeIterator = feedRepository.findAllOfPost(this);
         feedNodeIterator.forEachRemaining(FeedNodeEntity::forget);
 
         super.forget();

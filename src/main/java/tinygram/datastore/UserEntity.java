@@ -55,5 +55,7 @@ public interface UserEntity extends TypedEntity, UserAware {
 
     void incrementPostCount();
 
+    void decrementPostCount();
+
     long getPostCount();
 }
