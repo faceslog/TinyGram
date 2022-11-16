@@ -40,11 +40,11 @@ public final class FeedApiSchema {
     }
 
     public static Path getFollowedPath(Key key) {
-        return new BasePath(InstApiSchema.PATH, RELATIVE_FOLLOWED_PATH + "/" + KeyFactory.keyToString(key));
+        return new BasePath(InstApiSchema.PATH, RELATIVE_FOLLOWED_PATH);
     }
 
     public static Path getFollowedPath(Key key, String nextPage) {
-        return new BasePath(InstApiSchema.PATH, RELATIVE_FOLLOWED_PATH + "/" + KeyFactory.keyToString(key) + "/" + nextPage);
+        return new BasePath(InstApiSchema.PATH, RELATIVE_FOLLOWED_PATH + "/" + nextPage);
     }
 
     public static Path getFromPath(UserEntity entity) {
