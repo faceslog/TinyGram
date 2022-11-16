@@ -1,5 +1,7 @@
 package tinygram.datastore;
 
+import java.util.Iterator;
+
 import com.google.appengine.api.datastore.Key;
 
 public interface PostRepository extends Repository<PostEntity> {
@@ -11,4 +13,10 @@ public interface PostRepository extends Repository<PostEntity> {
     }
 
     PostEntity findLatest(Key userKey);
+
+    default Iterator<PostEntity> findAll(UserEntity user) {
+        return findAll(user.getKey());
+    }
+
+    Iterator<PostEntity> findAll(Key userKey);
 }

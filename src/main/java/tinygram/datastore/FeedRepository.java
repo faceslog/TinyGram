@@ -1,5 +1,7 @@
 package tinygram.datastore;
 
+import java.util.Iterator;
+
 import com.google.appengine.api.datastore.Key;
 
 public interface FeedRepository extends Repository<FeedNodeEntity> {
@@ -10,17 +12,29 @@ public interface FeedRepository extends Repository<FeedNodeEntity> {
 
     FeedNodeEntity register(Key userKey, PostEntity post);
 
-    Feed findAll(String page);
-
-    default Feed findAll(UserEntity user, String page) {
-        return findAll(user.getKey(), page);
+    default Iterator<FeedNodeEntity> findAllOfUser(UserEntity user) {
+        return findAllOfUser(user.getKey());
     }
 
-    Feed findAll(Key userKey, String page);
+    Iterator<FeedNodeEntity> findAllOfUser(Key userKey);
 
-    default Feed findAllFrom(UserEntity user, String page) {
-        return findAllFrom(user.getKey(), page);
+    default Iterator<FeedNodeEntity> findAllOfPost(PostEntity post) {
+        return findAllOfPost(post.getKey());
     }
 
-    Feed findAllFrom(Key userKey, String page);
+    Iterator<FeedNodeEntity> findAllOfPost(Key postKey);
+
+    Feed findPaged(String page);
+
+    default Feed findPaged(UserEntity user, String page) {
+        return findPaged(user.getKey(), page);
+    }
+
+    Feed findPaged(Key userKey, String page);
+
+    default Feed findPagedFrom(UserEntity user, String page) {
+        return findPagedFrom(user.getKey(), page);
+    }
+
+    Feed findPagedFrom(Key userKey, String page);
 }

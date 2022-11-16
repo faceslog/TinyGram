@@ -40,7 +40,7 @@ public class FeedApi {
         final FeedRepository feedRepository = buildRepository();
 
         log.info("Retrieving feed...");
-        final Feed feed = feedRepository.findAll(page);
+        final Feed feed = feedRepository.findPaged(page);
         log.info("Feed successfully retrieved.");
 
         return feed;
@@ -63,7 +63,7 @@ public class FeedApi {
         final FeedRepository feedRepository = buildRepository();
 
         log.info("Retrieving user feed...");
-        final Feed feed = feedRepository.findAll(userRepository.getCurrentUser().getKey(), page);
+        final Feed feed = feedRepository.findPaged(userRepository.getCurrentUser().getKey(), page);
         log.info("User feed successfully retrieved.");
 
         return feed;
@@ -85,7 +85,7 @@ public class FeedApi {
         final FeedRepository feedRepository = buildRepository();
 
         log.info("Retrieving user posts...");
-        final Feed feed = feedRepository.findAllFrom(KeyFactory.stringToKey(userKey), page);
+        final Feed feed = feedRepository.findPagedFrom(KeyFactory.stringToKey(userKey), page);
         log.info("User posts successfully retrieved.");
 
         return feed;

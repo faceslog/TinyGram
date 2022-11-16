@@ -12,6 +12,8 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
+import tinygram.util.IteratorWrapper;
+
 public class BasePostRepository implements PostRepository {
 
     private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -44,5 +46,15 @@ public class BasePostRepository implements PostRepository {
 
         final Iterator<Entity> iterator = datastore.prepare(query).asIterator();
         return iterator.hasNext() ? new BasePostEntity(userProvider, iterator.next()) : null;
+    }
+
+    @Override
+    public Iterator<PostEntity> findAll(Key userKey) {
+        final Query query = new Query(PostEntity.KIND)
+                .setFilter(new FilterPredicate(PostEntity.FIELD_OWNER, FilterOperator.EQUAL, userKey))
+                .addSort(PostEntity.FIELD_DATE, SortDirection.DESCENDING);
+
+        final Iterator<Entity> iterator = datastore.prepare(query).asIterator();
+        return new IteratorWrapper<>(iterator, raw -> new BasePostEntity(userProvider, raw));
     }
 }

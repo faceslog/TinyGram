@@ -1,5 +1,7 @@
 package tinygram.datastore;
 
+import java.util.Iterator;
+
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -15,6 +17,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
 import tinygram.Config;
+import tinygram.util.IteratorWrapper;
 
 public class BaseFeedRepository implements FeedRepository {
 
@@ -30,6 +33,25 @@ public class BaseFeedRepository implements FeedRepository {
         return new BaseFeedNodeEntity(datastore.get(key));
     }
 
+    @Override
+    public Iterator<FeedNodeEntity> findAllOfUser(Key userKey) {
+        final Query query = new Query(FeedNodeEntity.KIND)
+                .setFilter(new FilterPredicate(FeedNodeEntity.FIELD_USER, FilterOperator.EQUAL, userKey))
+                .addSort(FeedNodeEntity.FIELD_DATE, SortDirection.DESCENDING);
+
+        final Iterator<Entity> iterator = datastore.prepare(query).asIterator();
+        return new IteratorWrapper<>(iterator, BaseFeedNodeEntity::new);
+    }
+
+    @Override
+    public Iterator<FeedNodeEntity> findAllOfPost(Key postKey) {
+        final Query query = new Query(FeedNodeEntity.KIND)
+                .setFilter(new FilterPredicate(FeedNodeEntity.FIELD_POST, FilterOperator.EQUAL, postKey));
+
+        final Iterator<Entity> iterator = datastore.prepare(query).asIterator();
+        return new IteratorWrapper<>(iterator, BaseFeedNodeEntity::new);
+    }
+
     private FetchOptions getFeedOptions(String page) {
         final FetchOptions fetchOptions = FetchOptions.Builder.withLimit(Config.FEED_LIMIT);
 
@@ -41,7 +63,7 @@ public class BaseFeedRepository implements FeedRepository {
     }
 
     @Override
-    public Feed findAll(String page) {
+    public Feed findPaged(String page) {
         final PreparedQuery query = datastore.prepare(new Query(PostEntity.KIND)
                 .addSort(PostEntity.FIELD_DATE, SortDirection.DESCENDING)
                 .setKeysOnly());
@@ -52,7 +74,7 @@ public class BaseFeedRepository implements FeedRepository {
     }
 
     @Override
-    public Feed findAll(Key userKey, String page) {
+    public Feed findPaged(Key userKey, String page) {
         final PreparedQuery query = datastore.prepare(new Query(FeedNodeEntity.KIND)
                 .setFilter(new FilterPredicate(FeedNodeEntity.FIELD_USER, FilterOperator.EQUAL, userKey))
                 .addSort(FeedNodeEntity.FIELD_DATE, SortDirection.DESCENDING));
@@ -63,7 +85,7 @@ public class BaseFeedRepository implements FeedRepository {
     }
 
     @Override
-    public Feed findAllFrom(Key userKey, String page) {
+    public Feed findPagedFrom(Key userKey, String page) {
         final PreparedQuery query = datastore.prepare(new Query(PostEntity.KIND)
                 .setFilter(new FilterPredicate(PostEntity.FIELD_OWNER, FilterOperator.EQUAL, userKey))
                 .addSort(PostEntity.FIELD_DATE, SortDirection.DESCENDING)
