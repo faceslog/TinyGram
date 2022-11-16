@@ -25,11 +25,14 @@ public class FeedTransformer implements ResourceTransformer<Feed, List<ResourceR
             listResponse.add(feedNodeResourceResponse);
         }
 
-        resourceResponse.addLink("next",
-                feed.isAboutFollowed() ? FeedApiSchema.getFollowedPath(feed.getUser(), feed.getNextPage()) :
-                feed.getUser() != null ? FeedApiSchema.getFromPath(feed.getUser(), feed.getNextPage()) :
-                FeedApiSchema.getGlobalPath(feed.getNextPage())
-        );
+        final String nextPage = feed.getNextPage();
+        if (nextPage != null) {
+            resourceResponse.addLink("next",
+                    feed.isAboutFollowed() ? FeedApiSchema.getFollowedPath(feed.getUser(), feed.getNextPage()) :
+                    feed.getUser() != null ? FeedApiSchema.getFromPath(feed.getUser(), feed.getNextPage()) :
+                    FeedApiSchema.getGlobalPath(feed.getNextPage())
+            );
+        }
 
         return resourceResponse;
     }

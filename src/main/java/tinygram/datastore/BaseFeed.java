@@ -8,6 +8,8 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.QueryResultList;
 
+import tinygram.Config;
+
 public class BaseFeed implements Feed {
 
     private final Collection<Key> posts;
@@ -25,7 +27,7 @@ public class BaseFeed implements Feed {
 
     public BaseFeed(Function<Entity, Key> entityBuilder, QueryResultList<Entity> results, Key userKey, boolean aboutFollowed) {
         posts = new ArrayList<>(results.size());
-        nextPage = results.getCursor().toWebSafeString();
+        nextPage = results.size() < Config.FEED_LIMIT ? null : results.getCursor().toWebSafeString();
 
         this.userKey = userKey;
         this.aboutFollowed = aboutFollowed;
