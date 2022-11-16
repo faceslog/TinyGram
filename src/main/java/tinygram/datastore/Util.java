@@ -1,5 +1,6 @@
 package tinygram.datastore;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -11,6 +12,12 @@ import com.google.appengine.api.datastore.Transaction;
 public class Util {
 
     private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+    public static <T> void withinTransaction(Consumer<T> action, T arg) {
+        final Transaction transaction = datastore.beginTransaction();
+        action.accept(arg);
+        transaction.commit();
+    }
 
     public static <T, U> U withinTransaction(Function<T, U> action, T arg) {
         final Transaction transaction = datastore.beginTransaction();
