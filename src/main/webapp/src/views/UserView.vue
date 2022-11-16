@@ -1,9 +1,9 @@
 <template>
-  
+
   <div class="bg-gray-100 min-h-screen h-full">
-    
+
     <div v-on:scroll="onScroll" class="h-screen overflow-x-auto">
-      
+
       <Header></Header>
 
       <!-- Profile -->
@@ -17,10 +17,10 @@
               </button>
             </div>
           </div>
-          
+
           <div class="w-auto md:px-4 px-1 py-6 text-center">
             <div class="text-left pl-4 pt-3">
-              
+
               <span class="md:text-xl text-lg font-bold">{{ user.username }}</span>
             </div>
 
@@ -89,7 +89,7 @@ export default {
         followersCount: 0,
         isFollowed: false,
         key: "azertyuiop",
-        bio: "Welcome to my profile !"        
+        bio: "Welcome to my profile !"
       },
       posts: [],
       isLoadingFeed: false,
@@ -126,7 +126,7 @@ export default {
     },
     loadFeedData: async function() {
 
-      if(this.isLoadingFeed) 
+      if(this.isLoadingFeed)
         return;
 
       this.isLoadingFeed = true;
@@ -136,19 +136,19 @@ export default {
 
       if(promises.length <= 0)
         this.hasReachEOF = true;
-      
+
       await Promise.all(promises);
 
       this.nextFeedUrl = res.data._links.next;
-      this.isLoadingFeed = false;      
+      this.isLoadingFeed = false;
     },
     loadPost: async function(postUrl) {
-      
+
       let res = await this.$axios.get(postUrl);
-      
+
       this.posts.push({ image: res.data.result.image, key: res.data.result.key });
     },
-    onScroll: function({ target: { scrollTop, clientHeight, scrollHeight }}) {  
+    onScroll: function({ target: { scrollTop, clientHeight, scrollHeight }}) {
 
       // If the user reach the bottom load more post
       if (scrollTop + clientHeight >= scrollHeight) {
@@ -160,7 +160,7 @@ export default {
       this.user.followersCount++;
       this.user.isFollowed = true;
 
-      await this.$axios.put(`/user/${this.user.key}`, { followed: true });      
+      await this.$axios.put(`/user/${this.user.key}`, { followed: true });
     },
     unfollow: async function() {
 
@@ -173,7 +173,7 @@ export default {
   computed: {
     isItself: function() {
       return this.$store.getters.getUserId == this.user.key;
-    }  
+    }
   }
 }
 </script>

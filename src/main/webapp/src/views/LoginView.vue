@@ -8,9 +8,9 @@
       <div class="flex flex-col flex-shrink-0 w-[350px]">
         <div class="flex flex-col items-center justify-center rounded w-full border-[1px] border-gray-300 bg-white p-6">
           <div class="w-full">
-            <p class="pb-3 px-3 mt-4 text-2xl text-center my-3 text-gray-800 tracking-wide font-bold" alt="instagram">TinyGram</p>
+            <img src="/images/tinygram-login.png" class="h-14 mt-4 mx-auto mb-8" alt="tinygram"/>
           </div>
-          
+
           <div class="w-full px-5">
             <form>
               <div class="w-full">
@@ -19,7 +19,7 @@
                     <input placeholder="Phone number, username, or email"  name="username"  type="text" class="text-xs p-2 border-[1px] rounded bg-gray-200/10 w-full border-gray-300" disabled/>
                   </div>
                 </div>
-                  
+
                 <div>
                   <div class="relative">
                     <input type="password" class="text-xs p-2 border-[1px] rounded bg-gray-200/10 w-full border-gray-300" placeholder="Password" disabled/>
@@ -30,11 +30,7 @@
                   <button class="w-full bg-blue-300 text-sm text-white font-semibold p-1 rounded-sm" type="submit" disabled>Log In</button>
                 </div>
 
-                <div class="flex gap-2 items-center my-3">
-                  <div class="border-b-[1px] bg-transparent border-gray-400 h-0 w-full"></div>
-                  <div class="uppercase text-gray-500 font-semibold text-base"></div>
-                  <div class="border-b-[1px] bg-transparent border-gray-400 h-0 w-full"></div>
-                </div>
+                <hr class="flex gap-2 items-center my-3 border-gray-400"/>
 
                 <div class="mt-4">
                   <div class="text-[#4267B2] flex items-center justify-center w-full">
@@ -65,27 +61,27 @@ export default {
     }
   },
   methods: {
-    login: function(response) { 
+    login: function(response) {
 
       this.$store.dispatch('setToken', response.credential);
       let decodedData = this.$store.getters.getDecodedToken;
-      
+
       let data = {
         name: decodedData.name,
         image: decodedData.picture
       }
 
       this.$axios.defaults.headers.common['Authorization'] = `Bearer ${response.credential}`;
-      
+
       this.$axios.post("/user", data).then(res => {
-        
+
         this.$swal('Welcome !', 'Loading Data ...', 'success');
-        this.$store.dispatch('setUser', res.data.result); 
+        this.$store.dispatch('setUser', res.data.result);
         this.$router.push("/");
 
       }).catch(err => {
 
-        console.log(err); 
+        console.log(err);
         this.$swal('Login Error', 'Oops Login Failed ...', 'error');
       });
     }

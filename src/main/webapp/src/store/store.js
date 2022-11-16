@@ -40,15 +40,15 @@ const store = createStore({
     },
     getters: {
         getDecodedToken(state) {
-            
+
             if(state.token == null)
                 store.dispatch('findToken');
 
             if(state.token == null)
                 return null;
-    
+
             const userData = decodeCredential(state.token);
-            
+
             return userData;
         },
         getToken(state) {

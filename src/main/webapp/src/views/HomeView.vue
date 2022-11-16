@@ -1,11 +1,11 @@
 <template>
 
-  <div class="bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 min-h-screen h-full">    
-    
+  <div class="bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 min-h-screen h-full">
+
     <div v-on:scroll="onScroll" class="h-screen overflow-x-auto">
 
       <Header></Header>
-      
+
       <div class="mt-6 max-w-4xl mx-auto">
         <!-- FEED HERE -->
         <div v-for="post in postsList" :key="post" class="mx-auto w-4/5 mb-4">
@@ -55,7 +55,7 @@ export default {
       this.isLoadingFeed = true;
 
       try {
-        
+
         let [x, y] = await Promise.all([ this.loadFeedFollowed(), this.loadFeedGlobal()]);
 
         let promises = [...x, ...y].map(post => this.loadPost(post._links.self));
@@ -107,7 +107,7 @@ export default {
 
       return post;
     },
-    onScroll: function({ target: { scrollTop, clientHeight, scrollHeight }}) {  
+    onScroll: function({ target: { scrollTop, clientHeight, scrollHeight }}) {
       // If the user reach the bottom load more post
       if (scrollTop + clientHeight >= scrollHeight) {
         this.loadFeed();

@@ -1,12 +1,12 @@
 <template>
     <div class="feed-item border border-gray-400 rounded bg-white">
         <!-- Post Header -->
-        <router-link :to="'/users/' + post.userkey" class="border-b p-2 flex justify-between items-center cursor-pointer">  
+        <router-link :to="'/users/' + post.userkey" class="border-b p-2 flex justify-between items-center cursor-pointer">
             <div class="left flex flex-row items-center">
                 <div class="user-img h-10 w-10 border rounded-full overflow-hidden mr-4">
                   <img alt="profile" draggable="false" :src="post.userpic">
                 </div>
-                
+
                 <div class="user-name-and-place flex flex-col">
                   <span class="text-base font-bold">{{ post.username }}</span>
                 </div>
@@ -21,7 +21,7 @@
             </div>
         </router-link>
 
-            
+
         <div class="">
             <img class="h-full w-full object-cover" :src="post.imgUrl" alt="post.imgUrl">
         </div>
@@ -56,7 +56,7 @@
                             </svg>
                         </button>
                     </div>
-                  
+
                     <div class="">
                         <div class="save">
                             <svg aria-label="Save" fill="#262626" height="24" viewBox="0 0 48 48" width="24">
@@ -97,7 +97,7 @@
 export default {
     name: "PostCard",
     props: {
-        post: Object 
+        post: Object
     },
     mounted() {
         let token = this.$store.getters.getToken;
@@ -112,7 +112,7 @@ export default {
                 this.unlike(this.post.postId);
         },
         like: async function(postId) {
-            
+
             this.post.likesCount++;
             this.post.hasLiked = true;
 

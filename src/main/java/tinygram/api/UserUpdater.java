@@ -4,7 +4,7 @@ import tinygram.datastore.UserEntity;
 import tinygram.datastore.UserProvider;
 
 public class UserUpdater implements EntityUpdater<UserEntity> {
-    
+
     public String name;
     public String image;
     public Boolean followed;
