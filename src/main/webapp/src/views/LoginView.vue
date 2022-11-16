@@ -55,11 +55,6 @@
 
 <script>
 export default {
-  data()
-  {
-    return {
-    }
-  },
   methods: {
     login: function(response) {
 

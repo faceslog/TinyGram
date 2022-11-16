@@ -13,7 +13,7 @@
         </div>
       </div>
 
-      <div v-if="!hasReachEOF" class="text-lg text-center text-gray-800 font-bold mb-3">Loading ...</div>
+      <div v-if="nextFeedFollowedUrl || nextFeedGlobalUrl" class="text-lg text-center text-gray-800 font-bold mb-3">Loading ...</div>
 
     </div>
   </div>
@@ -33,8 +33,7 @@ export default {
       postsList: [],
       nextFeedGlobalUrl: "",
       nextFeedFollowedUrl: "",
-      isLoadingFeed: false,
-      hasReachEOF: false
+      isLoadingFeed: false
     }
   },
   async mounted()  {
@@ -50,7 +49,11 @@ export default {
   methods: {
     loadFeed: async function() {
 
-      if(this.isLoadingFeed) return;
+      if(this.isLoadingFeed) 
+        return;
+
+      if(!this.nextFeedFollowedUrl && !this.nextFeedGlobalUrl)
+        return;
 
       this.isLoadingFeed = true;
 
@@ -60,31 +63,33 @@ export default {
 
         let promises = [...x, ...y].map(post => this.loadPost(post._links.self));
 
-        if(promises.length <= 0)
-          this.hasReachEOF = true;
-
         this.postsList = [...this.postsList, ...await Promise.all(promises)];
+        this.postsList = this.postsList.filter((s => a => !s.has(a.postId) && s.add(a.postId))(new Set));            
 
       } catch(err) {
         console.log(err);
-        this.$router.push("/not-found");
+       // this.$router.push("/not-found");
       }
 
       this.isLoadingFeed = false;
     },
     loadFeedFollowed: async function() {
 
+      if(!this.nextFeedFollowedUrl) return [];
+
       let res = await this.$axios.get(this.nextFeedFollowedUrl);
 
-      this.nextFeedFollowedUrl = res.data._links.next;
+      this.nextFeedFollowedUrl = res.data._links?.next;
 
       return res.data.result;
     },
     loadFeedGlobal: async function() {
 
+      if(!this.nextFeedGlobalUrl) return [];
+
       let res = await this.$axios.get(this.nextFeedGlobalUrl);
 
-      this.nextFeedGlobalUrl = res.data._links.next;
+      this.nextFeedGlobalUrl = res.data._links?.next;
 
       return res.data.result;
     },
@@ -108,10 +113,9 @@ export default {
       return post;
     },
     onScroll: function({ target: { scrollTop, clientHeight, scrollHeight }}) {
-      // If the user reach the bottom load more post
-      if (scrollTop + clientHeight >= scrollHeight) {
+      
+      if (scrollTop + clientHeight >= scrollHeight)
         this.loadFeed();
-      }
     }
   }
 }
