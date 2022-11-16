@@ -9,8 +9,6 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
-import tinygram.Util;
-
 public abstract class AbstractTypedEntity implements TypedEntity {
 
     private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -58,6 +56,11 @@ public abstract class AbstractTypedEntity implements TypedEntity {
         final Set<TypedEntity> toPersist = relatedEntities;
         relatedEntities = new HashSet<>();
         toPersist.forEach(TypedEntity::persist);
+    }
+
+    @Override
+    public void forget() {
+        datastore.delete(getKey());
     }
 
     @Override

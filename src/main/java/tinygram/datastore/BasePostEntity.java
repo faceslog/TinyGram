@@ -3,6 +3,7 @@ package tinygram.datastore;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
@@ -114,5 +115,15 @@ class BasePostEntity extends AbstractUserAwareEntity implements PostEntity {
     public long getLikeCount() {
         final Long object = getProperty(FIELD_LIKE_COUNT);
         return object;
+    }
+
+    @Override
+    public void forget() {
+        final FeedRepository feedRepository = new BaseFeedRepository();
+        final Iterator<FeedNodeEntity> feedNodeIterator = feedRepository.findAllOfPost(this);
+
+        feedNodeIterator.forEachRemaining(FeedNodeEntity::forget);
+
+        super.forget();
     }
 }

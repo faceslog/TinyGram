@@ -2,6 +2,7 @@ package tinygram.datastore;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import com.google.api.server.spi.auth.common.User;
 import com.google.appengine.api.datastore.Entity;
@@ -63,7 +64,7 @@ class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
         KindException.ensure(KIND, user);
 
         if (equals(user)) {
-            throw new IllegalArgumentException("Trying to follow itself.");
+            throw new IllegalArgumentException("Trying to follow themselves.");
         }
 
         final Collection<Key> following = getFollowers();
@@ -149,5 +150,20 @@ class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
     public long getPostCount() {
         final Long object = getProperty(FIELD_POST_COUNT);
         return object;
+    }
+
+    @Override
+    public void forget() {
+        final FeedRepository feedRepository = new BaseFeedRepository();
+        final Iterator<FeedNodeEntity> feedNodeIterator = feedRepository.findAllOfUser(this);
+
+        feedNodeIterator.forEachRemaining(FeedNodeEntity::forget);
+
+        final PostRepository postRepository = new BasePostRepository(getUserProvider());
+        final Iterator<PostEntity> postIterator = postRepository.findAll(this);
+
+        postIterator.forEachRemaining(PostEntity::forget);
+
+        super.forget();
     }
 }

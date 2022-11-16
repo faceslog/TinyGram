@@ -9,4 +9,6 @@ public interface TypedEntity {
     String getKind();
 
     void persist();
+
+    void forget();
 }
