@@ -1,4 +1,4 @@
-package tinygram;
+package tinygram.datastore;
 
 import java.util.function.Function;
 import java.util.function.Supplier;

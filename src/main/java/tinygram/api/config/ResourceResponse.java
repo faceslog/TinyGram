@@ -3,7 +3,7 @@ package tinygram.api.config;
 import java.util.HashMap;
 import java.util.Map;
 
-import tinygram.api.ApiPath;
+import tinygram.util.Path;
 
 public class ResourceResponse<T> {
 
@@ -15,7 +15,7 @@ public class ResourceResponse<T> {
         _links = new HashMap<>();
     }
 
-    public boolean addLink(String name, ApiPath path) {
+    public boolean addLink(String name, Path path) {
         return addLink(name, path.getRelative());
     }
 

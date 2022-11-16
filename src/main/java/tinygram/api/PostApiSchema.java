@@ -4,6 +4,8 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
 import tinygram.datastore.PostEntity;
+import tinygram.util.Path;
+import tinygram.util.BasePath;
 
 public final class PostApiSchema {
 
@@ -16,12 +18,12 @@ public final class PostApiSchema {
 
     public static final String KEY_ARGUMENT_SUFFIX = "/{" + KEY_ARGUMENT_NAME + "}";
 
-    public static ApiPath getPath(PostEntity entity) {
+    public static Path getPath(PostEntity entity) {
         return getPath(entity.getKey());
     }
 
-    public static ApiPath getPath(Key key) {
-        return new BaseApiPath(InstApiSchema.PATH, RELATIVE_PATH + "/" + KeyFactory.keyToString(key));
+    public static Path getPath(Key key) {
+        return new BasePath(InstApiSchema.PATH, RELATIVE_PATH + "/" + KeyFactory.keyToString(key));
     }
 
     private PostApiSchema() {}

@@ -11,10 +11,10 @@ import com.google.api.server.spi.config.Named;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
 
-import tinygram.Util;
 import tinygram.datastore.BaseUserRepository;
 import tinygram.datastore.UserEntity;
 import tinygram.datastore.UserRepository;
+import tinygram.datastore.Util;
 
 @ApiReference(InstApi.class)
 public class UserApi {

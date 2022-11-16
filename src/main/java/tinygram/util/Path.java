@@ -1,6 +1,6 @@
-package tinygram.api;
+package tinygram.util;
 
-public interface ApiPath {
+public interface Path {
 
     String getAbsolute();
 

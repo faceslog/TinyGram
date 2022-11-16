@@ -1,18 +1,18 @@
-package tinygram.api;
+package tinygram.util;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
-public class BaseApiPath implements ApiPath {
+public class BasePath implements Path {
 
     private final String root;
     private final String path;
 
-    public BaseApiPath(String root, Key resource) {
+    public BasePath(String root, Key resource) {
         this(root, KeyFactory.keyToString(resource));
     }
 
-    public BaseApiPath(String root, String path) {
+    public BasePath(String root, String path) {
         this.root = root;
         this.path = path;
     }

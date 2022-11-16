@@ -4,6 +4,8 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
 import tinygram.datastore.UserEntity;
+import tinygram.util.Path;
+import tinygram.util.BasePath;
 
 public final class FeedApiSchema {
 
@@ -21,44 +23,44 @@ public final class FeedApiSchema {
 
     public static final String PAGE_ARGUMENT_SUFFIX = "/{" + PAGE_ARGUMENT_NAME + "}";
 
-    public static ApiPath getGlobalPath() {
-        return new BaseApiPath(InstApiSchema.PATH, RELATIVE_GLOBAL_PATH);
+    public static Path getGlobalPath() {
+        return new BasePath(InstApiSchema.PATH, RELATIVE_GLOBAL_PATH);
     }
 
-    public static ApiPath getGlobalPath(String nextPage) {
-        return new BaseApiPath(InstApiSchema.PATH, RELATIVE_GLOBAL_PATH + "/" + nextPage);
+    public static Path getGlobalPath(String nextPage) {
+        return new BasePath(InstApiSchema.PATH, RELATIVE_GLOBAL_PATH + "/" + nextPage);
     }
 
-    public static ApiPath getFollowedPath(UserEntity entity) {
+    public static Path getFollowedPath(UserEntity entity) {
         return getFollowedPath(entity.getKey());
     }
 
-    public static ApiPath getFollowedPath(UserEntity entity, String nextPage) {
+    public static Path getFollowedPath(UserEntity entity, String nextPage) {
         return getFollowedPath(entity.getKey(), nextPage);
     }
 
-    public static ApiPath getFollowedPath(Key key) {
-        return new BaseApiPath(InstApiSchema.PATH, RELATIVE_FOLLOWED_PATH + "/" + KeyFactory.keyToString(key));
+    public static Path getFollowedPath(Key key) {
+        return new BasePath(InstApiSchema.PATH, RELATIVE_FOLLOWED_PATH + "/" + KeyFactory.keyToString(key));
     }
 
-    public static ApiPath getFollowedPath(Key key, String nextPage) {
-        return new BaseApiPath(InstApiSchema.PATH, RELATIVE_FOLLOWED_PATH + "/" + KeyFactory.keyToString(key) + "/" + nextPage);
+    public static Path getFollowedPath(Key key, String nextPage) {
+        return new BasePath(InstApiSchema.PATH, RELATIVE_FOLLOWED_PATH + "/" + KeyFactory.keyToString(key) + "/" + nextPage);
     }
 
-    public static ApiPath getFromPath(UserEntity entity) {
+    public static Path getFromPath(UserEntity entity) {
         return getFromPath(entity.getKey());
     }
 
-    public static ApiPath getFromPath(UserEntity entity, String nextPage) {
+    public static Path getFromPath(UserEntity entity, String nextPage) {
         return getFromPath(entity.getKey(), nextPage);
     }
 
-    public static ApiPath getFromPath(Key key) {
-        return new BaseApiPath(InstApiSchema.PATH, RELATIVE_FROM_PATH + "/" + KeyFactory.keyToString(key));
+    public static Path getFromPath(Key key) {
+        return new BasePath(InstApiSchema.PATH, RELATIVE_FROM_PATH + "/" + KeyFactory.keyToString(key));
     }
 
-    public static ApiPath getFromPath(Key key, String nextPage) {
-        return new BaseApiPath(InstApiSchema.PATH, RELATIVE_FROM_PATH + "/" + KeyFactory.keyToString(key) + "/" + nextPage);
+    public static Path getFromPath(Key key, String nextPage) {
+        return new BasePath(InstApiSchema.PATH, RELATIVE_FROM_PATH + "/" + KeyFactory.keyToString(key) + "/" + nextPage);
     }
 
     private FeedApiSchema() {}
