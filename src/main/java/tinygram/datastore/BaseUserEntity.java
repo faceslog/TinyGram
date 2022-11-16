@@ -7,14 +7,12 @@ import com.google.api.server.spi.auth.common.User;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
-import tinygram.Config;
-
 class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
 
     public BaseUserEntity(User user, String name, String image) {
-        super(new UndefinedUserProvider(), Config.DEBUG ? "test" : user.getId());
+        super(new UndefinedUserProvider(), user.getId());
 
-        setProperty(FIELD_ID, Config.DEBUG ? "test" : user.getId());
+        setProperty(FIELD_ID, user.getId());
         setProperty(FIELD_NAME, name);
         setProperty(FIELD_IMAGE, image);
         setProperty(FIELD_FOLLOWERS, new HashSet<>());
@@ -64,7 +62,7 @@ class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
     public boolean addFollow(UserEntity user) {
         KindException.ensure(KIND, user);
 
-        if (equals(user) && !Config.DEBUG) {
+        if (equals(user)) {
             throw new IllegalArgumentException("Trying to follow itself.");
         }
 

@@ -11,7 +11,6 @@ import com.google.api.server.spi.config.Named;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
 
-import tinygram.Config;
 import tinygram.Util;
 import tinygram.datastore.BaseUserRepository;
 import tinygram.datastore.UserEntity;
@@ -23,7 +22,7 @@ public class UserApi {
     private static final Logger log = Logger.getLogger(UserApi.class.getName());
 
     public static UserRepository buildRepository(User user) throws UnauthorizedException {
-        if (user == null && !Config.DEBUG) {
+        if (user == null) {
             throw new IllegalArgumentException("Missing user credentials.");
         }
 
@@ -47,7 +46,7 @@ public class UserApi {
         path       = UserApiSchema.RELATIVE_PATH,
         httpMethod = HttpMethod.POST)
     public UserEntity postUser(User user, UserUpdater userUpdater) throws UnauthorizedException {
-        if (user == null && !Config.DEBUG) {
+        if (user == null) {
             throw new IllegalArgumentException("Missing user credentials.");
         }
 

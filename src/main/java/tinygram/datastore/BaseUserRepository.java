@@ -10,8 +10,6 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
-import tinygram.Config;
-
 public class BaseUserRepository implements UserRepository {
 
     private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -28,7 +26,7 @@ public class BaseUserRepository implements UserRepository {
 
     @Override
     public UserEntity getCurrentUser() {
-        return userProvider.get();
+        return userProvider.exists() ? userProvider.get() : null;
     }
 
     @Override
@@ -48,7 +46,7 @@ public class BaseUserRepository implements UserRepository {
 
     @Override
     public UserEntity find(User user) {
-        return find(Config.DEBUG ? "test" : user.getId());
+        return find(user.getId());
     }
 
     @Override

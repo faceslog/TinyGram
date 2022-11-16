@@ -8,7 +8,5 @@ public final class Config {
 
     public static final int FEED_LIMIT = 6;
 
-    public static final boolean DEBUG = false;
-
     private Config() {}
 }
