@@ -45,12 +45,13 @@ public class BenchmarkApi {
         name       = "benchmark.followers",
         path       = "benchmark/followers/{count}",
         httpMethod = HttpMethod.PUT)
-    public void addFollowers(User user, @Named("count") int count) throws UnauthorizedException {
+    public UserEntity addFollowers(User user, @Named("count") int count) throws UnauthorizedException {
         final UserRepository userRepository = UserApi.buildRepository(user);
 
         final UserEntity userEntity = userRepository.getCurrentUser();
         final String userId = user.getId();
 
+        log.info("Setting follower count to " + count + "...");
         final List<UserEntity> toPersist = new ArrayList<>();
 
         int i = 1;
@@ -63,10 +64,12 @@ public class BenchmarkApi {
             followerEntity = userRepository.register(follower, getFollowerName(userId, i), "");
             userEntity.addFollow(followerEntity);
 
+            log.info("Registering missing follower " + i + "...");
             toPersist.add(userEntity);
         }
 
         Util.withinTransaction(toPersist::forEach, UserEntity::persist);
+        log.info(toPersist.size() + " missing followers successfully registered.");
 
         final List<UserEntity> toForget = new ArrayList<>();
 
@@ -76,10 +79,16 @@ public class BenchmarkApi {
             UserEntity followerEntity = userRepository.find(follower.getId());
             if (followerEntity == null) break;
 
+            log.info("Unregistering excess follower " + i + "...");
             toForget.add(followerEntity);
         }
 
         Util.withinTransaction(toForget::forEach, UserEntity::forget);
+        log.info(toForget.size() + " excess followers successfully unregistered.");
+
+        log.info("Follower count successfully set to " + count + ".");
+
+        return userEntity;
     }
 
     @ApiMethod(
@@ -90,23 +99,29 @@ public class BenchmarkApi {
         final UserRepository userRepository = UserApi.buildRepository(user);
         final PostRepository postRepository = PostApi.buildRepository(userRepository);
 
+        final UserEntity userEntity = userRepository.getCurrentUser();
+
         final String publisherId = Randomizer.alphanum(16);
         final User publisher = getPublisher(publisherId);
 
-        final UserEntity userEntity = userRepository.getCurrentUser();
+        log.info("Registering publisher...");
         final UserEntity publisherEntity = userRepository.register(publisher, getPublisherName(publisherId), "");
-
         publisherEntity.addFollow(userEntity);
+
         Util.withinTransaction(publisherEntity::persist);
+        log.info("Publisher successfully registered.");
 
         final List<PostEntity> toPersist = new ArrayList<>();
 
         for (int i = 1; i <= postCount; ++i) {
             final PostEntity postEntity = postRepository.register(publisherEntity, DEFAULT_POST_IMAGE, "My post " + i + ".");
+
+            log.info("Registering post " + i + "...");
             toPersist.add(postEntity);
         }
 
         Util.withinTransaction(toPersist::forEach, PostEntity::persist);
+        log.info(toPersist.size() + " posts successfully registered.");
 
         return publisherEntity;
     }
