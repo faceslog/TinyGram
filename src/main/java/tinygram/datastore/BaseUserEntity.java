@@ -2,6 +2,7 @@ package tinygram.datastore;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.logging.Logger;
 
 import com.google.api.server.spi.auth.common.User;
 import com.google.appengine.api.datastore.Entity;
@@ -159,7 +160,7 @@ class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
     }
 
     @Override
-    public void forget() {
+    public void forgetUsing(Forgetter forgetter) {
         final UserRepository userRepository = new BaseUserRepository();
         final PostRepository postRepository = new BasePostRepository(getUserProvider());
         final FeedRepository feedRepository = new BaseFeedRepository();
@@ -173,10 +174,15 @@ class BaseUserEntity extends AbstractUserAwareEntity implements UserEntity {
             throw new IllegalStateException(e);
         }
 
-        userRepository.findAllFollowed(this).forEachRemaining(followed -> followed.removeFollow(this));
-        feedRepository.findAllOfUser(this).forEachRemaining(FeedNodeEntity::forget);
-        postRepository.findAll(this).forEachRemaining(PostEntity::forget);
+        userRepository.findAllFollowed(this).forEachRemaining(followed -> {
+            followed.removeFollow(this);
+            log.info(followed.toString());
+        });
+        feedRepository.findAllOfUser(this).forEachRemaining(feedNode -> feedNode.forgetUsing(forgetter));
+        postRepository.findAll(this).forEachRemaining(post -> post.forgetUsing(forgetter));
 
-        super.forget();
+        super.forgetUsing(forgetter);
     }
+
+    private static final Logger log = Logger.getLogger(BaseUserEntity.class.getName());
 }

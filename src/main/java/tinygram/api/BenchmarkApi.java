@@ -15,7 +15,7 @@ import tinygram.datastore.PostEntity;
 import tinygram.datastore.PostRepository;
 import tinygram.datastore.UserEntity;
 import tinygram.datastore.UserRepository;
-import tinygram.datastore.Util;
+import tinygram.datastore.TransactionManager;
 import tinygram.util.Randomizer;
 
 @ApiReference(InstApi.class)
@@ -24,6 +24,7 @@ public class BenchmarkApi {
     private static final String DEFAULT_POST_IMAGE = "https://cdn0.matrimonio.com.co/usr/2/1/0/2/cfb_315540.jpg";
 
     private static final Logger log = Logger.getLogger(PostApi.class.getName());
+    private static final TransactionManager transactionManager = TransactionManager.get();
 
     private static User getFollower(String userId, int i) {
         return new User("BMF" + userId + i, "bmf" + userId + i + "@instapi.com");
@@ -68,7 +69,7 @@ public class BenchmarkApi {
             toPersist.add(userEntity);
         }
 
-        Util.withinTransaction(toPersist::forEach, UserEntity::persist);
+        transactionManager.persist(toPersist);
         log.info(toPersist.size() + " missing followers successfully registered.");
 
         final List<UserEntity> toForget = new ArrayList<>();
@@ -83,7 +84,7 @@ public class BenchmarkApi {
             toForget.add(followerEntity);
         }
 
-        Util.withinTransaction(toForget::forEach, UserEntity::forget);
+        transactionManager.forget(toForget);
         log.info(toForget.size() + " excess followers successfully unregistered.");
 
         log.info("Follower count successfully set to " + count + ".");
@@ -108,7 +109,7 @@ public class BenchmarkApi {
         final UserEntity publisherEntity = userRepository.register(publisher, getPublisherName(publisherId), "");
         publisherEntity.addFollow(userEntity);
 
-        Util.withinTransaction(publisherEntity::persist);
+        transactionManager.persist(publisherEntity);
         log.info("Publisher successfully registered.");
 
         final List<PostEntity> toPersist = new ArrayList<>();
@@ -120,7 +121,7 @@ public class BenchmarkApi {
             toPersist.add(postEntity);
         }
 
-        Util.withinTransaction(toPersist::forEach, PostEntity::persist);
+        transactionManager.persist(toPersist);
         log.info(toPersist.size() + " posts successfully registered.");
 
         return publisherEntity;

@@ -4,14 +4,10 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
 public abstract class AbstractTypedEntity implements TypedEntity {
-
-    private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
     private final Entity raw;
     private Set<TypedEntity> relatedEntities;
@@ -37,8 +33,9 @@ public abstract class AbstractTypedEntity implements TypedEntity {
         return raw.getKey();
     }
 
+    @SuppressWarnings("unchecked")
     protected <T> T getProperty(String propertyName) {
-        return Util.extractProperty(raw, propertyName);
+        return (T) raw.getProperty(propertyName);
     }
 
     protected void setProperty(String propertyName, Object value) {
@@ -50,17 +47,17 @@ public abstract class AbstractTypedEntity implements TypedEntity {
     }
 
     @Override
-    public void persist() {
-        datastore.put(raw);
+    public void persistUsing(Persister persister) {
+        persister.persist(raw);
 
         final Set<TypedEntity> toPersist = relatedEntities;
         relatedEntities = new HashSet<>();
-        toPersist.forEach(TypedEntity::persist);
+        toPersist.forEach(entity -> entity.persistUsing(persister));
     }
 
     @Override
-    public void forget() {
-        datastore.delete(getKey());
+    public void forgetUsing(Forgetter forgetter) {
+        forgetter.forget(raw);
     }
 
     @Override

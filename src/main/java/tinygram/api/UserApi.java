@@ -14,12 +14,13 @@ import com.google.appengine.api.datastore.KeyFactory;
 import tinygram.datastore.BaseUserRepository;
 import tinygram.datastore.UserEntity;
 import tinygram.datastore.UserRepository;
-import tinygram.datastore.Util;
+import tinygram.datastore.TransactionManager;
 
 @ApiReference(InstApi.class)
 public class UserApi {
 
     private static final Logger log = Logger.getLogger(UserApi.class.getName());
+    private static final TransactionManager transactionManager = TransactionManager.get();
 
     public static UserRepository buildRepository(User user) throws UnauthorizedException {
         if (user == null) {
@@ -62,7 +63,7 @@ public class UserApi {
 
         userEntity = userRepository.register(user, "", "");
         userUpdater.update(userEntity);
-        Util.withinTransaction(userEntity::persist);
+        transactionManager.persist(userEntity);
         log.info("User successfully registered.");
 
         return userEntity;
@@ -95,7 +96,7 @@ public class UserApi {
 
         log.info("Updating target user data...");
         userUpdater.update(userEntity);
-        Util.withinTransaction(userEntity::persist);
+        transactionManager.persist(userEntity);
         log.info("Target user data successfully updated.");
 
         return userEntity;

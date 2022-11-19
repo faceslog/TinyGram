@@ -118,7 +118,7 @@ class BasePostEntity extends AbstractUserAwareEntity implements PostEntity {
     }
 
     @Override
-    public void forget() {
+    public void forgetUsing(Forgetter forgetter) {
         final UserRepository userRepository = new BaseUserRepository();
         final FeedRepository feedRepository = new BaseFeedRepository();
 
@@ -129,8 +129,8 @@ class BasePostEntity extends AbstractUserAwareEntity implements PostEntity {
             throw new IllegalStateException(e);
         }
 
-        feedRepository.findAllOfPost(this).forEachRemaining(FeedNodeEntity::forget);
+        feedRepository.findAllOfPost(this).forEachRemaining(feedNode -> feedNode.forgetUsing(forgetter));
 
-        super.forget();
+        super.forgetUsing(forgetter);
     }
 }

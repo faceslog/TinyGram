@@ -8,7 +8,7 @@ public interface TypedEntity {
 
     String getKind();
 
-    void persist();
+    void persistUsing(Persister persister);
 
-    void forget();
+    void forgetUsing(Forgetter forgetter);
 }

@@ -15,12 +15,13 @@ import tinygram.datastore.BasePostRepository;
 import tinygram.datastore.PostEntity;
 import tinygram.datastore.PostRepository;
 import tinygram.datastore.UserRepository;
-import tinygram.datastore.Util;
+import tinygram.datastore.TransactionManager;
 
 @ApiReference(InstApi.class)
 public class PostApi {
 
     private static final Logger log = Logger.getLogger(PostApi.class.getName());
+    private static final TransactionManager transactionManager = TransactionManager.get();
 
     public static PostRepository buildRepository(UserRepository userRepository) {
         return new BasePostRepository(userRepository);
@@ -37,7 +38,7 @@ public class PostApi {
         log.info("Registering post...");
         final PostEntity postEntity = postRepository.register(userRepository.getCurrentUser(), "", "");
         postUpdater.update(postEntity);
-        Util.withinTransaction(postEntity::persist);
+        transactionManager.persist(postEntity);
         log.info("Post successfully registered.");
 
         return postEntity;
@@ -72,7 +73,7 @@ public class PostApi {
 
         log.info("Updating post data...");
         postUpdater.update(postEntity);
-        Util.withinTransaction(postEntity::persist);
+        transactionManager.persist(postEntity);
         log.info("Post data successfully updated.");
 
         return postEntity;
