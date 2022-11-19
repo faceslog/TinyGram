@@ -1,5 +1,7 @@
 package tinygram.datastore;
 
+import java.util.Iterator;
+
 import com.google.api.server.spi.auth.common.User;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -9,6 +11,8 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+
+import tinygram.util.IteratorWrapper;
 
 public class BaseUserRepository implements UserRepository {
 
@@ -56,5 +60,14 @@ public class BaseUserRepository implements UserRepository {
 
         final Entity raw = datastore.prepare(query).asSingleEntity();
         return raw == null ? null : new BaseUserEntity(userProvider, raw);
+    }
+
+    @Override
+    public Iterator<UserEntity> findAllFollowed(Key userKey) {
+        final Query query = new Query(UserEntity.KIND)
+                .setFilter(new FilterPredicate(UserEntity.FIELD_FOLLOWERS, FilterOperator.EQUAL, userKey));
+
+        final Iterator<Entity> iterator = datastore.prepare(query).asIterator();
+        return new IteratorWrapper<>(iterator, raw -> new BaseUserEntity(userProvider, raw));
     }
 }

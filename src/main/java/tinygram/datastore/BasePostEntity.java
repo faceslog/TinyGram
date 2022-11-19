@@ -3,7 +3,6 @@ package tinygram.datastore;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
@@ -130,8 +129,7 @@ class BasePostEntity extends AbstractUserAwareEntity implements PostEntity {
             throw new IllegalStateException(e);
         }
 
-        final Iterator<FeedNodeEntity> feedNodeIterator = feedRepository.findAllOfPost(this);
-        feedNodeIterator.forEachRemaining(FeedNodeEntity::forget);
+        feedRepository.findAllOfPost(this).forEachRemaining(FeedNodeEntity::forget);
 
         super.forget();
     }
