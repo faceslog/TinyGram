@@ -1,7 +1,5 @@
 package tinygram.datastore;
 
-import java.util.HashSet;
-
 import com.google.api.server.spi.auth.common.User;
 import com.google.appengine.api.datastore.Entity;
 
@@ -16,7 +14,6 @@ class UserEntityImpl extends TypedEntityImpl implements UserEntity {
         setProperty(FIELD_ID, user.getId());
         setProperty(FIELD_NAME, name);
         setProperty(FIELD_IMAGE, image);
-        setProperty(FIELD_FOLLOWERS, new HashSet<>());
         setProperty(FIELD_FOLLOWER_COUNT, 0l);
         setProperty(FIELD_FOLLOWING_COUNT, 0l);
         setProperty(FIELD_POST_COUNT, 0l);
