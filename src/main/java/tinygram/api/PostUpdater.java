@@ -1,36 +1,20 @@
 package tinygram.api;
 
 import tinygram.datastore.PostEntity;
-import tinygram.datastore.UserEntity;
-import tinygram.datastore.UserProvider;
 
-public class PostUpdater implements EntityUpdater<PostEntity> {
+public class PostUpdater {
 
     public String image;
     public String description;
     public Boolean liked;
 
-    @Override
-    public PostEntity update(PostEntity entity) {
+    public void update(PostEntity post) {
         if (image != null) {
-            entity.setImage(image);
+            post.setImage(image);
         }
 
         if (description != null) {
-            entity.setDescription(description);
+            post.setDescription(description);
         }
-
-        final UserProvider userProvider = entity.getUserProvider();
-        if (liked != null && userProvider.exists()) {
-            final UserEntity currentUser = userProvider.get();
-
-            if (liked) {
-                entity.addLike(currentUser);
-            } else {
-                entity.removeLike(currentUser);
-            }
-        }
-
-        return entity;
     }
 }

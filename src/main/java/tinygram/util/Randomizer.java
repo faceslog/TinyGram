@@ -4,15 +4,19 @@ import java.util.Random;
 
 public class Randomizer {
 
-    private static final String ALLOWED_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    
+    public static final String NUMERIC = "0123456789";
+    public static final String UPPER_ALPHABETIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    public static final String LOWER_ALPHABETIC = "abcdefghijklmnopqrstuvwxyz";
+    public static final String ALPHABETIC = UPPER_ALPHABETIC + LOWER_ALPHABETIC;
+    public static final String ALPHANUMERIC = ALPHABETIC + NUMERIC;
+
     private static final Random random = new Random();
 
-    public static String alphanum(int length) {
+    public static String randomize(String allowedChars, int length) {
         StringBuilder sb = new StringBuilder(length);
 
         for (int i = 0; i < length; i++) {
-            sb.append(ALLOWED_CHARS.charAt(random.nextInt(ALLOWED_CHARS.length())));
+            sb.append(allowedChars.charAt(random.nextInt(allowedChars.length())));
         }
 
         return sb.toString();

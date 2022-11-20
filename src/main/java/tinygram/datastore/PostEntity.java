@@ -5,7 +5,7 @@ import java.util.Date;
 
 import com.google.appengine.api.datastore.Key;
 
-public interface PostEntity extends TypedEntity, UserAware {
+public interface PostEntity extends TypedEntity {
 
     static final String KIND = "Post";
 

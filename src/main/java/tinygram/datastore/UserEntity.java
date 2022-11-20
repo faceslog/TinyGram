@@ -1,10 +1,6 @@
 package tinygram.datastore;
 
-import java.util.Collection;
-
-import com.google.appengine.api.datastore.Key;
-
-public interface UserEntity extends TypedEntity, UserAware {
+public interface UserEntity extends TypedEntity {
 
     static final String KIND = "User";
 
@@ -31,25 +27,15 @@ public interface UserEntity extends TypedEntity, UserAware {
 
     void setImage(String image);
 
-    Collection<Key> getFollowers();
+    void incrementFollowerCount();
 
-    default boolean followedBy(UserEntity user) {
-        return followedBy(user.getKey());
-    }
-
-    default boolean followedBy(Key userKey) {
-        return getFollowers().contains(userKey);
-    }
-
-    boolean addFollow(UserEntity user);
-
-    boolean removeFollow(UserEntity user);
+    void decrementFollowerCount();
 
     long getFollowerCount();
 
-    void incrementFollowing();
+    void incrementFollowingCount();
 
-    void decrementFollowing();
+    void decrementFollowingCount();
 
     long getFollowingCount();
 

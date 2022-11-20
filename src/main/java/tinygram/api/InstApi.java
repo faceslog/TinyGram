@@ -3,9 +3,6 @@ package tinygram.api;
 import com.google.api.server.spi.config.Api;
 
 import tinygram.Config;
-import tinygram.api.config.FeedTransformer;
-import tinygram.api.config.PostTransformer;
-import tinygram.api.config.UserTransformer;
 
 @Api(
     name         = InstApiSchema.NAME,

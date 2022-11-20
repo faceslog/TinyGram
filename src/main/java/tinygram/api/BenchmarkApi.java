@@ -11,10 +11,12 @@ import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.response.UnauthorizedException;
 
+import tinygram.datastore.FollowEntity;
+import tinygram.datastore.FollowEntityManager;
 import tinygram.datastore.PostEntity;
-import tinygram.datastore.PostRepository;
+import tinygram.datastore.PostEntityManager;
 import tinygram.datastore.UserEntity;
-import tinygram.datastore.UserRepository;
+import tinygram.datastore.UserEntityManager;
 import tinygram.datastore.TransactionManager;
 import tinygram.util.Randomizer;
 
@@ -23,8 +25,11 @@ public class BenchmarkApi {
 
     private static final String DEFAULT_POST_IMAGE = "https://cdn0.matrimonio.com.co/usr/2/1/0/2/cfb_315540.jpg";
 
-    private static final Logger log = Logger.getLogger(PostApi.class.getName());
+    private static final Logger logger = Logger.getLogger(PostApi.class.getName());
     private static final TransactionManager transactionManager = TransactionManager.get();
+    private static final UserEntityManager userManager = UserEntityManager.get();
+    private static final FollowEntityManager followManager = FollowEntityManager.get();
+    private static final PostEntityManager postManager = PostEntityManager.get();
 
     private static User getFollower(String userId, int i) {
         return new User("BMF" + userId + i, "bmf" + userId + i + "@instapi.com");
@@ -46,50 +51,47 @@ public class BenchmarkApi {
         name       = "benchmark.followers",
         path       = "benchmark/followers/{count}",
         httpMethod = HttpMethod.PUT)
-    public UserEntity addFollowers(User user, @Named("count") int count) throws UnauthorizedException {
-        final UserRepository userRepository = UserApi.buildRepository(user);
+    public void addFollowers(User user, @Named("count") int count) throws UnauthorizedException {
+        final UserEntity currentUser = UserApi.getCurrentUser(user);
+        final String userId = currentUser.getId();
 
-        final UserEntity userEntity = userRepository.getCurrentUser();
-        final String userId = user.getId();
-
-        log.info("Setting follower count to " + count + "...");
-        final List<UserEntity> toPersist = new ArrayList<>();
+        logger.info("Setting follower count to " + count + "...");
+        final List<FollowEntity> toPersist = new ArrayList<>();
 
         int i = 1;
         for (; i <= count; ++i) {
             final User follower = getFollower(userId, i);
 
-            UserEntity followerEntity = userRepository.find(follower.getId());
+            UserEntity followerEntity = userManager.find(follower.getId());
             if (followerEntity != null) continue;
 
-            followerEntity = userRepository.register(follower, getFollowerName(userId, i), "");
-            userEntity.addFollow(followerEntity);
+            followerEntity = userManager.register(follower, getFollowerName(userId, i), "");
 
-            log.info("Registering missing follower " + i + "...");
-            toPersist.add(userEntity);
+            final FollowEntity followEntity = followManager.register(followerEntity, currentUser);
+
+            logger.info("Registering missing follower " + i + "...");
+            toPersist.add(followEntity);
         }
 
         transactionManager.persist(toPersist);
-        log.info(toPersist.size() + " missing followers successfully registered.");
+        logger.info(toPersist.size() + " missing followers successfully registered.");
 
         final List<UserEntity> toForget = new ArrayList<>();
 
         for (;; ++i) {
             final User follower = getFollower(userId, i);
 
-            UserEntity followerEntity = userRepository.find(follower.getId());
+            UserEntity followerEntity = userManager.find(follower.getId());
             if (followerEntity == null) break;
 
-            log.info("Unregistering excess follower " + i + "...");
+            logger.info("Unregistering excess follower " + i + "...");
             toForget.add(followerEntity);
         }
 
         transactionManager.forget(toForget);
-        log.info(toForget.size() + " excess followers successfully unregistered.");
+        logger.info(toForget.size() + " excess followers successfully unregistered.");
 
-        log.info("Follower count successfully set to " + count + ".");
-
-        return userEntity;
+        logger.info("Follower count successfully set to " + count + ".");
     }
 
     @ApiMethod(
@@ -97,32 +99,29 @@ public class BenchmarkApi {
         path       = "benchmark/publisher/{postCount}",
         httpMethod = HttpMethod.POST)
     public UserEntity makePublisher(User user, @Named("postCount") int postCount) throws UnauthorizedException {
-        final UserRepository userRepository = UserApi.buildRepository(user);
-        final PostRepository postRepository = PostApi.buildRepository(userRepository);
+        final UserEntity currentUser = UserApi.getCurrentUser(user);
 
-        final UserEntity userEntity = userRepository.getCurrentUser();
-
-        final String publisherId = Randomizer.alphanum(16);
+        final String publisherId = Randomizer.randomize(Randomizer.ALPHANUMERIC, 16);
         final User publisher = getPublisher(publisherId);
 
-        log.info("Registering publisher...");
-        final UserEntity publisherEntity = userRepository.register(publisher, getPublisherName(publisherId), "");
-        publisherEntity.addFollow(userEntity);
+        logger.info("Registering publisher...");
+        final UserEntity publisherEntity = userManager.register(publisher, getPublisherName(publisherId), "");
+        final FollowEntity followEntity = followManager.register(currentUser, publisherEntity);
 
-        transactionManager.persist(publisherEntity);
-        log.info("Publisher successfully registered.");
+        transactionManager.persist(followEntity);
+        logger.info("Publisher successfully registered.");
 
         final List<PostEntity> toPersist = new ArrayList<>();
 
         for (int i = 1; i <= postCount; ++i) {
-            final PostEntity postEntity = postRepository.register(publisherEntity, DEFAULT_POST_IMAGE, "My post " + i + ".");
+            final PostEntity postEntity = postManager.register(publisherEntity, DEFAULT_POST_IMAGE, "My post " + i + ".");
 
-            log.info("Registering post " + i + "...");
+            logger.info("Registering post " + i + "...");
             toPersist.add(postEntity);
         }
 
         transactionManager.persist(toPersist);
-        log.info(toPersist.size() + " posts successfully registered.");
+        logger.info(toPersist.size() + " posts successfully registered.");
 
         return publisherEntity;
     }
