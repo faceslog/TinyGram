@@ -20,7 +20,7 @@ class TransactionManagerImpl implements TransactionManager {
 
     @Override
     public <T extends TypedEntity> void persist(Iterable<T> entities) {
-        boolean retry = false;
+        boolean ok = false;
 
         do {
             final PersisterImpl persister = new PersisterImpl();
@@ -34,20 +34,20 @@ class TransactionManagerImpl implements TransactionManager {
             try {
                 datastoreService.put(persister.toPersist);
                 transaction.commit();
+                ok = true;
             } catch (final ConcurrentModificationException e) {
                 logger.log(Level.INFO, "Concurrent modification while persisting entities, retrying...", e);
-                retry = true;
             } finally {
                 if (transaction.isActive()) {
                     transaction.rollback();
                 }
             }
-        } while (retry);
+        } while (!ok);
     }
 
     @Override
     public <T extends TypedEntity> void forget(Iterable<T> entities) {
-        boolean retry = false;
+        boolean ok = false;
 
         do {
             final ForgetterImpl forgetter = new ForgetterImpl();
@@ -63,15 +63,15 @@ class TransactionManagerImpl implements TransactionManager {
                 datastoreService.put(forgetter.toPersist);
                 datastoreService.delete(forgetter.toForget);
                 transaction.commit();
+                ok = true;
             } catch (final ConcurrentModificationException e) {
                 logger.log(Level.INFO, "Concurrent modification while forgetting entities, retrying...", e);
-                retry = true;
             } finally {
                 if (transaction.isActive()) {
                     transaction.rollback();
                 }
             }
-        } while (retry);
+        } while (!ok);
     }
 
     private static class PersisterImpl implements Persister {

@@ -12,6 +12,8 @@ class FeedNodeEntityImpl extends TypedEntityImpl implements FeedNodeEntity {
     }
 
     public FeedNodeEntityImpl(Key userKey, PostEntity post) {
+        super(post.getKey().getName() + userKey.getName());
+
         setProperty(PROPERTY_USER, userKey);
         setProperty(PROPERTY_POST, post.getKey());
         setProperty(PROPERTY_DATE, post.getDate());

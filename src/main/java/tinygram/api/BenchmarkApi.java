@@ -56,7 +56,7 @@ public class BenchmarkApi {
         final String userId = currentUser.getId();
 
         logger.info("Setting follower count to " + count + "...");
-        final List<FollowEntity> toPersist = new ArrayList<>();
+        int persistCount = 0;
 
         int i = 1;
         for (; i <= count; ++i) {
@@ -70,13 +70,13 @@ public class BenchmarkApi {
             final FollowEntity followEntity = followManager.register(followerEntity, currentUser);
 
             logger.info("Registering missing follower " + i + "...");
-            toPersist.add(followEntity);
+            transactionManager.persist(followEntity);
+            ++persistCount;
         }
 
-        transactionManager.persist(toPersist);
-        logger.info(toPersist.size() + " missing followers successfully registered.");
+        logger.info(persistCount + " missing followers successfully registered.");
 
-        final List<UserEntity> toForget = new ArrayList<>();
+        int forgetCount = 0;
 
         for (;; ++i) {
             final User follower = getFollower(userId, i);
@@ -85,11 +85,11 @@ public class BenchmarkApi {
             if (followerEntity == null) break;
 
             logger.info("Unregistering excess follower " + i + "...");
-            toForget.add(followerEntity);
+            transactionManager.forget(followerEntity);
+            ++forgetCount;
         }
 
-        transactionManager.forget(toForget);
-        logger.info(toForget.size() + " excess followers successfully unregistered.");
+        logger.info(forgetCount + " excess followers successfully unregistered.");
 
         logger.info("Follower count successfully set to " + count + ".");
     }

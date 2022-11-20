@@ -13,6 +13,8 @@ class PostEntityImpl extends TypedEntityImpl implements PostEntity {
     private static final FeedNodeEntityManager feedManager = FeedNodeEntityManager.get();
 
     public PostEntityImpl(UserEntity owner, String image, String description) {
+        super(owner.getKey().getName() + new Date().getTime());
+
         setProperty(PROPERTY_OWNER, owner.getKey());
         setProperty(PROPERTY_DATE, new Date());
         setProperty(PROPERTY_IMAGE, image);

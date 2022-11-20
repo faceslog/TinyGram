@@ -11,7 +11,7 @@ class FollowEntityImpl extends TypedEntityImpl implements FollowEntity {
     private static final PostEntityManager postManager = PostEntityManager.get();
 
     public FollowEntityImpl(UserEntity source, UserEntity target) {
-        super(source.getId() + target.getId());
+        super(source.getKey().getName() + target.getKey().getName());
 
         if (source.equals(target)) {
             throw new IllegalArgumentException("Trying to follow themselves.");

@@ -9,7 +9,7 @@ class LikeEntityImpl extends TypedEntityImpl implements LikeEntity {
     private static final PostEntityManager postManager = PostEntityManager.get();
 
     public LikeEntityImpl(UserEntity user, PostEntity post) {
-        super(user.getId() + post.getKey().getId());
+        super(user.getKey().getName() + post.getKey().getName());
 
         // Sur Instagram, un utilisateur peut like ses propres posts.
         // if (user.getKey().equals(post.getOwner())) {
