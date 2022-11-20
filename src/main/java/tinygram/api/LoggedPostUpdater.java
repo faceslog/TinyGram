@@ -1,9 +1,14 @@
 package tinygram.api;
 
+import tinygram.datastore.LikeEntityManager;
 import tinygram.datastore.PostEntity;
+import tinygram.datastore.TransactionManager;
 import tinygram.datastore.UserEntity;
 
 public class LoggedPostUpdater extends PostUpdater {
+
+    private static final TransactionManager transactionManager = TransactionManager.get();
+    private static final LikeEntityManager likeManager = LikeEntityManager.get();
 
     public Boolean liked;
 
@@ -12,9 +17,9 @@ public class LoggedPostUpdater extends PostUpdater {
 
         if (liked != null) {
             if (liked) {
-                post.addLike(currentUser);
+                transactionManager.persist(likeManager.register(currentUser, post));
             } else {
-                post.removeLike(currentUser);
+                transactionManager.forget(likeManager.find(currentUser, post));
             }
         }
     }

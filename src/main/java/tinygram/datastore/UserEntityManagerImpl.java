@@ -7,6 +7,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
@@ -31,8 +32,8 @@ class UserEntityManagerImpl implements UserEntityManager {
 
     @Override
     public UserEntity find(String userId) {
-        final Query query = new Query(UserEntity.KIND)
-                .setFilter(new FilterPredicate(UserEntity.FIELD_ID, FilterOperator.EQUAL, userId));
+        final Filter filter = new FilterPredicate(UserEntity.PROPERTY_ID.getName(), FilterOperator.EQUAL, userId);
+        final Query query = new Query(UserEntity.KIND).setFilter(filter);
 
         final Entity raw = datastore.prepare(query).asSingleEntity();
         return raw == null ? null : new UserEntityImpl(raw);

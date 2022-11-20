@@ -4,12 +4,12 @@ public interface UserEntity extends TypedEntity {
 
     static final String KIND = "User";
 
-    static final String FIELD_ID = "id";
-    static final String FIELD_NAME = "name";
-    static final String FIELD_IMAGE = "image";
-    static final String FIELD_FOLLOWER_COUNT = "followercount";
-    static final String FIELD_FOLLOWING_COUNT = "followingcount";
-    static final String FIELD_POST_COUNT = "postcount";
+    static final Property<String> PROPERTY_ID = Property.indexedString("id");
+    static final Property<String> PROPERTY_NAME = Property.string("name");
+    static final Property<String> PROPERTY_IMAGE = Property.string("image");
+    static final Property<Long> PROPERTY_FOLLOWER_COUNT = Property.number("followercount");
+    static final Property<Long> PROPERTY_FOLLOWING_COUNT = Property.number("followingcount");
+    static final Property<Long> PROPERTY_POST_COUNT = Property.number("postcount");
 
     @Override
     default String getKind() {

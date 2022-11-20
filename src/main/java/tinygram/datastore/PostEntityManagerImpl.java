@@ -8,6 +8,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -30,9 +31,9 @@ class PostEntityManagerImpl implements PostEntityManager {
 
     @Override
     public PostEntity findLatest(Key userKey) {
-        final Query query = new Query(PostEntity.KIND)
-                .setFilter(new FilterPredicate(PostEntity.FIELD_OWNER, FilterOperator.EQUAL, userKey))
-                .addSort(PostEntity.FIELD_DATE, SortDirection.DESCENDING);
+        final Filter filter = new FilterPredicate(PostEntity.PROPERTY_OWNER.getName(), FilterOperator.EQUAL, userKey);
+        final Query query = new Query(PostEntity.KIND).setFilter(filter)
+                .addSort(PostEntity.PROPERTY_DATE.getName(), SortDirection.DESCENDING);
 
         final Iterator<Entity> iterator = datastore.prepare(query).asIterator();
         return iterator.hasNext() ? new PostEntityImpl(iterator.next()) : null;
@@ -40,11 +41,11 @@ class PostEntityManagerImpl implements PostEntityManager {
 
     @Override
     public Iterator<PostEntity> findAll(Key userKey) {
-        final Query query = new Query(PostEntity.KIND)
-                .setFilter(new FilterPredicate(PostEntity.FIELD_OWNER, FilterOperator.EQUAL, userKey))
-                .addSort(PostEntity.FIELD_DATE, SortDirection.DESCENDING);
+        final Filter filter = new FilterPredicate(PostEntity.PROPERTY_OWNER.getName(), FilterOperator.EQUAL, userKey);
+        final Query query = new Query(PostEntity.KIND).setFilter(filter)
+                .addSort(PostEntity.PROPERTY_DATE.getName(), SortDirection.DESCENDING);
 
         final Iterator<Entity> iterator = datastore.prepare(query).asIterator();
-        return new IteratorMapper<>(iterator, raw -> new PostEntityImpl(raw));
+        return new IteratorMapper<>(iterator, PostEntityImpl::new);
     }
 }

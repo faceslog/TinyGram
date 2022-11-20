@@ -18,7 +18,7 @@ public class LoggedUserUpdater extends UserUpdater {
             if (followed) {
                 transactionManager.persist(followManager.register(currentUser, user));
             } else {
-                transactionManager.forget(followManager.find(currentUser.getKey(), user.getKey()));
+                transactionManager.forget(followManager.find(currentUser, user));
             }
         }
     }

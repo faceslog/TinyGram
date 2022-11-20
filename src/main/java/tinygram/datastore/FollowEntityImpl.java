@@ -17,8 +17,8 @@ class FollowEntityImpl extends TypedEntityImpl implements FollowEntity {
             throw new IllegalArgumentException("Trying to follow themselves.");
         }
 
-        setProperty(FIELD_SOURCE, source.getKey());
-        setProperty(FIELD_TARGET, target.getKey());
+        setProperty(PROPERTY_SOURCE, source.getKey());
+        setProperty(PROPERTY_TARGET, target.getKey());
 
         source.incrementFollowingCount();
         addRelatedEntity(source);
@@ -40,12 +40,12 @@ class FollowEntityImpl extends TypedEntityImpl implements FollowEntity {
 
     @Override
     public Key getSource() {
-        return getProperty(FIELD_SOURCE);
+        return getProperty(PROPERTY_SOURCE);
     }
 
     @Override
     public Key getTarget() {
-        return getProperty(FIELD_TARGET);
+        return getProperty(PROPERTY_TARGET);
     }
 
     @Override

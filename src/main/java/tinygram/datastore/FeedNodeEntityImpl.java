@@ -12,11 +12,9 @@ class FeedNodeEntityImpl extends TypedEntityImpl implements FeedNodeEntity {
     }
 
     public FeedNodeEntityImpl(Key userKey, PostEntity post) {
-        super();
-
-        setProperty(FIELD_USER, userKey);
-        setProperty(FIELD_POST, post.getKey());
-        setProperty(FIELD_DATE, post.getDate());
+        setProperty(PROPERTY_USER, userKey);
+        setProperty(PROPERTY_POST, post.getKey());
+        setProperty(PROPERTY_DATE, post.getDate());
     }
 
     public FeedNodeEntityImpl(Entity raw) {
@@ -25,16 +23,16 @@ class FeedNodeEntityImpl extends TypedEntityImpl implements FeedNodeEntity {
 
     @Override
     public Key getUser() {
-        return getProperty(FIELD_USER);
+        return getProperty(PROPERTY_USER);
     }
 
     @Override
     public Key getPost() {
-        return getProperty(FIELD_POST);
+        return getProperty(PROPERTY_POST);
     }
 
     @Override
     public Date getDate() {
-        return getProperty(FIELD_DATE);
+        return getProperty(PROPERTY_DATE);
     }
 }

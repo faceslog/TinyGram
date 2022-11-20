@@ -12,6 +12,18 @@ public interface FollowEntityManager extends TypedEntityManager<FollowEntity> {
 
     FollowEntity register(UserEntity source, UserEntity target);
 
+    default FollowEntity find(UserEntity source, UserEntity target) {
+        return find(source, target.getKey());
+    }
+
+    default FollowEntity find(Key sourceKey, UserEntity target) {
+        return find(sourceKey, target.getKey());
+    }
+
+    default FollowEntity find(UserEntity source, Key targetKey) {
+        return find(source.getKey(), targetKey);
+    }
+
     FollowEntity find(Key source, Key target);
 
     default Iterator<FollowEntity> findAllFrom(UserEntity user) {

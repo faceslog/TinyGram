@@ -7,7 +7,7 @@ import java.util.Set;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
-abstract class TypedEntityImpl implements TypedEntity {
+abstract class TypedEntityImpl implements TypedEntity, TypedEntityInternal {
 
     private final Entity raw;
     private Set<TypedEntity> relatedEntities;
@@ -33,16 +33,23 @@ abstract class TypedEntityImpl implements TypedEntity {
         return raw.getKey();
     }
 
+    @Override
     @SuppressWarnings("unchecked")
-    protected <T> T getProperty(String propertyName) {
-        return (T) raw.getProperty(propertyName);
+    public <T> T getProperty(Property<? extends T> property) {
+        return (T) raw.getProperty(property.getName());
     }
 
-    protected void setProperty(String propertyName, Object value) {
-        raw.setProperty(propertyName, value);
+    @Override
+    public <T> void setProperty(Property<? super T> property, T value) {
+        if (property.isIndexed()) {
+            raw.setIndexedProperty(property.getName(), value);
+        } else {
+            raw.setUnindexedProperty(property.getName(), value);
+        }
     }
 
-    protected boolean addRelatedEntity(TypedEntity entity) {
+    @Override
+    public boolean addRelatedEntity(TypedEntity entity) {
         return relatedEntities.add(entity);
     }
 

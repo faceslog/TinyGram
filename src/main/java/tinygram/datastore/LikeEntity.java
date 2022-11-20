@@ -1,16 +1,13 @@
 package tinygram.datastore;
 
-import java.util.Date;
-
 import com.google.appengine.api.datastore.Key;
 
-public interface FeedNodeEntity extends TypedEntity {
+public interface LikeEntity extends TypedEntity {
 
-    static final String KIND = "FeedNode";
+    static final String KIND = "Like";
 
     static final Property<Key> PROPERTY_USER = Property.indexedKey("user");
     static final Property<Key> PROPERTY_POST = Property.indexedKey("post");
-    static final Property<Date> PROPERTY_DATE = Property.indexedDate("date");
 
     @Override
     default String getKind() {
@@ -20,6 +17,4 @@ public interface FeedNodeEntity extends TypedEntity {
     Key getUser();
 
     Key getPost();
-
-    Date getDate();
 }

@@ -28,7 +28,7 @@ class UserResponse extends EntityResponse<UserEntity> {
 
         if (resource.hasCurrentUser()) {
             final UserEntity currentUser = resource.getCurrentUser();
-            final FollowEntity follow = followManager.find(currentUser.getKey(), user.getKey());
+            final FollowEntity follow = followManager.find(currentUser, user);
     
             followed = follow != null;
         } else {

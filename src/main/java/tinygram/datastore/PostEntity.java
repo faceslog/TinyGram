@@ -1,6 +1,5 @@
 package tinygram.datastore;
 
-import java.util.Collection;
 import java.util.Date;
 
 import com.google.appengine.api.datastore.Key;
@@ -9,12 +8,11 @@ public interface PostEntity extends TypedEntity {
 
     static final String KIND = "Post";
 
-    static final String FIELD_OWNER = "owner";
-    static final String FIELD_DATE = "date";
-    static final String FIELD_IMAGE = "image";
-    static final String FIELD_DESCRIPTION = "description";
-    static final String FIELD_LIKES = "likes";
-    static final String FIELD_LIKE_COUNT = "likecount";
+    static final Property<Key> PROPERTY_OWNER = Property.indexedKey("owner");
+    static final Property<Date> PROPERTY_DATE = Property.indexedDate("date");
+    static final Property<String> PROPERTY_IMAGE = Property.string("image");
+    static final Property<String> PROPERTY_DESCRIPTION = Property.string("description");
+    static final Property<Long> PROPERTY_LIKE_COUNT = Property.number("likecount");
 
     @Override
     default String getKind() {
@@ -33,27 +31,9 @@ public interface PostEntity extends TypedEntity {
 
     void setDescription(String description);
 
-    Collection<Key> getLikes();
+    void incrementLikeCount();
 
-    default boolean likedBy(UserEntity user) {
-        return likedBy(user.getKey());
-    }
-
-    default boolean likedBy(Key userKey) {
-        return getLikes().contains(userKey);
-    }
-
-    default boolean addLike(UserEntity user) {
-        return addLike(user.getKey());
-    }
-
-    boolean addLike(Key userKey);
-
-    default boolean removeLike(UserEntity user) {
-        return removeLike(user.getKey());
-    }
-
-    boolean removeLike(Key userKey);
+    void decrementLikeCount();
 
     long getLikeCount();
 }

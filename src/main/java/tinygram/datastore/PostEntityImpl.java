@@ -1,8 +1,6 @@
 package tinygram.datastore;
 
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
@@ -15,12 +13,11 @@ class PostEntityImpl extends TypedEntityImpl implements PostEntity {
     private static final FeedNodeEntityManager feedManager = FeedNodeEntityManager.get();
 
     public PostEntityImpl(UserEntity owner, String image, String description) {
-        setProperty(FIELD_OWNER, owner.getKey());
-        setProperty(FIELD_DATE, new Date());
-        setProperty(FIELD_IMAGE, image);
-        setProperty(FIELD_DESCRIPTION, description);
-        setProperty(FIELD_LIKES, new HashSet<>());
-        setProperty(FIELD_LIKE_COUNT, 0l);
+        setProperty(PROPERTY_OWNER, owner.getKey());
+        setProperty(PROPERTY_DATE, new Date());
+        setProperty(PROPERTY_IMAGE, image);
+        setProperty(PROPERTY_DESCRIPTION, description);
+        setProperty(PROPERTY_LIKE_COUNT, 0l);
 
         owner.incrementPostCount();
         addRelatedEntity(owner);
@@ -42,84 +39,49 @@ class PostEntityImpl extends TypedEntityImpl implements PostEntity {
 
     @Override
     public Key getOwner() {
-        return getProperty(FIELD_OWNER);
+        return getProperty(PROPERTY_OWNER);
     }
 
     @Override
     public Date getDate() {
-        return getProperty(FIELD_DATE);
+        return getProperty(PROPERTY_DATE);
     }
 
     @Override
     public String getImage() {
-        return getProperty(FIELD_IMAGE);
+        return getProperty(PROPERTY_IMAGE);
     }
 
     @Override
     public void setImage(String image) {
-        setProperty(FIELD_IMAGE, image);
+        setProperty(PROPERTY_IMAGE, image);
     }
 
     @Override
     public String getDescription() {
-        return getProperty(FIELD_DESCRIPTION);
+        return getProperty(PROPERTY_DESCRIPTION);
     }
 
     @Override
     public void setDescription(String description) {
-        setProperty(FIELD_DESCRIPTION, description);
+        setProperty(PROPERTY_DESCRIPTION, description);
     }
 
     @Override
-    public Collection<Key> getLikes() {
-        final Collection<Key> likes = getProperty(FIELD_LIKES);
-        return likes == null ? new HashSet<>() : likes;
+    public void incrementLikeCount() {
+        final long likeCount = getProperty(PROPERTY_LIKE_COUNT);
+        setProperty(PROPERTY_LIKE_COUNT, likeCount + 1l);
     }
 
     @Override
-    public boolean addLike(Key userKey) {
-        KindException.ensure(UserEntity.KIND, userKey);
-        // Sur Instagram, un utilisateur peut like ses propres posts.
-        // if (getOwner().getKey().equals(userKey)) {
-        //     throw new IllegalArgumentException("Trying to like its own post.");
-        // }
-
-        final Collection<Key> likes = getLikes();
-        if (likes.contains(userKey)) {
-            return false;
-        }
-
-        likes.add(userKey);
-        final long likeCount = getLikeCount() + 1l;
-
-        setProperty(FIELD_LIKES, likes);
-        setProperty(FIELD_LIKE_COUNT, likeCount);
-
-        return true;
-    }
-
-    @Override
-    public boolean removeLike(Key userKey) {
-        KindException.ensure(UserEntity.KIND, userKey);
-
-        final Collection<Key> likes = getLikes();
-        if (!likes.contains(userKey)) {
-            return false;
-        }
-
-        likes.remove(userKey);
-        final long likeCount = getLikeCount() - 1l;
-
-        setProperty(FIELD_LIKES, likes);
-        setProperty(FIELD_LIKE_COUNT, likeCount);
-
-        return true;
+    public void decrementLikeCount() {
+        final long likeCount = getProperty(PROPERTY_LIKE_COUNT);
+        setProperty(PROPERTY_LIKE_COUNT, likeCount - 1l);
     }
 
     @Override
     public long getLikeCount() {
-        final Long object = getProperty(FIELD_LIKE_COUNT);
-        return object;
+        return getProperty(PROPERTY_LIKE_COUNT);
     }
 
     @Override

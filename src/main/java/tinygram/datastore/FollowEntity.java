@@ -6,8 +6,8 @@ public interface FollowEntity extends TypedEntity {
 
     static final String KIND = "Follow";
 
-    static final String FIELD_SOURCE = "source";
-    static final String FIELD_TARGET = "target";
+    static final Property<Key> PROPERTY_SOURCE = Property.indexedKey("source");
+    static final Property<Key> PROPERTY_TARGET = Property.indexedKey("target");
 
     @Override
     default String getKind() {
