@@ -6,6 +6,10 @@ import com.google.appengine.api.datastore.Key;
 
 class FollowEntityImpl extends TypedEntityImpl implements FollowEntity {
 
+    private static final UserEntityManager userManager = UserEntityManager.get();
+    private static final FeedNodeEntityManager feedManager = FeedNodeEntityManager.get();
+    private static final PostEntityManager postManager = PostEntityManager.get();
+
     public FollowEntityImpl(UserEntity source, UserEntity target) {
         super(source.getId() + target.getId());
 
@@ -22,11 +26,9 @@ class FollowEntityImpl extends TypedEntityImpl implements FollowEntity {
         target.incrementFollowerCount();
         addRelatedEntity(target);
 
-        final PostEntityManager postManager = PostEntityManager.get();
         final PostEntity latestPost = postManager.findLatest(target);
 
         if (latestPost != null) {
-            final FeedNodeEntityManager feedManager = FeedNodeEntityManager.get();
             final FeedNodeEntity feedNode = feedManager.register(source, latestPost);
             addRelatedEntity(feedNode);
         }
@@ -48,16 +50,14 @@ class FollowEntityImpl extends TypedEntityImpl implements FollowEntity {
 
     @Override
     public void forgetUsing(Forgetter forgetter) {
-        final UserEntityManager userManager = UserEntityManager.get();
-
         try {
             final UserEntity source = userManager.get(getSource());
             source.decrementFollowingCount();
-            addRelatedEntity(source);
+            source.persistUsing(forgetter);
 
             final UserEntity target = userManager.get(getTarget());
             target.decrementFollowerCount();
-            addRelatedEntity(target);
+            target.persistUsing(forgetter);
         } catch (final EntityNotFoundException e) {
             throw new IllegalStateException(e);
         }

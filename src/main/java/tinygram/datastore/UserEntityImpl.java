@@ -7,6 +7,9 @@ import com.google.appengine.api.datastore.Entity;
 
 class UserEntityImpl extends TypedEntityImpl implements UserEntity {
 
+    private static final FollowEntityManager followManager = FollowEntityManager.get();
+    private static final PostEntityManager postManager = PostEntityManager.get();
+
     public UserEntityImpl(User user, String name, String image) {
         super(user.getId());
 
@@ -104,9 +107,6 @@ class UserEntityImpl extends TypedEntityImpl implements UserEntity {
 
     @Override
     public void forgetUsing(Forgetter forgetter) {
-        final FollowEntityManager followManager = FollowEntityManager.get();
-        final PostEntityManager postManager = PostEntityManager.get();
-
         followManager.findAllTo(this).forEachRemaining(follow -> follow.forgetUsing(forgetter));
         followManager.findAllFrom(this).forEachRemaining(follow -> follow.forgetUsing(forgetter));
         postManager.findAll(this).forEachRemaining(post -> post.forgetUsing(forgetter));

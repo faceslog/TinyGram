@@ -10,6 +10,10 @@ import com.google.appengine.api.datastore.Key;
 
 class PostEntityImpl extends TypedEntityImpl implements PostEntity {
 
+    private static final UserEntityManager userManager = UserEntityManager.get();
+    private static final FollowEntityManager followManager = FollowEntityManager.get();
+    private static final FeedNodeEntityManager feedManager = FeedNodeEntityManager.get();
+
     public PostEntityImpl(UserEntity owner, String image, String description) {
         setProperty(FIELD_OWNER, owner.getKey());
         setProperty(FIELD_DATE, new Date());
@@ -20,10 +24,6 @@ class PostEntityImpl extends TypedEntityImpl implements PostEntity {
 
         owner.incrementPostCount();
         addRelatedEntity(owner);
-
-        final FollowEntityManager followManager = FollowEntityManager.get();
-        final UserEntityManager userManager = UserEntityManager.get();
-        final FeedNodeEntityManager feedManager = FeedNodeEntityManager.get();
 
         followManager.findAllTo(owner).forEachRemaining(follow -> {
             try {
@@ -124,13 +124,10 @@ class PostEntityImpl extends TypedEntityImpl implements PostEntity {
 
     @Override
     public void forgetUsing(Forgetter forgetter) {
-        final UserEntityManager userManager = UserEntityManager.get();
-        final FeedNodeEntityManager feedManager = FeedNodeEntityManager.get();
-
         try {
             final UserEntity owner = userManager.get(getOwner());
             owner.decrementPostCount();
-            addRelatedEntity(owner);
+            owner.persistUsing(forgetter);
         } catch (final EntityNotFoundException e) {
             throw new IllegalStateException(e);
         }

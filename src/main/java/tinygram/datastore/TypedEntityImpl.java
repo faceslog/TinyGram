@@ -60,8 +60,8 @@ abstract class TypedEntityImpl implements TypedEntity {
 
     @Override
     public void forgetUsing(Forgetter forgetter) {
+        // persistRelatedEntities(forgetter);
         forgetter.forget(raw);
-        persistRelatedEntities(forgetter);
     }
 
     @Override
