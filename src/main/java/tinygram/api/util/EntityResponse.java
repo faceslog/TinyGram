@@ -1,8 +1,8 @@
-package tinygram.api;
+package tinygram.api.util;
 
 import com.google.appengine.api.datastore.KeyFactory;
 
-import tinygram.datastore.TypedEntity;
+import tinygram.datastore.util.TypedEntity;
 
 public class EntityResponse<T extends TypedEntity> {
 

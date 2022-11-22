@@ -17,11 +17,18 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
 import tinygram.Config;
+import tinygram.datastore.util.TransactionContext;
 import tinygram.util.IteratorMapper;
 
 class FeedNodeEntityManagerImpl implements FeedNodeEntityManager {
 
-    private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    private static final DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
+
+    private final TransactionContext context;
+
+    public FeedNodeEntityManagerImpl(TransactionContext context) {
+        this.context = context;
+    }
 
     @Override
     public FeedNodeEntity register(Key userKey, PostEntity post) {
@@ -30,7 +37,7 @@ class FeedNodeEntityManagerImpl implements FeedNodeEntityManager {
 
     @Override
     public FeedNodeEntity get(Key key) throws EntityNotFoundException {
-        return new FeedNodeEntityImpl(datastore.get(key));
+        return new FeedNodeEntityImpl(context.get(key));
     }
 
     @Override
@@ -39,7 +46,7 @@ class FeedNodeEntityManagerImpl implements FeedNodeEntityManager {
         final Query query = new Query(FeedNodeEntity.KIND).setFilter(filter)
                 .addSort(FeedNodeEntity.PROPERTY_DATE.getName(), SortDirection.DESCENDING);
 
-        final Iterator<Entity> iterator = datastore.prepare(query).asIterator();
+        final Iterator<Entity> iterator = context.findAll(query);
         return new IteratorMapper<>(iterator, FeedNodeEntityImpl::new);
     }
 
@@ -48,7 +55,7 @@ class FeedNodeEntityManagerImpl implements FeedNodeEntityManager {
         final Filter filter = new FilterPredicate(FeedNodeEntity.PROPERTY_POST.getName(), FilterOperator.EQUAL, postKey);
         final Query query = new Query(FeedNodeEntity.KIND).setFilter(filter);
 
-        final Iterator<Entity> iterator = datastore.prepare(query).asIterator();
+        final Iterator<Entity> iterator = context.findAll(query);
         return new IteratorMapper<>(iterator, FeedNodeEntityImpl::new);
     }
 
@@ -67,7 +74,7 @@ class FeedNodeEntityManagerImpl implements FeedNodeEntityManager {
         final Query query = new Query(PostEntity.KIND).setKeysOnly()
                 .addSort(PostEntity.PROPERTY_DATE.getName(), SortDirection.DESCENDING);
 
-        final QueryResultList<Entity> result = datastore.prepare(query).asQueryResultList(getFeedOptions(page));
+        final QueryResultList<Entity> result = datastoreService.prepare(query).asQueryResultList(getFeedOptions(page));
 
         return new FeedImpl(Entity::getKey, result);
     }
@@ -78,7 +85,7 @@ class FeedNodeEntityManagerImpl implements FeedNodeEntityManager {
         final Query query = new Query(FeedNodeEntity.KIND).setFilter(filter)
                 .addSort(FeedNodeEntity.PROPERTY_DATE.getName(), SortDirection.DESCENDING);
 
-        final QueryResultList<Entity> result = datastore.prepare(query).asQueryResultList(getFeedOptions(page));
+        final QueryResultList<Entity> result = datastoreService.prepare(query).asQueryResultList(getFeedOptions(page));
 
         return new FeedImpl(raw -> new FeedNodeEntityImpl(raw).getPost(), result, userKey, true);
     }
@@ -89,7 +96,7 @@ class FeedNodeEntityManagerImpl implements FeedNodeEntityManager {
         final Query query = new Query(PostEntity.KIND).setKeysOnly().setFilter(filter)
                 .addSort(PostEntity.PROPERTY_DATE.getName(), SortDirection.DESCENDING);
 
-        final QueryResultList<Entity> result = datastore.prepare(query).asQueryResultList(getFeedOptions(page));
+        final QueryResultList<Entity> result = datastoreService.prepare(query).asQueryResultList(getFeedOptions(page));
 
         return new FeedImpl(Entity::getKey, result, userKey);
     }

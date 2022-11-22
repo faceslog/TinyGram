@@ -1,4 +1,4 @@
-package tinygram.datastore;
+package tinygram.datastore.util;
 
 import java.util.Date;
 

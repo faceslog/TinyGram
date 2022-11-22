@@ -6,37 +6,30 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 
+import tinygram.datastore.util.TransactionContext;
+import tinygram.datastore.util.TypedEntityImpl;
+
 class PostEntityImpl extends TypedEntityImpl implements PostEntity {
 
-    private static final UserEntityManager userManager = UserEntityManager.get();
-    private static final FollowEntityManager followManager = FollowEntityManager.get();
-    private static final FeedNodeEntityManager feedManager = FeedNodeEntityManager.get();
+    private final CounterManager likeCounterManager = CounterManager.getOf(COUNTER_LIKE);
 
     public PostEntityImpl(UserEntity owner, String image, String description) {
-        super(owner.getKey().getName() + new Date().getTime());
+        super(KIND, owner.getKey().getName() + new Date().getTime());
 
         setProperty(PROPERTY_OWNER, owner.getKey());
         setProperty(PROPERTY_DATE, new Date());
         setProperty(PROPERTY_IMAGE, image);
         setProperty(PROPERTY_DESCRIPTION, description);
-        setProperty(PROPERTY_LIKE_COUNT, 0l);
 
         owner.incrementPostCount();
         addRelatedEntity(owner);
 
-        followManager.findAllTo(owner).forEachRemaining(follow -> {
-            try {
-                final UserEntity follower = userManager.get(follow.getSource());
-                final FeedNodeEntity feedNode = feedManager.register(follower, this);
-                addRelatedEntity(feedNode);
-            } catch (EntityNotFoundException e) {
-                throw new IllegalStateException(e);
-            }
-        });
+        final CounterEntity likeCounter = likeCounterManager.register(getKey().getName());
+        addRelatedEntity(likeCounter);
     }
 
     public PostEntityImpl(Entity raw) {
-        super(raw);
+        super(KIND, raw);
     }
 
     @Override
@@ -69,35 +62,50 @@ class PostEntityImpl extends TypedEntityImpl implements PostEntity {
         setProperty(PROPERTY_DESCRIPTION, description);
     }
 
+    private CounterEntity getLikeCounter() {
+        try {
+            return likeCounterManager.get(getKey().getName());
+        } catch (final EntityNotFoundException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     @Override
     public void incrementLikeCount() {
-        final long likeCount = getProperty(PROPERTY_LIKE_COUNT);
-        setProperty(PROPERTY_LIKE_COUNT, likeCount + 1l);
+        final CounterEntity counter = getLikeCounter();
+        counter.increment();
+        addRelatedEntity(counter);
     }
 
     @Override
     public void decrementLikeCount() {
-        final long likeCount = getProperty(PROPERTY_LIKE_COUNT);
-        setProperty(PROPERTY_LIKE_COUNT, likeCount - 1l);
+        final CounterEntity counter = getLikeCounter();
+        counter.decrement();
+        addRelatedEntity(counter);
     }
 
     @Override
     public long getLikeCount() {
-        return getProperty(PROPERTY_LIKE_COUNT);
+        return getLikeCounter().getValue();
     }
 
     @Override
-    public void forgetUsing(Forgetter forgetter) {
+    public void forgetUsing(TransactionContext context) {
+        final UserEntityManager userManager = UserEntityManager.get(context);
+        final FeedNodeEntityManager feedManager = FeedNodeEntityManager.get(context);
+
         try {
             final UserEntity owner = userManager.get(getOwner());
             owner.decrementPostCount();
-            owner.persistUsing(forgetter);
+            owner.persistUsing(context);
         } catch (final EntityNotFoundException e) {
             throw new IllegalStateException(e);
         }
 
-        feedManager.findAllOfPost(this).forEachRemaining(feedNode -> feedNode.forgetUsing(forgetter));
+        getLikeCounter().forgetUsing(context);
 
-        super.forgetUsing(forgetter);
+        feedManager.findAllOfPost(this).forEachRemaining(feedNode -> feedNode.forgetUsing(context));
+
+        super.forgetUsing(context);
     }
 }

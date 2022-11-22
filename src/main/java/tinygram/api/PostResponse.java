@@ -4,14 +4,14 @@ import java.util.Date;
 
 import com.google.appengine.api.datastore.KeyFactory;
 
+import tinygram.api.util.EntityResponse;
 import tinygram.datastore.LikeEntity;
 import tinygram.datastore.LikeEntityManager;
 import tinygram.datastore.PostEntity;
 import tinygram.datastore.UserEntity;
+import tinygram.datastore.util.TransactionContext;
 
 class PostResponse extends EntityResponse<PostEntity> {
-
-    private static final LikeEntityManager likeManager = LikeEntityManager.get();
 
     public final String owner;
     public final Date date;
@@ -32,6 +32,8 @@ class PostResponse extends EntityResponse<PostEntity> {
         likecount = post.getLikeCount();
 
         if (resource.hasCurrentUser()) {
+            final LikeEntityManager likeManager = LikeEntityManager.get(TransactionContext.getCurrent());
+
             final UserEntity currentUser = resource.getCurrentUser();
             final LikeEntity like = likeManager.find(currentUser, post);
 

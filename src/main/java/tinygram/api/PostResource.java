@@ -1,5 +1,6 @@
 package tinygram.api;
 
+import tinygram.api.util.Resource;
 import tinygram.datastore.PostEntity;
 import tinygram.datastore.UserEntity;
 

@@ -2,25 +2,30 @@ package tinygram.datastore;
 
 import com.google.api.server.spi.auth.common.User;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+
+import tinygram.datastore.util.TransactionContext;
+import tinygram.datastore.util.TypedEntityImpl;
 
 class UserEntityImpl extends TypedEntityImpl implements UserEntity {
 
-    private static final FollowEntityManager followManager = FollowEntityManager.get();
-    private static final PostEntityManager postManager = PostEntityManager.get();
+    private static final CounterManager followerCounterManager = CounterManager.getOf(COUNTER_FOLLOWER);
 
     public UserEntityImpl(User user, String name, String image) {
-        super(user.getId());
+        super(KIND, user.getId());
 
         setProperty(PROPERTY_ID, user.getId());
         setProperty(PROPERTY_NAME, name);
         setProperty(PROPERTY_IMAGE, image);
-        setProperty(PROPERTY_FOLLOWER_COUNT, 0l);
         setProperty(PROPERTY_FOLLOWING_COUNT, 0l);
         setProperty(PROPERTY_POST_COUNT, 0l);
+
+        final CounterEntity followerCounter = followerCounterManager.register(getKey().getName());
+        addRelatedEntity(followerCounter);
     }
 
     public UserEntityImpl(Entity raw) {
-        super(raw);
+        super(KIND, raw);
     }
 
     @Override
@@ -48,21 +53,31 @@ class UserEntityImpl extends TypedEntityImpl implements UserEntity {
         setProperty(PROPERTY_IMAGE, image);
     }
 
+    private CounterEntity getFollowerCounter() {
+        try {
+            return followerCounterManager.get(getKey().getName());
+        } catch (final EntityNotFoundException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     @Override
     public void incrementFollowerCount() {
-        final long followerCount = getProperty(PROPERTY_FOLLOWER_COUNT);
-        setProperty(PROPERTY_FOLLOWER_COUNT, followerCount + 1l);
+        final CounterEntity counter = getFollowerCounter();
+        counter.increment();
+        addRelatedEntity(counter);
     }
 
     @Override
     public void decrementFollowerCount() {
-        final long followerCount = getProperty(PROPERTY_FOLLOWER_COUNT);
-        setProperty(PROPERTY_FOLLOWER_COUNT, followerCount - 1l);
+        final CounterEntity counter = getFollowerCounter();
+        counter.decrement();
+        addRelatedEntity(counter);
     }
 
     @Override
     public long getFollowerCount() {
-        return getProperty(PROPERTY_FOLLOWER_COUNT);
+        return getFollowerCounter().getValue();
     }
 
     @Override
@@ -100,11 +115,16 @@ class UserEntityImpl extends TypedEntityImpl implements UserEntity {
     }
 
     @Override
-    public void forgetUsing(Forgetter forgetter) {
-        followManager.findAllTo(this).forEachRemaining(follow -> follow.forgetUsing(forgetter));
-        followManager.findAllFrom(this).forEachRemaining(follow -> follow.forgetUsing(forgetter));
-        postManager.findAll(this).forEachRemaining(post -> post.forgetUsing(forgetter));
+    public void forgetUsing(TransactionContext context) {
+        final FollowEntityManager followManager = FollowEntityManager.get(context);
+        final PostEntityManager postManager = PostEntityManager.get(context);
 
-        super.forgetUsing(forgetter);
+        getFollowerCounter().forgetUsing(context);
+
+        followManager.findAllTo(this).forEachRemaining(follow -> follow.forgetUsing(context));
+        followManager.findAllFrom(this).forEachRemaining(follow -> follow.forgetUsing(context));
+        postManager.findAll(this).forEachRemaining(post -> post.forgetUsing(context));
+
+        super.forgetUsing(context);
     }
 }

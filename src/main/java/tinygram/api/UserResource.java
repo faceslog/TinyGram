@@ -1,5 +1,6 @@
 package tinygram.api;
 
+import tinygram.api.util.Resource;
 import tinygram.datastore.UserEntity;
 
 public class UserResource extends Resource {

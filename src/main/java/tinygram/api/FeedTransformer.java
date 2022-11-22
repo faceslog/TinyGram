@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.google.appengine.api.datastore.Key;
 
+import tinygram.api.util.ResourceResponse;
+import tinygram.api.util.ResourceTransformer;
 import tinygram.datastore.Feed;
 
 public class FeedTransformer implements ResourceTransformer<FeedResource, List<ResourceResponse<FeedNodeResponse>>> {

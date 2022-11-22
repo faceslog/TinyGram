@@ -1,12 +1,12 @@
 package tinygram.api;
 
+import tinygram.api.util.EntityResponse;
 import tinygram.datastore.FollowEntity;
 import tinygram.datastore.FollowEntityManager;
 import tinygram.datastore.UserEntity;
+import tinygram.datastore.util.TransactionContext;
 
 class UserResponse extends EntityResponse<UserEntity> {
-
-    private static final FollowEntityManager followManager = FollowEntityManager.get();
 
     public final String name;
     public final String image;
@@ -27,6 +27,8 @@ class UserResponse extends EntityResponse<UserEntity> {
         postcount = user.getPostCount();
 
         if (resource.hasCurrentUser()) {
+            final FollowEntityManager followManager = FollowEntityManager.get(TransactionContext.getCurrent());
+
             final UserEntity currentUser = resource.getCurrentUser();
             final FollowEntity follow = followManager.find(currentUser, user);
     

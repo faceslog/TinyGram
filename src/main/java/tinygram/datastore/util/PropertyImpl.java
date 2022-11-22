@@ -1,4 +1,4 @@
-package tinygram.datastore;
+package tinygram.datastore.util;
 
 class PropertyImpl<T> implements Property<T> {
 

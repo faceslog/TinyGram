@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
@@ -16,28 +14,37 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
+import tinygram.datastore.util.TransactionContext;
 import tinygram.util.IteratorMapper;
 
 class FollowEntityManagerImpl implements FollowEntityManager {
 
-    private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    private final TransactionContext context;
+
+    public FollowEntityManagerImpl(TransactionContext context) {
+        this.context = context;
+    }
 
     @Override
     public FollowEntity register(UserEntity source, UserEntity target) {
-        return new FollowEntityImpl(source, target);
+        final FeedNodeEntityManager feedManager = FeedNodeEntityManager.get(context);
+        final PostEntityManager postManager = PostEntityManager.get(context);
+
+        final FollowEntityImpl follow = new FollowEntityImpl(source, target);
+
+        // Add the last target user post to the source user feed.
+        final PostEntity latestPost = postManager.findLatest(target);
+        if (latestPost != null) {
+            final FeedNodeEntity feedNode = feedManager.register(source, latestPost);
+            follow.addRelatedEntity(feedNode);
+        }
+
+        return follow;
     }
 
     @Override
     public FollowEntity get(Key key) throws EntityNotFoundException {
-        return new FollowEntityImpl(datastore.get(key));
-    }
-
-    private FollowEntity unsafeGet(Key key) {
-        try {
-            return get(key);
-        } catch (final EntityNotFoundException e) {
-            throw new IllegalStateException(e);
-        }
+        return new FollowEntityImpl(context.get(key));
     }
 
     @Override
@@ -49,7 +56,7 @@ class FollowEntityManagerImpl implements FollowEntityManager {
         final Filter filter = new CompositeFilter(CompositeFilterOperator.AND, subfilters);
         final Query query = new Query(FollowEntity.KIND).setFilter(filter);
 
-        final Entity raw = datastore.prepare(query).asSingleEntity();
+        final Entity raw = context.find(query);
         return raw == null ? null : new FollowEntityImpl(raw);
     }
 
@@ -58,8 +65,8 @@ class FollowEntityManagerImpl implements FollowEntityManager {
         final Filter filter = new FilterPredicate(FollowEntity.PROPERTY_SOURCE.getName(), FilterOperator.EQUAL, userKey);
         final Query query = new Query(FollowEntity.KIND).setFilter(filter);
 
-        final Iterator<Entity> iterator = datastore.prepare(query).asIterator();
-        return new IteratorMapper<>(iterator, raw -> unsafeGet(raw.getKey()));
+        final Iterator<Entity> iterator = context.findAll(query);
+        return new IteratorMapper<>(iterator, FollowEntityImpl::new);
     }
 
     @Override
@@ -67,7 +74,7 @@ class FollowEntityManagerImpl implements FollowEntityManager {
         final Filter filter = new FilterPredicate(FollowEntity.PROPERTY_TARGET.getName(), FilterOperator.EQUAL, userKey);
         final Query query = new Query(FollowEntity.KIND).setFilter(filter);
 
-        final Iterator<Entity> iterator = datastore.prepare(query).asIterator();
-        return new IteratorMapper<>(iterator, raw -> unsafeGet(raw.getKey()));
+        final Iterator<Entity> iterator = context.findAll(query);
+        return new IteratorMapper<>(iterator, FollowEntityImpl::new);
     }
 }

@@ -4,10 +4,13 @@ import java.util.Iterator;
 
 import com.google.appengine.api.datastore.Key;
 
+import tinygram.datastore.util.TransactionContext;
+import tinygram.datastore.util.TypedEntityManager;
+
 public interface FollowEntityManager extends TypedEntityManager<FollowEntity> {
 
-    static FollowEntityManager get() {
-        return new FollowEntityManagerImpl();
+    static FollowEntityManager get(TransactionContext context) {
+        return new FollowEntityManagerImpl(context);
     }
 
     FollowEntity register(UserEntity source, UserEntity target);

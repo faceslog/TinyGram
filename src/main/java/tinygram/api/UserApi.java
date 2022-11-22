@@ -13,19 +13,20 @@ import com.google.appengine.api.datastore.KeyFactory;
 
 import tinygram.datastore.UserEntity;
 import tinygram.datastore.UserEntityManager;
-import tinygram.datastore.TransactionManager;
+import tinygram.datastore.util.TransactionContext;
+import tinygram.datastore.util.TransactionManager;
 
 @ApiReference(InstApi.class)
 public class UserApi {
 
     private static final Logger logger = Logger.getLogger(UserApi.class.getName());
-    private static final TransactionManager transactionManager = TransactionManager.get();
-    private static final UserEntityManager userManager = UserEntityManager.get();
 
-    public static UserEntity getCurrentUser(User user) throws UnauthorizedException {
+    public static UserEntity getCurrentUser(TransactionContext context, User user) throws UnauthorizedException {
         if (user == null) {
             throw new IllegalArgumentException("Missing user credentials.");
         }
+
+        final UserEntityManager userManager = UserEntityManager.get(context);
 
         logger.info("Retrieving user data...");
         final UserEntity userEntity = userManager.find(user);
@@ -47,6 +48,10 @@ public class UserApi {
             throw new IllegalArgumentException("Missing user credentials.");
         }
 
+        final TransactionManager transactionManager = TransactionManager.begin();
+        final TransactionContext context = transactionManager.getContext();
+        final UserEntityManager userManager = UserEntityManager.get(context);
+
         logger.info("Registering user...");
         UserEntity userEntity = userManager.find(user);
 
@@ -55,9 +60,11 @@ public class UserApi {
         } else {
             userEntity = userManager.register(user, "", "");
             userUpdater.update(userEntity);
-            transactionManager.persist(userEntity);
+            userEntity.persistUsing(context);
             logger.info("User successfully registered.");
         }
+
+        transactionManager.commit();
 
         return new UserResource(userEntity);
     }
@@ -67,11 +74,17 @@ public class UserApi {
         path       = UserApiSchema.RELATIVE_PATH + UserApiSchema.KEY_ARGUMENT_SUFFIX,
         httpMethod = HttpMethod.GET)
     public UserResource getUser(User user, @Named(UserApiSchema.KEY_ARGUMENT_NAME) String targetUserKey) throws EntityNotFoundException, UnauthorizedException {
-        final UserEntity currentUser = getCurrentUser(user);
+        final TransactionManager transactionManager = TransactionManager.beginReadOnly();
+        final TransactionContext context = transactionManager.getContext();
+        final UserEntityManager userManager = UserEntityManager.get(context);
+
+        final UserEntity currentUser = getCurrentUser(context, user);
 
         logger.info("Retrieving user data...");
         final UserEntity userEntity = userManager.get(KeyFactory.stringToKey(targetUserKey));
         logger.info("User data successfully retrieved.");
+
+        transactionManager.commit();
 
         return new UserResource(currentUser, userEntity);
     }
@@ -81,17 +94,23 @@ public class UserApi {
         path       = UserApiSchema.RELATIVE_PATH + UserApiSchema.KEY_ARGUMENT_SUFFIX,
         httpMethod = HttpMethod.PUT)
     public UserResource putUser(User user, @Named(UserApiSchema.KEY_ARGUMENT_NAME) String userKey, LoggedUserUpdater userUpdater) throws EntityNotFoundException, UnauthorizedException {
-        final UserEntity currentUser = getCurrentUser(user);
+        final TransactionManager transactionManager = TransactionManager.begin();
+        final TransactionContext context = transactionManager.getContext();
+        final UserEntityManager userManager = UserEntityManager.get(context);
+
+        final UserEntity currentUser = getCurrentUser(context, user);
 
         logger.info("Retrieving target user data...");
         final UserEntity userEntity = userManager.get(KeyFactory.stringToKey(userKey));
         logger.info("Target user data successfully retrieved.");
 
         logger.info("Updating target user data...");
-        userUpdater.update(currentUser, userEntity);
-        transactionManager.persist(userEntity);
+        userUpdater.update(context, currentUser, userEntity);
+        userEntity.persistUsing(context);
         logger.info("Target user data successfully updated.");
 
-        return new UserResource(getCurrentUser(user), userEntity);
+        transactionManager.commit();
+
+        return new UserResource(currentUser, userEntity);
     }
 }

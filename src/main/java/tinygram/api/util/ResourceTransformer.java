@@ -1,4 +1,4 @@
-package tinygram.api;
+package tinygram.api.util;
 
 import com.google.api.server.spi.config.Transformer;
 

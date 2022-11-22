@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
@@ -16,11 +14,16 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
+import tinygram.datastore.util.TransactionContext;
 import tinygram.util.IteratorMapper;
 
 class LikeEntityManagerImpl implements LikeEntityManager {
 
-    private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    private final TransactionContext context;
+
+    public LikeEntityManagerImpl(TransactionContext context) {
+        this.context = context;
+    }
 
     @Override
     public LikeEntity register(UserEntity user, PostEntity post) {
@@ -29,15 +32,7 @@ class LikeEntityManagerImpl implements LikeEntityManager {
 
     @Override
     public LikeEntity get(Key key) throws EntityNotFoundException {
-        return new LikeEntityImpl(datastore.get(key));
-    }
-
-    private LikeEntity unsafeGet(Key key) {
-        try {
-            return get(key);
-        } catch (final EntityNotFoundException e) {
-            throw new IllegalStateException(e);
-        }
+        return new LikeEntityImpl(context.get(key));
     }
 
     @Override
@@ -49,7 +44,7 @@ class LikeEntityManagerImpl implements LikeEntityManager {
         final Filter filter = new CompositeFilter(CompositeFilterOperator.AND, subfilters);
         final Query query = new Query(LikeEntity.KIND).setFilter(filter);
 
-        final Entity raw = datastore.prepare(query).asSingleEntity();
+        final Entity raw = context.find(query);
         return raw == null ? null : new LikeEntityImpl(raw);
     }
 
@@ -58,8 +53,8 @@ class LikeEntityManagerImpl implements LikeEntityManager {
         final Filter filter = new FilterPredicate(LikeEntity.PROPERTY_USER.getName(), FilterOperator.EQUAL, userKey);
         final Query query = new Query(LikeEntity.KIND).setFilter(filter);
 
-        final Iterator<Entity> iterator = datastore.prepare(query).asIterator();
-        return new IteratorMapper<>(iterator, raw -> unsafeGet(raw.getKey()));
+        final Iterator<Entity> iterator = context.findAll(query);
+        return new IteratorMapper<>(iterator, LikeEntityImpl::new);
     }
 
     @Override
@@ -67,7 +62,7 @@ class LikeEntityManagerImpl implements LikeEntityManager {
         final Filter filter = new FilterPredicate(LikeEntity.PROPERTY_POST.getName(), FilterOperator.EQUAL, postKey);
         final Query query = new Query(LikeEntity.KIND).setFilter(filter);
 
-        final Iterator<Entity> iterator = datastore.prepare(query).asIterator();
-        return new IteratorMapper<>(iterator, raw -> unsafeGet(raw.getKey()));
+        final Iterator<Entity> iterator = context.findAll(query);
+        return new IteratorMapper<>(iterator, LikeEntityImpl::new);
     }
 }

@@ -2,6 +2,9 @@ package tinygram.datastore;
 
 import com.google.appengine.api.datastore.Key;
 
+import tinygram.datastore.util.Property;
+import tinygram.datastore.util.TypedEntity;
+
 public interface LikeEntity extends TypedEntity {
 
     static final String KIND = "Like";

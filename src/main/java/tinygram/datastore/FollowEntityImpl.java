@@ -4,14 +4,13 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 
+import tinygram.datastore.util.TransactionContext;
+import tinygram.datastore.util.TypedEntityImpl;
+
 class FollowEntityImpl extends TypedEntityImpl implements FollowEntity {
 
-    private static final UserEntityManager userManager = UserEntityManager.get();
-    private static final FeedNodeEntityManager feedManager = FeedNodeEntityManager.get();
-    private static final PostEntityManager postManager = PostEntityManager.get();
-
     public FollowEntityImpl(UserEntity source, UserEntity target) {
-        super(source.getKey().getName() + target.getKey().getName());
+        super(KIND, source.getKey().getName() + target.getKey().getName());
 
         if (source.equals(target)) {
             throw new IllegalArgumentException("Trying to follow themselves.");
@@ -25,17 +24,10 @@ class FollowEntityImpl extends TypedEntityImpl implements FollowEntity {
 
         target.incrementFollowerCount();
         addRelatedEntity(target);
-
-        final PostEntity latestPost = postManager.findLatest(target);
-
-        if (latestPost != null) {
-            final FeedNodeEntity feedNode = feedManager.register(source, latestPost);
-            addRelatedEntity(feedNode);
-        }
     }
 
     public FollowEntityImpl(Entity raw) {
-        super(raw);
+        super(KIND, raw);
     }
 
     @Override
@@ -49,19 +41,21 @@ class FollowEntityImpl extends TypedEntityImpl implements FollowEntity {
     }
 
     @Override
-    public void forgetUsing(Forgetter forgetter) {
+    public void forgetUsing(TransactionContext context) {
+        final UserEntityManager userManager = UserEntityManager.get(context);
+
         try {
             final UserEntity source = userManager.get(getSource());
             source.decrementFollowingCount();
-            source.persistUsing(forgetter);
+            source.persistUsing(context);
 
             final UserEntity target = userManager.get(getTarget());
             target.decrementFollowerCount();
-            target.persistUsing(forgetter);
+            target.persistUsing(context);
         } catch (final EntityNotFoundException e) {
             throw new IllegalStateException(e);
         }
 
-        super.forgetUsing(forgetter);
+        super.forgetUsing(context);
     }
 }

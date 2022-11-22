@@ -1,4 +1,4 @@
-package tinygram.api;
+package tinygram.api.util;
 
 import java.util.HashMap;
 import java.util.Map;

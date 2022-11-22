@@ -1,24 +1,23 @@
 package tinygram.api;
 
 import tinygram.datastore.FollowEntityManager;
-import tinygram.datastore.TransactionManager;
 import tinygram.datastore.UserEntity;
+import tinygram.datastore.util.TransactionContext;
 
 public class LoggedUserUpdater extends UserUpdater {
 
-    private static final TransactionManager transactionManager = TransactionManager.get();
-    private static final FollowEntityManager followManager = FollowEntityManager.get();
-
     public Boolean followed;
 
-    public void update(UserEntity currentUser, UserEntity user) {
+    public void update(TransactionContext context, UserEntity currentUser, UserEntity user) {
         super.update(user);
 
         if (followed != null) {
+            final FollowEntityManager followManager = FollowEntityManager.get(context);
+
             if (followed) {
-                transactionManager.persist(followManager.register(currentUser, user));
+                followManager.register(currentUser, user).persistUsing(context);
             } else {
-                transactionManager.forget(followManager.find(currentUser, user));
+                followManager.find(currentUser, user).forgetUsing(context);
             }
         }
     }

@@ -4,10 +4,13 @@ import java.util.Iterator;
 
 import com.google.appengine.api.datastore.Key;
 
+import tinygram.datastore.util.TransactionContext;
+import tinygram.datastore.util.TypedEntityManager;
+
 public interface FeedNodeEntityManager extends TypedEntityManager<FeedNodeEntity> {
 
-    static FeedNodeEntityManager get() {
-        return new FeedNodeEntityManagerImpl();
+    static FeedNodeEntityManager get(TransactionContext context) {
+        return new FeedNodeEntityManagerImpl(context);
     }
 
     default FeedNodeEntity register(UserEntity user, PostEntity post) {

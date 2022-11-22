@@ -1,4 +1,4 @@
-package tinygram.datastore;
+package tinygram.datastore.util;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -7,25 +7,30 @@ import java.util.Set;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
-abstract class TypedEntityImpl implements TypedEntity, TypedEntityInternal {
+public abstract class TypedEntityImpl implements TypedEntity, TypedEntityInternal {
 
     private final Entity raw;
     private Set<TypedEntity> relatedEntities;
 
-    public TypedEntityImpl() {
-        raw = new Entity(getKind());
+    public TypedEntityImpl(String kind) {
+        raw = new Entity(kind);
         relatedEntities = new HashSet<>();
     }
 
-    public TypedEntityImpl(String keyName) {
-        raw = new Entity(getKind(), keyName);
+    public TypedEntityImpl(String kind, String keyName) {
+        raw = new Entity(kind, keyName);
         relatedEntities = new HashSet<>();
     }
 
-    public TypedEntityImpl(Entity raw) {
+    public TypedEntityImpl(String kind, Entity raw) {
         this.raw = Objects.requireNonNull(raw);
         KindException.ensure(getKind(), raw);
         relatedEntities = new HashSet<>();
+    }
+
+    @Override
+    public String getKind() {
+        return raw.getKind();
     }
 
     @Override
@@ -53,22 +58,21 @@ abstract class TypedEntityImpl implements TypedEntity, TypedEntityInternal {
         return relatedEntities.add(entity);
     }
 
-    private void persistRelatedEntities(Persister persister) {
+    private void persistRelatedEntities(TransactionContext context) {
         final Set<TypedEntity> toPersist = relatedEntities;
         relatedEntities = new HashSet<>();
-        toPersist.forEach(entity -> entity.persistUsing(persister));
+        toPersist.forEach(entity -> entity.persistUsing(context));
     }
 
     @Override
-    public void persistUsing(Persister persister) {
-        persister.persist(raw);
-        persistRelatedEntities(persister);
+    public void persistUsing(TransactionContext context) {
+        context.persist(raw);
+        persistRelatedEntities(context);
     }
 
     @Override
-    public void forgetUsing(Forgetter forgetter) {
-        // persistRelatedEntities(forgetter);
-        forgetter.forget(raw);
+    public void forgetUsing(TransactionContext context) {
+        context.forget(raw);
     }
 
     @Override

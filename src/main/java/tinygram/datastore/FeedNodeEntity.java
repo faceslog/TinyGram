@@ -4,6 +4,9 @@ import java.util.Date;
 
 import com.google.appengine.api.datastore.Key;
 
+import tinygram.datastore.util.Property;
+import tinygram.datastore.util.TypedEntity;
+
 public interface FeedNodeEntity extends TypedEntity {
 
     static final String KIND = "FeedNode";

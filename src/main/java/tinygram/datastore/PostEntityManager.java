@@ -4,10 +4,13 @@ import java.util.Iterator;
 
 import com.google.appengine.api.datastore.Key;
 
+import tinygram.datastore.util.TransactionContext;
+import tinygram.datastore.util.TypedEntityManager;
+
 public interface PostEntityManager extends TypedEntityManager<PostEntity> {
 
-    static PostEntityManager get() {
-        return new PostEntityManagerImpl();
+    static PostEntityManager get(TransactionContext context) {
+        return new PostEntityManagerImpl(context);
     }
 
     PostEntity register(UserEntity user, String image, String description);

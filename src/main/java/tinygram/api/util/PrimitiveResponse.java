@@ -1,4 +1,4 @@
-package tinygram.api;
+package tinygram.api.util;
 
 public class PrimitiveResponse {
     public static class String {

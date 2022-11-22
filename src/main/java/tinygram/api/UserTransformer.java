@@ -1,5 +1,7 @@
 package tinygram.api;
 
+import tinygram.api.util.ResourceResponse;
+import tinygram.api.util.ResourceTransformer;
 import tinygram.datastore.UserEntity;
 
 public class UserTransformer implements ResourceTransformer<UserResource, UserResponse> {

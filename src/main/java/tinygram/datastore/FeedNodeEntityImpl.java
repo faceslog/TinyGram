@@ -5,6 +5,8 @@ import java.util.Date;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
+import tinygram.datastore.util.TypedEntityImpl;
+
 class FeedNodeEntityImpl extends TypedEntityImpl implements FeedNodeEntity {
 
     public FeedNodeEntityImpl(UserEntity user, PostEntity post) {
@@ -12,7 +14,7 @@ class FeedNodeEntityImpl extends TypedEntityImpl implements FeedNodeEntity {
     }
 
     public FeedNodeEntityImpl(Key userKey, PostEntity post) {
-        super(post.getKey().getName() + userKey.getName());
+        super(KIND, post.getKey().getName() + userKey.getName());
 
         setProperty(PROPERTY_USER, userKey);
         setProperty(PROPERTY_POST, post.getKey());
@@ -20,7 +22,7 @@ class FeedNodeEntityImpl extends TypedEntityImpl implements FeedNodeEntity {
     }
 
     public FeedNodeEntityImpl(Entity raw) {
-        super(raw);
+        super(KIND, raw);
     }
 
     @Override

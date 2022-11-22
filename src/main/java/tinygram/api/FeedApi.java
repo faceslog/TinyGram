@@ -13,12 +13,13 @@ import com.google.api.server.spi.config.Named;
 import tinygram.datastore.Feed;
 import tinygram.datastore.FeedNodeEntityManager;
 import tinygram.datastore.UserEntity;
+import tinygram.datastore.util.TransactionContext;
+import tinygram.datastore.util.TransactionManager;
 
 @ApiReference(InstApi.class)
 public class FeedApi {
 
     private static final Logger logger = Logger.getLogger(PostApi.class.getName());
-    private static final FeedNodeEntityManager feedManager = FeedNodeEntityManager.get();
 
     @ApiMethod(
         name       = FeedApiSchema.RESOURCE_NAME + ".get.global",
@@ -33,9 +34,15 @@ public class FeedApi {
         path       = FeedApiSchema.RELATIVE_GLOBAL_PATH + FeedApiSchema.PAGE_ARGUMENT_SUFFIX,
         httpMethod = HttpMethod.GET)
     public FeedResource globalPagedFeed(@Named(FeedApiSchema.PAGE_ARGUMENT_NAME) String page) {
+        final TransactionManager transactionManager = TransactionManager.beginReadOnly();
+        final TransactionContext context = transactionManager.getContext();
+        final FeedNodeEntityManager feedManager = FeedNodeEntityManager.get(context);
+
         logger.info("Retrieving feed...");
         final Feed feed = feedManager.findPaged(page);
         logger.info("Feed successfully retrieved.");
+
+        transactionManager.commit();
 
         return new FeedResource(feed);
     }
@@ -53,11 +60,17 @@ public class FeedApi {
         path       = FeedApiSchema.RELATIVE_FOLLOWED_PATH + FeedApiSchema.PAGE_ARGUMENT_SUFFIX,
         httpMethod = HttpMethod.GET)
     public FeedResource followedPagedFeed(User user, @Named(FeedApiSchema.PAGE_ARGUMENT_NAME) String page) throws UnauthorizedException {
-        final UserEntity currentUser = UserApi.getCurrentUser(user);
+        final TransactionManager transactionManager = TransactionManager.beginReadOnly();
+        final TransactionContext context = transactionManager.getContext();
+        final FeedNodeEntityManager feedManager = FeedNodeEntityManager.get(context);
+
+        final UserEntity currentUser = UserApi.getCurrentUser(context, user);
 
         logger.info("Retrieving user feed...");
         final Feed feed = feedManager.findPaged(currentUser.getKey(), page);
         logger.info("User feed successfully retrieved.");
+
+        transactionManager.commit();
 
         return new FeedResource(feed);
     }
@@ -75,9 +88,15 @@ public class FeedApi {
         path       = FeedApiSchema.RELATIVE_FROM_PATH + UserApiSchema.KEY_ARGUMENT_SUFFIX + FeedApiSchema.PAGE_ARGUMENT_SUFFIX,
         httpMethod = HttpMethod.GET)
     public FeedResource fromPagedFeed(@Named(UserApiSchema.KEY_ARGUMENT_NAME) String userKey, @Named(FeedApiSchema.PAGE_ARGUMENT_NAME) String page) {
+        final TransactionManager transactionManager = TransactionManager.beginReadOnly();
+        final TransactionContext context = transactionManager.getContext();
+        final FeedNodeEntityManager feedManager = FeedNodeEntityManager.get(context);
+
         logger.info("Retrieving user posts...");
         final Feed feed = feedManager.findPagedFrom(KeyFactory.stringToKey(userKey), page);
         logger.info("User posts successfully retrieved.");
+
+        transactionManager.commit();
 
         return new FeedResource(feed);
     }
