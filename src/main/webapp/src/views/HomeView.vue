@@ -67,8 +67,7 @@ export default {
         this.postsList = this.postsList.filter((s => a => !s.has(a.postId) && s.add(a.postId))(new Set));
 
       } catch(err) {
-        console.log(err);
-       // this.$router.push("/not-found");
+        this.$router.push("/login");
       }
 
       this.isLoadingFeed = false;
