@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -71,6 +72,23 @@ class TransactionContextImpl implements TransactionContextInternal {
         }
 
         return putIfMissing(entity);
+    }
+
+    @Override
+    public Iterator<Entity> findAll(String kind) {
+        final Query query = new Query(kind);
+
+        final Iterator<Entity> iterator = datastoreService.prepare(query).asIterator();
+
+        IteratorUtils.map(iterator, this::putIfMissing);
+
+        final Collection<Entity> entities = new LinkedList<>();
+        entitiesToPersist.forEach(entity -> {
+            if (entity.getKey().getKind().equals(kind))
+                entities.add(entity);
+        });
+
+        return IteratorUtils.of(entities.iterator(), iterator);
     }
 
     @Override

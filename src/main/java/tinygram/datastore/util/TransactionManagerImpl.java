@@ -9,6 +9,9 @@ import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
 import com.google.appengine.api.datastore.TransactionOptions.Mode;
 
+/**
+ * An implementation of the {@TransactionManager} interface.
+ */
 class TransactionManagerImpl implements TransactionManager {
 
     private static final Logger logger = Logger.getLogger(TransactionContextImpl.class.getName());
@@ -16,10 +19,21 @@ class TransactionManagerImpl implements TransactionManager {
 
     private static TransactionManager current;
 
+    /**
+     * Gets the currently active transaction.
+     *
+     * @return The transaction interface if a transaction has already been started, {@code null}
+     *         otherwise.
+     */
     public static TransactionManager getCurrent() {
         return TransactionManagerImpl.current;
     }
 
+    /**
+     * Sets the currently active transaction.
+     *
+     * @param transactionManager The transaction interface.
+     */
     public static void setCurrent(TransactionManager transactionManager) {
         TransactionManagerImpl.current = transactionManager;
     }
@@ -27,6 +41,11 @@ class TransactionManagerImpl implements TransactionManager {
     private final Transaction transaction;
     private final TransactionContextInternal context;
 
+    /**
+     * Creates a transaction interface, starting a new transaction.
+     *
+     * @param readOnly Whether the transaction is read-only or not.
+     */
     public TransactionManagerImpl(boolean readOnly) {
         final TransactionOptions transactionOptions = TransactionOptions.Builder.withDefaults();
         if (readOnly) {

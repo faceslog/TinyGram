@@ -12,7 +12,7 @@ import java.util.function.Function;
 class IteratorMapper<T, U> implements Iterator<U> {
 
     private final Iterator<T> iterator;
-    private final Function<? super T, ? extends U> mapper;
+    private final Function<T, U> mapper;
 
     /**
      * Creates an iterator functor.
@@ -20,7 +20,7 @@ class IteratorMapper<T, U> implements Iterator<U> {
      * @param iterator The iterator to extract values from.
      * @param mapper   The function to convert extracted values.
      */
-    public IteratorMapper(Iterator<T> iterator, Function<? super T, ? extends U> mapper) {
+    public IteratorMapper(Iterator<T> iterator, Function<T, U> mapper) {
         this.iterator = iterator;
         this.mapper = mapper;
     }

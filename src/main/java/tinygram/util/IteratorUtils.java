@@ -58,7 +58,7 @@ public final class IteratorUtils {
      * @return An iterator extracting values from <b>iterator</b>, then converting these using
      *         <b>mapper</b>.
      */
-    public static <T, U> Iterator<U> map(Iterator<T> iterator, Function<? super T, ? extends U> mapper) {
+    public static <T, U> Iterator<U> map(Iterator<T> iterator, Function<T, U> mapper) {
         return new IteratorMapper<>(iterator, mapper);
     }
 

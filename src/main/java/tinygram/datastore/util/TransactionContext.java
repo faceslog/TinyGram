@@ -113,8 +113,19 @@ public interface TransactionContext {
      * @param query The entity query.
      *
      * @return An entity matching <b>query</b> if it exists in the datastore, {@code null} otherwise.
+     *
+     * @deprecated
      */
     Entity find(Query query);
+
+    /**
+     * Finds all entities in the datastore of a specific kind.
+     *
+     * @param kind The entity kind.
+     *
+     * @return An iterator of all entities of the given kind.
+     */
+    Iterator<Entity> findAll(String kind);
 
     /**
      * Fins all entities in the datastore matching a specific query.
@@ -124,6 +135,8 @@ public interface TransactionContext {
      * @param query The entity query.
      *
      * @return An iterator of all entities matching <b>query</b>.
+     *
+     * @deprecated
      */
     Iterator<Entity> findAll(Query query);
 

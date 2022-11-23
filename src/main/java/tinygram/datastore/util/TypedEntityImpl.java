@@ -7,21 +7,43 @@ import java.util.Set;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
-public abstract class TypedEntityImpl implements TypedEntity, TypedEntityInternal {
+/**
+ * An basic implementation of the {@TypedEntity} interface, which is intended to be specialized for
+ * any entity kind, providing operations by using {@TypedEntityInternal}.
+ */
+public abstract class TypedEntityImpl implements TypedEntityInternal {
 
     private final Entity raw;
     private Set<TypedEntity> relatedEntities;
 
+    /**
+     * Creates a new entity, not already added it to the datastore.
+     *
+     * @param kind The entity kind.
+     */
     public TypedEntityImpl(String kind) {
         raw = new Entity(kind);
         relatedEntities = new HashSet<>();
     }
 
+    /**
+     * Creates a new entity, not already added it to the datastore.
+     *
+     * @param kind    The entity kind.
+     * @param keyName The entity name, mandatory when trying to fetch the entity within the same
+     *                transaction.
+     */
     public TypedEntityImpl(String kind, String keyName) {
         raw = new Entity(kind, keyName);
         relatedEntities = new HashSet<>();
     }
 
+    /**
+     * Encapsulates an already existing entity.
+     *
+     * @param kind The entity kind.
+     * @param raw  The raw entity.
+     */
     public TypedEntityImpl(String kind, Entity raw) {
         this.raw = Objects.requireNonNull(raw);
         KindException.ensure(getKind(), raw);
@@ -58,6 +80,11 @@ public abstract class TypedEntityImpl implements TypedEntity, TypedEntityInterna
         return relatedEntities.add(entity);
     }
 
+    /**
+     * Adds all related entities to the datastore or updates these within a given transaction.
+     *
+     * @param context The transaction context.
+     */
     private void persistRelatedEntities(TransactionContext context) {
         final Set<TypedEntity> toPersist = relatedEntities;
         relatedEntities = new HashSet<>();
