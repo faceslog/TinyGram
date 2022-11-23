@@ -15,6 +15,14 @@ import com.google.appengine.api.datastore.Query;
 
 import tinygram.util.IteratorUtils;
 
+/**
+ * An implementation of the {@link TransactionContext} interface.
+ *
+ * Stores entities in a cache to prevent using multiple {@link Entity} objects within the same
+ * transaction.
+ * Only adds and removes entities from the datastore at the end of the transaction
+ * to reduce resource locking.
+ */
 class TransactionContextImpl implements TransactionContextInternal {
 
     private static final DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
@@ -23,6 +31,9 @@ class TransactionContextImpl implements TransactionContextInternal {
     private final Collection<Entity> entitiesToPersist;
     private final Collection<Key> keysToForget;
 
+    /**
+     * Creates an empty transaction context.
+     */
     public TransactionContextImpl() {
         cache = new HashMap<>();
         entitiesToPersist = new HashSet<>();
@@ -74,14 +85,16 @@ class TransactionContextImpl implements TransactionContextInternal {
         final Entity storedEntity = cache.get(key);
 
         if (storedEntity == null && cache.containsKey(key)) {
-            throw new IllegalArgumentException("Trying to persist an entity, which has already been forgetted in the " +
-                    "same transaction. If this is intentional, consider persiting it in another transaction, or " +
-                    "prevent forgetting it earlier in this transaction.");
+            throw new IllegalArgumentException("Trying to persist an entity, which has already " +
+                    "been forgetted in the same transaction. If this is intentional, consider " +
+                    "persiting it in another transaction, or prevent forgetting it earlier in " +
+                    "this transaction.");
         }
 
         if (storedEntity != null && storedEntity != entity) {
-            throw new IllegalArgumentException("Trying to persist an entity, while an unrelated one has already been " +
-                    "persisted. Consider getting it from the transaction context instead of modifying another one.");
+            throw new IllegalArgumentException("Trying to persist an entity, while an unrelated " +
+                    "one has already been persisted. Consider getting it from the transaction " +
+                    "context instead of modifying another one.");
         }
 
         cache.putIfAbsent(key, entity);
@@ -95,8 +108,8 @@ class TransactionContextImpl implements TransactionContextInternal {
         Entity storedEntity = cache.get(key);
 
         if (storedEntity == null && cache.containsKey(key)) {
-            throw new IllegalArgumentException("Trying to forget an entity, which has already been forgetted in this " +
-                    "transaction.");
+            throw new IllegalArgumentException("Trying to forget an entity, which has already " +
+                    "been forgetted in this transaction.");
         }
 
         if (storedEntity == null) {
@@ -104,8 +117,8 @@ class TransactionContextImpl implements TransactionContextInternal {
         }
 
         if (storedEntity == null) {
-            throw new IllegalArgumentException("Trying to forget an entity, which has not already been persisted or " +
-                    "has been forgetted in a previously commited transaction.");
+            throw new IllegalArgumentException("Trying to forget an entity, which has not already " +
+                    "been persisted or has been forgetted in a previously commited transaction.");
         }
 
         cache.put(key, null);
