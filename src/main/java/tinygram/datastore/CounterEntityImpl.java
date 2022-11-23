@@ -7,7 +7,7 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 
 import tinygram.datastore.util.TransactionContext;
 import tinygram.datastore.util.TypedEntityImpl;
-import tinygram.util.SumConsumer;
+import tinygram.util.FoldSum;
 
 class CounterEntityImpl extends TypedEntityImpl implements CounterEntity {
 
@@ -75,7 +75,7 @@ class CounterEntityImpl extends TypedEntityImpl implements CounterEntity {
 
     @Override
     public long getValue() {
-        final SumConsumer<CounterShardEntity> sum = new SumConsumer<>(CounterShardEntity::getValue);
+        final FoldSum<CounterShardEntity> sum = new FoldSum<>(CounterShardEntity::getValue);
 
         shardManager.findAll().forEachRemaining(sum);
         return sum.getValue();

@@ -12,7 +12,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
 import tinygram.datastore.util.TransactionContext;
-import tinygram.util.IteratorMapper;
+import tinygram.util.IteratorUtils;
 
 class PostEntityManagerImpl implements PostEntityManager {
 
@@ -66,6 +66,6 @@ class PostEntityManagerImpl implements PostEntityManager {
                 .addSort(PostEntity.PROPERTY_DATE.getName(), SortDirection.DESCENDING);
 
         final Iterator<Entity> iterator = context.findAll(query);
-        return new IteratorMapper<>(iterator, PostEntityImpl::new);
+        return IteratorUtils.map(iterator, PostEntityImpl::new);
     }
 }

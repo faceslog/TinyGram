@@ -13,7 +13,7 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
 
-import tinygram.util.IteratorMapper;
+import tinygram.util.IteratorUtils;
 
 class TransactionContextImpl implements TransactionContextInternal {
 
@@ -65,7 +65,7 @@ class TransactionContextImpl implements TransactionContextInternal {
     @Override
     public Iterator<Entity> findAll(Query query) {
         final Iterator<Entity> iterator = datastoreService.prepare(query).asIterator();
-        return new IteratorMapper<>(iterator, this::putIfMissing);
+        return IteratorUtils.map(iterator, this::putIfMissing);
     }
 
     @Override

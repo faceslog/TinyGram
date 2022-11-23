@@ -1,36 +1,44 @@
 package tinygram.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-public class IteratorChain<T> implements Iterator<T> {
+/**
+ * An iterator chain, extracting values from a sequence of iterators.
+ *
+ * @param <T> The iterator value type.
+ */
+class IteratorChain<T> implements Iterator<T> {
 
     private Iterator<? extends T> iterator;
     private final Iterator<? extends Iterator<? extends T>> remainingIterators;
 
-    public static <T> Iterator<T> of(Iterator<? extends T> iterator1, Iterator<? extends T> iterator2) {
-        return new IteratorChain<T>(iterator1, Collections.singleton(iterator2).iterator());
+    /**
+     * Creates an iterator chain.
+     *
+     * @param iterable An iterator sequence, to flatten.
+     */
+    public IteratorChain(Iterable<? extends Iterator<? extends T>> iterable) {
+        this(iterable.iterator());
     }
 
-    public static <T> Iterator<T> of(Iterator<? extends T> iterator1, Iterator<? extends T> iterator2, Iterator<? extends T> iterator3) {
-        final Collection<Iterator<? extends T>> remainingIterators = new ArrayList<>(2);
-        remainingIterators.add(iterator2);
-        remainingIterators.add(iterator3);
-
-        return new IteratorChain<T>(iterator1, remainingIterators.iterator());
-    }
-
-    public IteratorChain(Iterable<? extends Iterator<? extends T>> iterators) {
-        this(iterators.iterator());
-    }
-
+    /**
+     * Creates an iterator chain.
+     *
+     * @param iterators An iterator of iterators to flatten.
+     */
     public IteratorChain(Iterator<? extends Iterator<? extends T>> iterators) {
         this(Collections.emptyIterator(), iterators);
     }
 
-    private IteratorChain(Iterator<? extends T> iterator, Iterator<? extends Iterator<? extends T>> remainingIterators) {
+    /**
+     * Creates an iterator chain.
+     *
+     * @param iterator           The first iterator.
+     * @param remainingIterators The following iterators.
+     */
+    public IteratorChain(Iterator<? extends T> iterator,
+                         Iterator<? extends Iterator<? extends T>> remainingIterators) {
         this.iterator = iterator;
         this.remainingIterators = remainingIterators;
         advance();

@@ -9,7 +9,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 
 import tinygram.datastore.util.TransactionContext;
-import tinygram.util.IteratorMapper;
+import tinygram.util.IteratorUtils;
 
 class CounterShardManagerImpl implements CounterShardManager {
 
@@ -43,6 +43,6 @@ class CounterShardManagerImpl implements CounterShardManager {
         final Query query = new Query(kind);
 
         final Iterator<Entity> iterator = context.findAll(query);
-        return new IteratorMapper<>(iterator, raw -> new CounterShardEntityImpl(counter, raw));
+        return IteratorUtils.map(iterator, raw -> new CounterShardEntityImpl(counter, raw));
     }
 }

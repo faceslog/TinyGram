@@ -18,7 +18,7 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 
 import tinygram.Config;
 import tinygram.datastore.util.TransactionContext;
-import tinygram.util.IteratorMapper;
+import tinygram.util.IteratorUtils;
 
 class FeedNodeEntityManagerImpl implements FeedNodeEntityManager {
 
@@ -47,7 +47,7 @@ class FeedNodeEntityManagerImpl implements FeedNodeEntityManager {
                 .addSort(FeedNodeEntity.PROPERTY_DATE.getName(), SortDirection.DESCENDING);
 
         final Iterator<Entity> iterator = context.findAll(query);
-        return new IteratorMapper<>(iterator, FeedNodeEntityImpl::new);
+        return IteratorUtils.map(iterator, FeedNodeEntityImpl::new);
     }
 
     @Override
@@ -56,7 +56,7 @@ class FeedNodeEntityManagerImpl implements FeedNodeEntityManager {
         final Query query = new Query(FeedNodeEntity.KIND).setFilter(filter);
 
         final Iterator<Entity> iterator = context.findAll(query);
-        return new IteratorMapper<>(iterator, FeedNodeEntityImpl::new);
+        return IteratorUtils.map(iterator, FeedNodeEntityImpl::new);
     }
 
     private FetchOptions getFeedOptions(String page) {

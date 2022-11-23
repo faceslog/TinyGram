@@ -15,7 +15,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 import tinygram.datastore.util.TransactionContext;
-import tinygram.util.IteratorMapper;
+import tinygram.util.IteratorUtils;
 
 class LikeEntityManagerImpl implements LikeEntityManager {
 
@@ -54,7 +54,7 @@ class LikeEntityManagerImpl implements LikeEntityManager {
         final Query query = new Query(LikeEntity.KIND).setFilter(filter);
 
         final Iterator<Entity> iterator = context.findAll(query);
-        return new IteratorMapper<>(iterator, LikeEntityImpl::new);
+        return IteratorUtils.map(iterator, LikeEntityImpl::new);
     }
 
     @Override
@@ -63,6 +63,6 @@ class LikeEntityManagerImpl implements LikeEntityManager {
         final Query query = new Query(LikeEntity.KIND).setFilter(filter);
 
         final Iterator<Entity> iterator = context.findAll(query);
-        return new IteratorMapper<>(iterator, LikeEntityImpl::new);
+        return IteratorUtils.map(iterator, LikeEntityImpl::new);
     }
 }
