@@ -118,12 +118,14 @@ class UserEntityImpl extends TypedEntityImpl implements UserEntity {
     public void forgetUsing(TransactionContext context) {
         final FollowEntityManager followManager = FollowEntityManager.get(context);
         final PostEntityManager postManager = PostEntityManager.get(context);
+        final FeedNodeEntityManager feedManager = FeedNodeEntityManager.get(context);
 
         getFollowerCounter().forgetUsing(context);
 
         followManager.findAllTo(this).forEachRemaining(follow -> follow.forgetUsing(context));
         followManager.findAllFrom(this).forEachRemaining(follow -> follow.forgetUsing(context));
         postManager.findAll(this).forEachRemaining(post -> post.forgetUsing(context));
+        feedManager.findAllOfUser(this).forEachRemaining(node -> node.forgetUsing(context));
 
         super.forgetUsing(context);
     }
