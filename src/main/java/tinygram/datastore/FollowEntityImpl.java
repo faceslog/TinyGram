@@ -7,8 +7,17 @@ import com.google.appengine.api.datastore.Key;
 import tinygram.datastore.util.TransactionContext;
 import tinygram.datastore.util.TypedEntityImpl;
 
+/**
+ * An implementation of the {@link FollowEntity} interface.
+ */
 class FollowEntityImpl extends TypedEntityImpl implements FollowEntity {
 
+    /**
+     * Creates a follow entity, not already added to the datastore.
+     *
+     * @param source The follower entity.
+     * @param target The followed user entity.
+     */
     public FollowEntityImpl(UserEntity source, UserEntity target) {
         super(KIND, source.getKey().getName() + target.getKey().getName());
 
@@ -26,6 +35,11 @@ class FollowEntityImpl extends TypedEntityImpl implements FollowEntity {
         addRelatedEntity(target);
     }
 
+    /**
+     * Encapsulates an already existing follow entity.
+     *
+     * @param raw The raw entity.
+     */
     public FollowEntityImpl(Entity raw) {
         super(KIND, raw);
     }

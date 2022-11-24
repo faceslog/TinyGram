@@ -7,10 +7,20 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import tinygram.datastore.util.TransactionContext;
 import tinygram.datastore.util.TypedEntityImpl;
 
+/**
+ * An implementation of the {@link UserEntity} interface.
+ */
 class UserEntityImpl extends TypedEntityImpl implements UserEntity {
 
     private static final CounterManager followerCounterManager = CounterManager.getOf(COUNTER_FOLLOWER);
 
+    /**
+     * Creates a user entity, not already added to the datastore.
+     *
+     * @param user  The Google user anthentification credentials.
+     * @param name  The user name.
+     * @param image The user profile picture.
+     */
     public UserEntityImpl(User user, String name, String image) {
         super(KIND, user.getId());
 
@@ -24,6 +34,11 @@ class UserEntityImpl extends TypedEntityImpl implements UserEntity {
         addRelatedEntity(followerCounter);
     }
 
+    /**
+     * Encapsulates an already existing user entity.
+     *
+     * @param raw The raw entity.
+     */
     public UserEntityImpl(Entity raw) {
         super(KIND, raw);
     }
@@ -53,6 +68,11 @@ class UserEntityImpl extends TypedEntityImpl implements UserEntity {
         setProperty(PROPERTY_IMAGE, image);
     }
 
+    /**
+     * Gets the counter storing the number of followers.
+     *
+     * @return The counter entity.
+     */
     private CounterEntity getFollowerCounter() {
         try {
             return followerCounterManager.get(getKey().getName());

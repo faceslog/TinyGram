@@ -1,20 +1,26 @@
 package tinygram.datastore.util;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
 /**
- * An basic implementation of the {@TypedEntity} interface, which is intended to be specialized for
- * any entity kind, providing operations by using {@TypedEntityInternal}.
+ * A basic implementation of the {@link TypedEntity} interface, which is intended to be specialized
+ * for any entity kind, providing operations by using {@link TypedEntityInternal}.
  */
 public abstract class TypedEntityImpl implements TypedEntityInternal {
 
+    /**
+     * The raw encapsulated entity.
+     */
     private final Entity raw;
-    private Set<TypedEntity> relatedEntities;
+    /**
+     * The set of entities to add to the datastore or update at the same time as this entity.
+     */
+    private Collection<TypedEntity> relatedEntities;
 
     /**
      * Creates a new entity, not already added it to the datastore.
@@ -27,7 +33,7 @@ public abstract class TypedEntityImpl implements TypedEntityInternal {
     }
 
     /**
-     * Creates a new entity, not already added it to the datastore.
+     * Creates a new entity, not already added to the datastore.
      *
      * @param kind    The entity kind.
      * @param keyName The entity name, mandatory when trying to fetch the entity within the same
@@ -86,7 +92,7 @@ public abstract class TypedEntityImpl implements TypedEntityInternal {
      * @param context The transaction context.
      */
     private void persistRelatedEntities(TransactionContext context) {
-        final Set<TypedEntity> toPersist = relatedEntities;
+        final Collection<TypedEntity> toPersist = relatedEntities;
         relatedEntities = new HashSet<>();
         toPersist.forEach(entity -> entity.persistUsing(context));
     }

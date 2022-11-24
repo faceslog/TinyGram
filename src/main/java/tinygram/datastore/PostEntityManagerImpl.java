@@ -14,10 +14,21 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import tinygram.datastore.util.TransactionContext;
 import tinygram.util.IteratorUtils;
 
+/**
+ * An implementation of the {@link PostEntityManager} interface.
+ */
 class PostEntityManagerImpl implements PostEntityManager {
 
+    /**
+     * The current transaction context.
+     */
     private final TransactionContext context;
 
+    /**
+     * Creates a post entity interface.
+     *
+     * @param context The transaction context.
+     */
     public PostEntityManagerImpl(TransactionContext context) {
         this.context = context;
     }

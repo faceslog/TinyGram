@@ -17,10 +17,21 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import tinygram.datastore.util.TransactionContext;
 import tinygram.util.IteratorUtils;
 
+/**
+ * An implementation of the {@link LikeEntityManager} interface.
+ */
 class LikeEntityManagerImpl implements LikeEntityManager {
 
+    /**
+     * The current transaction context.
+     */
     private final TransactionContext context;
 
+    /**
+     * Creates a like entity interface.
+     *
+     * @param context The transaction context.
+     */
     public LikeEntityManagerImpl(TransactionContext context) {
         this.context = context;
     }

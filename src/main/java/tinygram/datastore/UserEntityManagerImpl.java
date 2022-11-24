@@ -11,10 +11,21 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 import tinygram.datastore.util.TransactionContext;
 
+/**
+ * An implementation of the {@link UserEntityManager} interface.
+ */
 class UserEntityManagerImpl implements UserEntityManager {
 
+    /**
+     * The current transaction context.
+     */
     private final TransactionContext context;
 
+    /**
+     * Creates a user entity interface.
+     *
+     * @param context The transaction context.
+     */
     public UserEntityManagerImpl(TransactionContext context) {
         this.context = context;
     }

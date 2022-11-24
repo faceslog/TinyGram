@@ -9,10 +9,20 @@ import com.google.appengine.api.datastore.Key;
 import tinygram.datastore.util.TransactionContext;
 import tinygram.datastore.util.TypedEntityImpl;
 
+/**
+ * An implementation of the {@link PostEntity} interface.
+ */
 class PostEntityImpl extends TypedEntityImpl implements PostEntity {
 
     private final CounterManager likeCounterManager = CounterManager.getOf(COUNTER_LIKE);
 
+    /**
+     * Creates a post entity, not already added to the datastore.
+     *
+     * @param owner       The post owner entity.
+     * @param image       The post image URL.
+     * @param description The post image description.
+     */
     public PostEntityImpl(UserEntity owner, String image, String description) {
         super(KIND, owner.getKey().getName() + new Date().getTime());
 
@@ -28,6 +38,11 @@ class PostEntityImpl extends TypedEntityImpl implements PostEntity {
         addRelatedEntity(likeCounter);
     }
 
+    /**
+     * Encapsulates an already existing post entity.
+     *
+     * @param raw The raw entity.
+     */
     public PostEntityImpl(Entity raw) {
         super(KIND, raw);
     }
@@ -62,6 +77,11 @@ class PostEntityImpl extends TypedEntityImpl implements PostEntity {
         setProperty(PROPERTY_DESCRIPTION, description);
     }
 
+    /**
+     * Gets the counter storing the number of likes.
+     *
+     * @return The counter entity.
+     */
     private CounterEntity getLikeCounter() {
         try {
             return likeCounterManager.get(getKey().getName());

@@ -7,12 +7,17 @@ import com.google.appengine.api.datastore.Key;
 
 import tinygram.datastore.util.TypedEntityImpl;
 
+/**
+ * An implementation of the {@link FeedNodeEntity} interface.
+ */
 class FeedNodeEntityImpl extends TypedEntityImpl implements FeedNodeEntity {
 
-    public FeedNodeEntityImpl(UserEntity user, PostEntity post) {
-        this(user.getKey(), post);
-    }
-
+    /**
+     * Creates a feed node entity, not already added to the datastore.
+     *
+     * @param userKey The key of the feed user entity.
+     * @param post    The feed post entity.
+     */
     public FeedNodeEntityImpl(Key userKey, PostEntity post) {
         super(KIND, post.getKey().getName() + userKey.getName());
 
@@ -21,6 +26,11 @@ class FeedNodeEntityImpl extends TypedEntityImpl implements FeedNodeEntity {
         setProperty(PROPERTY_DATE, post.getDate());
     }
 
+    /**
+     * Encapsulates an already existing feed node entity.
+     *
+     * @param raw The raw entity.
+     */
     public FeedNodeEntityImpl(Entity raw) {
         super(KIND, raw);
     }

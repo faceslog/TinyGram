@@ -19,7 +19,7 @@ public interface Property<T> {
      * @return The generated property reference.
      */
     static Property<Date> date(String name) {
-        return new PropertyImpl<>(name);
+        return new PropertyImpl<>(name, false);
     }
 
     /**
@@ -30,7 +30,7 @@ public interface Property<T> {
      * @return The generated property reference.
      */
     static Property<Key> key(String name) {
-        return new PropertyImpl<>(name);
+        return new PropertyImpl<>(name, false);
     }
 
     /**
@@ -41,7 +41,7 @@ public interface Property<T> {
      * @return The generated property reference.
      */
     static Property<Long> number(String name) {
-        return new PropertyImpl<>(name);
+        return new PropertyImpl<>(name, false);
     }
 
     /**
@@ -52,7 +52,7 @@ public interface Property<T> {
      * @return The generated property reference.
      */
     static Property<String> string(String name) {
-        return new PropertyImpl<>(name);
+        return new PropertyImpl<>(name, false);
     }
 
     /**

@@ -1,11 +1,12 @@
 package tinygram.util;
 
+import java.util.Objects;
 import java.util.Random;
 
 /**
  * Provides functions to generate random identifiers.
  */
-public class Randomizer {
+public final class Randomizer {
 
     /**
      * The set of all numeric characters.
@@ -32,14 +33,17 @@ public class Randomizer {
 
     /**
      * Generates a random string of fixed length.
-     * 
+     *
      * @param allowedChars The set of characters to generate the string from. The number of
      *                     occurrences of each one increases its weight.
      * @param length       The generated string length.
-     * 
+     *
      * @return A string composed of characters from <b>allowedChars</b>.
      */
     public static String randomize(String allowedChars, int length) {
+        Objects.requireNonNull(allowedChars);
+        Numbers.requireNonNegative(length);
+
         final StringBuilder stringBuilder = new StringBuilder(length);
 
         for (int i = 0; i < length; i++) {

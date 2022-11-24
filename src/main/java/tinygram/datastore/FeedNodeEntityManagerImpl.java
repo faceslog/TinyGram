@@ -1,5 +1,6 @@
 package tinygram.datastore;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 import com.google.appengine.api.datastore.Cursor;
@@ -20,12 +21,23 @@ import tinygram.Config;
 import tinygram.datastore.util.TransactionContext;
 import tinygram.util.IteratorUtils;
 
+/**
+ * An implementation of the {@link FeedNodeEntityManager} interface.
+ */
 class FeedNodeEntityManagerImpl implements FeedNodeEntityManager {
 
     private static final DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
 
+    /**
+     * The current transaction context.
+     */
     private final TransactionContext context;
 
+    /**
+     * Creates a feed node entity interface.
+     *
+     * @param context The transaction context.
+     */
     public FeedNodeEntityManagerImpl(TransactionContext context) {
         this.context = context;
     }
@@ -59,6 +71,13 @@ class FeedNodeEntityManagerImpl implements FeedNodeEntityManager {
         return IteratorUtils.map(iterator, FeedNodeEntityImpl::new);
     }
 
+    /**
+     * Gets the default fetching options to use with a feed request.
+     *
+     * @param page The feed page token.
+     *
+     * @return The default fetching options starting at <b>page</b>.
+     */
     private FetchOptions getFeedOptions(String page) {
         final FetchOptions fetchOptions = FetchOptions.Builder.withLimit(Config.FEED_LIMIT);
 

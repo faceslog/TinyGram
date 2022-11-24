@@ -17,10 +17,21 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import tinygram.datastore.util.TransactionContext;
 import tinygram.util.IteratorUtils;
 
+/**
+ * An implementation of the {@link FollowEntityManager} interface.
+ */
 class FollowEntityManagerImpl implements FollowEntityManager {
 
+    /**
+     * The current transaction context.
+     */
     private final TransactionContext context;
 
+    /**
+     * Creates a follow entity interface.
+     *
+     * @param context The transaction context.
+     */
     public FollowEntityManagerImpl(TransactionContext context) {
         this.context = context;
     }

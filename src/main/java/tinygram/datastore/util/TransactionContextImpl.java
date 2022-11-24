@@ -18,17 +18,28 @@ import tinygram.util.IteratorUtils;
 /**
  * An implementation of the {@link TransactionContext} interface.
  *
- * Stores entities in a cache to prevent using multiple {@link Entity} objects within the same
+ * <p> Stores entities in a cache to prevent using multiple {@link Entity} objects within the same
  * transaction.
- * Only adds and removes entities from the datastore at the end of the transaction
+ *
+ * <p> Only adds and removes entities from the datastore at the end of the transaction
  * to reduce resource locking.
  */
 class TransactionContextImpl implements TransactionContextInternal {
 
     private static final DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
 
+    /**
+     * The entity cache, containing entities fetched from the datastore or added to it within the
+     * transaction.
+     */
     private final Map<Key, Entity> cache;
+    /**
+     * The set of entities to add to the datastore or update at the end of this transaction.
+     */
     private final Collection<Entity> entitiesToPersist;
+    /**
+     * The set of entities to remove from the datastore at the end of this transaction.
+     */
     private final Collection<Key> keysToForget;
 
     /**
@@ -52,6 +63,13 @@ class TransactionContextImpl implements TransactionContextInternal {
         return entity;
     }
 
+    /**
+     * Puts an entity in the cache, and retrieves it if there already is one in the cache.
+     *
+     * @param entity The entity to add to the cache.
+     *
+     * @return The already cached entity, or <b>entity</b> if there was not any.
+     */
     private Entity putIfMissing(Entity entity) {
         final Key key = entity.getKey();
 

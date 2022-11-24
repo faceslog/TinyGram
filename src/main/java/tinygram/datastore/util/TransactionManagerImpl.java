@@ -17,6 +17,9 @@ class TransactionManagerImpl implements TransactionManager {
     private static final Logger logger = Logger.getLogger(TransactionContextImpl.class.getName());
     private static final DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
 
+    /**
+     * The currently active transaction.
+     */
     private static TransactionManager current;
 
     /**
@@ -38,7 +41,13 @@ class TransactionManagerImpl implements TransactionManager {
         TransactionManagerImpl.current = transactionManager;
     }
 
+    /**
+     * The encapsulated Google transaction interface.
+     */
     private final Transaction transaction;
+    /**
+     * The transaction context.
+     */
     private final TransactionContextInternal context;
 
     /**

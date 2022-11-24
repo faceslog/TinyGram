@@ -1,5 +1,7 @@
 package tinygram.datastore.util;
 
+import java.util.Objects;
+
 /**
  * An implementation of the {@link Property} interface.
  *
@@ -7,26 +9,23 @@ package tinygram.datastore.util;
  */
 class PropertyImpl<T> implements Property<T> {
 
-    private final String name;
-    private final boolean indexed;
-
     /**
-     * Creates an unindexed property reference.
-     *
-     * @param name The property name.
+     * The property name.
      */
-    public PropertyImpl(String name) {
-        this(name, false);
-    }
+    private final String name;
+    /**
+     * Whether the property is indexed or not.
+     */
+    private final boolean indexed;
 
     /**
      * Creates a property reference.
      *
      * @param name    The property name.
-     * @param indexed Whether the property is indexed.
+     * @param indexed Whether the property is indexed or not.
      */
     public PropertyImpl(String name, boolean indexed) {
-        this.name = name;
+        this.name = Objects.requireNonNull(name);
         this.indexed = indexed;
     }
 

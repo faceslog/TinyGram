@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.function.Function;
 
 /**
- * An iterator chain, extracting values from a sequence of iterators.
+ * Provides utility iterator builders.
  */
 public final class IteratorUtils {
 
