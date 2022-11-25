@@ -11,93 +11,125 @@ import com.google.api.server.spi.config.Named;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
 
-import tinygram.datastore.BaseUserRepository;
 import tinygram.datastore.UserEntity;
-import tinygram.datastore.UserRepository;
-import tinygram.datastore.Util;
+import tinygram.datastore.UserEntityManager;
+import tinygram.datastore.util.TransactionContext;
+import tinygram.datastore.util.TransactionManager;
 
+/**
+ * The Tinygram user API.
+ */
 @ApiReference(InstApi.class)
 public class UserApi {
 
-    private static final Logger log = Logger.getLogger(UserApi.class.getName());
+    private static final Logger logger = Logger.getLogger(UserApi.class.getName());
 
-    public static UserRepository buildRepository(User user) throws UnauthorizedException {
+    /**
+     * Gets the currently logged user data, ensuring credentials are valid.
+     *
+     * @param context The current transaction context.
+     * @param user    The Google user authentification credentials.
+     *
+     * @return The currently logged user entity.
+     *
+     * @throws UnauthorizedException If the given authentification credentials are invalid, or the
+     *                               user has not already been registered within the datastore.
+     */
+    public static UserEntity getCurrentUser(TransactionContext context, User user)
+                throws UnauthorizedException {
         if (user == null) {
-            throw new IllegalArgumentException("Missing user credentials.");
+            throw new UnauthorizedException("Missing user credentials.");
         }
 
-        final UserRepository userRepository = new BaseUserRepository();
+        final UserEntityManager userManager = UserEntityManager.get(context);
 
-        log.info("Retrieving user data...");
-        final UserEntity userEntity = userRepository.find(user);
+        logger.info("Retrieving user data...");
+        final UserEntity userEntity = userManager.find(user);
 
         if (userEntity == null) {
-            throw new IllegalArgumentException("Unregistered user.");
+            throw new UnauthorizedException("Unregistered user.");
         }
 
-        userRepository.setCurrentUser(userEntity);
-        log.info("User data retrieved.");
-
-        return userRepository;
+        logger.info("User data retrieved.");
+        return userEntity;
     }
 
     @ApiMethod(
         name       = UserApiSchema.RESOURCE_NAME + ".post",
         path       = UserApiSchema.RELATIVE_PATH,
         httpMethod = HttpMethod.POST)
-    public UserEntity postUser(User user, UserUpdater userUpdater) throws UnauthorizedException {
+    public UserResource postUser(User user, UserUpdater userUpdater) throws UnauthorizedException {
         if (user == null) {
-            throw new IllegalArgumentException("Missing user credentials.");
+            throw new UnauthorizedException("Missing user credentials.");
         }
 
-        final UserRepository userRepository = new BaseUserRepository();
+        final TransactionManager transactionManager = TransactionManager.begin();
+        final TransactionContext context = transactionManager.getContext();
+        final UserEntityManager userManager = UserEntityManager.get(context);
 
-        log.info("Registering user...");
-        UserEntity userEntity = userRepository.find(user);
+        logger.info("Registering user...");
+        UserEntity userEntity = userManager.find(user);
 
         if (userEntity != null) {
-            log.info("User already registered: data retrieved.");
-            return userEntity;
+            logger.info("User already registered: data retrieved.");
+        } else {
+            userEntity = userManager.register(user, "", "");
+            userUpdater.update(userEntity);
+            userEntity.persistUsing(context);
+            logger.info("User successfully registered.");
         }
 
-        userEntity = userRepository.register(user, "", "");
-        userUpdater.update(userEntity);
-        Util.withinTransaction(userEntity::persist);
-        log.info("User successfully registered.");
+        transactionManager.commit();
 
-        return userEntity;
+        return new UserResource(userEntity);
     }
 
     @ApiMethod(
         name       = UserApiSchema.RESOURCE_NAME + ".get",
         path       = UserApiSchema.RELATIVE_PATH + UserApiSchema.KEY_ARGUMENT_SUFFIX,
         httpMethod = HttpMethod.GET)
-    public UserEntity getUser(User user, @Named(UserApiSchema.KEY_ARGUMENT_NAME) String targetUserKey) throws EntityNotFoundException, UnauthorizedException {
-        final UserRepository userRepository = buildRepository(user);
+    public UserResource getUser(User user,
+                                @Named(UserApiSchema.KEY_ARGUMENT_NAME) String targetUserKey)
+                throws EntityNotFoundException, UnauthorizedException {
+        final TransactionManager transactionManager = TransactionManager.beginReadOnly();
+        final TransactionContext context = transactionManager.getContext();
+        final UserEntityManager userManager = UserEntityManager.get(context);
 
-        log.info("Retrieving user data...");
-        final UserEntity userEntity = userRepository.get(KeyFactory.stringToKey(targetUserKey));
-        log.info("User data successfully retrieved.");
+        final UserEntity currentUser = getCurrentUser(context, user);
 
-        return userEntity;
+        logger.info("Retrieving user data...");
+        final UserEntity userEntity = userManager.get(KeyFactory.stringToKey(targetUserKey));
+        logger.info("User data successfully retrieved.");
+
+        transactionManager.commit();
+
+        return new UserResource(currentUser, userEntity);
     }
 
     @ApiMethod(
         name       = UserApiSchema.RESOURCE_NAME + ".put",
         path       = UserApiSchema.RELATIVE_PATH + UserApiSchema.KEY_ARGUMENT_SUFFIX,
         httpMethod = HttpMethod.PUT)
-    public UserEntity putUser(User user, @Named(UserApiSchema.KEY_ARGUMENT_NAME) String userKey, UserUpdater userUpdater) throws EntityNotFoundException, UnauthorizedException {
-        final UserRepository userRepository = buildRepository(user);
+    public UserResource putUser(User user, @Named(UserApiSchema.KEY_ARGUMENT_NAME) String userKey,
+                                LoggedUserUpdater userUpdater)
+                throws EntityNotFoundException, UnauthorizedException {
+        final TransactionManager transactionManager = TransactionManager.begin();
+        final TransactionContext context = transactionManager.getContext();
+        final UserEntityManager userManager = UserEntityManager.get(context);
 
-        log.info("Retrieving target user data...");
-        final UserEntity userEntity = userRepository.get(KeyFactory.stringToKey(userKey));
-        log.info("Target user data successfully retrieved.");
+        final UserEntity currentUser = getCurrentUser(context, user);
 
-        log.info("Updating target user data...");
-        userUpdater.update(userEntity);
-        Util.withinTransaction(userEntity::persist);
-        log.info("Target user data successfully updated.");
+        logger.info("Retrieving target user data...");
+        final UserEntity userEntity = userManager.get(KeyFactory.stringToKey(userKey));
+        logger.info("Target user data successfully retrieved.");
 
-        return userEntity;
+        logger.info("Updating target user data...");
+        userUpdater.update(context, currentUser, userEntity);
+        userEntity.persistUsing(context);
+        logger.info("Target user data successfully updated.");
+
+        transactionManager.commit();
+
+        return new UserResource(currentUser, userEntity);
     }
 }

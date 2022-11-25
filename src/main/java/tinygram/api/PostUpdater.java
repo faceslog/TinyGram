@@ -1,36 +1,33 @@
 package tinygram.api;
 
 import tinygram.datastore.PostEntity;
-import tinygram.datastore.UserEntity;
-import tinygram.datastore.UserProvider;
 
-public class PostUpdater implements EntityUpdater<PostEntity> {
+/**
+ * An JSON-deserializable object, to use when updating a post entity.
+ */
+public class PostUpdater {
 
+    /**
+     * The post image.
+     */
     public String image;
+    /**
+     * The post image description.
+     */
     public String description;
-    public Boolean liked;
 
-    @Override
-    public PostEntity update(PostEntity entity) {
+    /**
+     * Updates a post entity according to the deserialized provided fields.
+     *
+     * @param post The post entity to update.
+     */
+    public void update(PostEntity post) {
         if (image != null) {
-            entity.setImage(image);
+            post.setImage(image);
         }
 
         if (description != null) {
-            entity.setDescription(description);
+            post.setDescription(description);
         }
-
-        final UserProvider userProvider = entity.getUserProvider();
-        if (liked != null && userProvider.exists()) {
-            final UserEntity currentUser = userProvider.get();
-
-            if (liked) {
-                entity.addLike(currentUser);
-            } else {
-                entity.removeLike(currentUser);
-            }
-        }
-
-        return entity;
     }
 }

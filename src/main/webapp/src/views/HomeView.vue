@@ -49,7 +49,7 @@ export default {
   methods: {
     loadFeed: async function() {
 
-      if(this.isLoadingFeed) 
+      if(this.isLoadingFeed)
         return;
 
       if(!this.nextFeedFollowedUrl && !this.nextFeedGlobalUrl)
@@ -64,11 +64,10 @@ export default {
         let promises = [...x, ...y].map(post => this.loadPost(post._links.self));
 
         this.postsList = [...this.postsList, ...await Promise.all(promises)];
-        this.postsList = this.postsList.filter((s => a => !s.has(a.postId) && s.add(a.postId))(new Set));            
+        this.postsList = this.postsList.filter((s => a => !s.has(a.postId) && s.add(a.postId))(new Set));
 
       } catch(err) {
-        console.log(err);
-       // this.$router.push("/not-found");
+        this.$router.push("/login");
       }
 
       this.isLoadingFeed = false;
@@ -113,7 +112,7 @@ export default {
       return post;
     },
     onScroll: function({ target: { scrollTop, clientHeight, scrollHeight }}) {
-      
+
       if (scrollTop + clientHeight >= scrollHeight)
         this.loadFeed();
     }
