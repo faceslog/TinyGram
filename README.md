@@ -1,19 +1,10 @@
 # Tinygram
 
-*_Application deployment:_ [`https://tinyinsta-366314.nw.r.appspot.com`](https://tinyinsta-366314.nw.r.appspot.com)*
-
 ![Tinygram logo](src/main/webapp/public/images/tinygram-login.png)
 
-<!-- TODO: Basic project presentation -->
-
-<!-- TODO: Add other links? -->
-
-
-
+*_Application deployment:_ [`https://tinyinsta-366314.nw.r.appspot.com`](https://tinyinsta-366314.nw.r.appspot.com)*
 
 ## Front-End
-
-<!-- TODO: I dunno, whether there's something to talk about in particular or not, here ya go... -->
 
 
 
@@ -45,9 +36,10 @@ was already in production.
 
 
 API Route: `API_URL/benchmark/followers/100` 
+
 *(Add or remove fake followers to reach the number of followers passed as argument here 100)*
 
-**Results:**
+**More detailed results with the 30 measures are available in `./assets/benchmark.xlsx`**
 
 |              | 10    | 100     |   500   |
 |--------------|-------|---------|---------|
@@ -55,6 +47,22 @@ API Route: `API_URL/benchmark/followers/100`
 | back-end     | 294ms | 1202ms  | 5388ms  |
 | mean         | 311ms | 1224ms  | 5405ms  |
 
+
+Then we evaluated the time required to load 10, 100 and 500 posts at the same time via the API. 
+We decided to load posts 6 by 6 when a user is scrolling. It should be fine for the user experience.
+A user wont be able to load and see more than 6 posts at the same time. So he should not expect any latency.
+However for the benchmark it increases the time required to retrieve the 10, 100, 500 posts.
+
+|              | 10    | 100     |   500   |
+|--------------|-------|---------|---------|
+| mean         | 227ms | 1734ms  | 7024ms  |
+
+We decided to not do the 3rd benchmark because in order for us to do a simulation of how many like we can do at the same time, we need to add as many users that have connected correctly with google, which means creating too many google accounts and users just for this test.
+
+Our design does not allow us to like a post without being connected as we need the user key generated on the first user login. This key is used in the datastore to keep a record of who liked the post.
+Even if we decide to deactivate the authentication, and fake a user key the links between some entities will not work properly and we may end up having wrong results for the tests.
+
+To perform that change we need to redo our entire model and make alot of changes.
 
 ## Legacy
 
