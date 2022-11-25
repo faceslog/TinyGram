@@ -28,7 +28,53 @@ The general back-end problem has been split into two distinct problems, with eac
 - [`tinygram.api`](src/main/java/tinygram/api): Managing the resource availability with the public REST API;
 - [`tinygram.datastore`](src/main/java/tinygram/datastore): Managing the resource availability with the public REST API.
 
-After several refactorings, we went through different data representations and chose to distinguish the data seen from the front-end, manageable using the API, which we call *resources*, and the data stored internally within the datastore, which we call entities. E.g. the front-end may access and alter [*User*](src/main/java/tinygram/api/UserResource.java) resources using the API, resources mapped to [*User*](src/main/java/tinygram/datastore/UserEntity.java) and [*Follow*](src/main/java/tinygram/datastore/FollowEntity.java) entities within the datastore management.
+After several refactorings, we went through different data representations and chose to distinguish the data seen from the front-end, manageable using the API, which we call *resources*, and the data stored internally within the datastore, which we call entities. *E.g.*, assuming an API request has been made to update information about a specific user:
+
+- A PUT request was made, redirecting to the user-specific API, as defined within the user API schema ([`tinygram.api.UserApiSchema`](src/main/java/tinygram/api/UserApiSchema.java)).
+- The request itself is handled by the API method implementation, which runs the actual datastore transaction ([`tinygram.api.UserApi`](src/main/java/tinygram/api/UserApi.java)).
+- The user data provided within the request body is then deserialized into a user resource updater ([`tinygram.api.LoggedUserUpdater`](src/main/java/tinygram/api/LoggedUserUpdater.java)).
+- During the transaction, a specific interface is used to interact with user datastore entities ([`tinygram.datastore.UserEntityManager`](src/main/java/tinygram/datastore/UserEntityManager.java)).
+- User data is then fetched from the datastore using this interface, which provides a type-safe wrapper instead of the raw entity ([`tinygram.datastore.UserEntity`](src/main/java/tinygram/datastore/UserEntity.java)).
+- The fetched entity can now be updated by the API, giving it to the initial user entity updater.
+- After the transaction has been committed, a user resource is built as an aggregate of the user entity and its associated follow/counter entities ([`tinygram.api.UserResource`](src/main/java/tinygram/api/UserResource.java)).
+- When trying to produce the JSON response to the HTTP request, Google's API management instanciates a user resource transformer ([`tinygram.api.UserTransformer`](src/main/java/tinygram/api/UserTransformer.java)).
+- By giving it the previously created user resource, the transformer formats it into a JSON-serializable response object, which is given back to the client ([`tinygram.api.UserResponse`](src/main/java/tinygram/api/UserResponse.java)).
+
+### Entity kinds
+
+Within the datastore, post and user data has been split into different entities, to either help reaching a scalable system, or improve overall performance.
+
+User personal data is directly stored within a *User* entity, the same goes for a *Post*.
+
+![User kind](assets/kind_user.png)
+![Post kind](assets/kind_post.png)
+
+When user *A* follows user *B*, the corresponding information is stored in multiple entities:
+
+- as an increment of the `followingcount` property of user *A*,
+- as a tuple entity *Follow*(*A*, *B*), and
+
+![Follow kind](assets/kind_follow.png)
+
+- as an increment of the follower counter of user *B*. This counter is split into multiple shards, with each counter its own shard kind.
+
+![Follower counter kind](assets/kind_counter_follower.png)
+![Follower counter shard kind](assets/kind_countershard_follower.png)
+
+The same goes for a like from user *A* to post *P*, which is stored:
+
+- as a tuple entity *Like*(*A*, *P*) and
+
+![Like kind](assets/kind_like.png)
+
+- as an increment of the (also sharded) like counter of user *B*.
+
+![Like counter kind](assets/kind_counter_like.png)
+![Like counter shard kind](assets/kind_countershard_like.png)
+
+Finally, when a post *P* is created by user *B*, it is added to the post feed of all followers *F* of *B*. This relation is also represented as a set of tuples *FeedNode*(*F*, *P*).
+
+![FeedNode kind](assets/kind_feednode.png)
 
 ## Small Benchmark
 
