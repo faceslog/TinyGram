@@ -55,6 +55,9 @@ We decided to load posts 6 by 6 when a user is scrolling. It should be fine for 
 A user wont be able to load and see more than 6 posts at the same time. So he should not expect any latency.
 However for the benchmark it increases the time required to retrieve the 10, 100, 500 posts.
 
+API Route: `API_URL/benchmark/publisher/100` create a fake user, automatically follow him and create X fake posts
+for the benchmark. (X values in our case: 10, 100, 500)
+
 |              | 10    | 100     |   500   |
 |--------------|-------|---------|---------|
 | mean         | 227ms | 1734ms  | 7024ms  |
