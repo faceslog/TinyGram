@@ -2,7 +2,7 @@
 
 ![Tinygram logo](src/main/webapp/public/images/tinygram-login.png)
 
-*_Application deployment:_ [`https://tinyinsta-366314.nw.r.appspot.com`](https://tinyinsta-366314.nw.r.appspot.com)*
+*_Application deployment:_ [`https://tinygram-369720.nw.r.appspot.com`](https://tinygram-369720.nw.r.appspot.com)*
 
 ## Front-End
 

@@ -24,7 +24,7 @@ app.use(VueSweetalert2);
 
 // Setup Axios
 const instance = axios.create({
-    baseURL: 'https://tinyinsta-366314.nw.r.appspot.com/_ah/api/instapi/v1',
+    baseURL: 'https://tinygram-369720.nw.r.appspot.com/_ah/api/instapi/v1',
 });
 
 app.config.globalProperties.$axios = { ...instance }
@@ -32,7 +32,7 @@ app.config.globalProperties.$axios = { ...instance }
 // Setup Google Login Btn
 
 app.use(googleLogin, {
-    clientId: '666928071557-7tupn0nhb8v6cg13vsjtlreg61b6akob.apps.googleusercontent.com'
+    clientId: '187194623723-7ifp7rf55768iigbooraqj9d6o6eqm69.apps.googleusercontent.com'
 });
 // ---------------------------
 app.mount('#app')
