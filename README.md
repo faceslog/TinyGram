@@ -6,7 +6,20 @@
 
 ## Front-End
 
+Made with VueJS, Vuex and Tailwind CSS, the front-end was designed to be responsive and user friendly as much as we could in the given period of time. It will help a user find every functionality he needs to communicate with his friends. 
 
+Here as the differents paths you can use to access the web app:
+
+- `/` *Home page, where you can discover new users and the posts from people you are following.*
+- `/login` *The login page to access the web app you will need to be authenticated with your Google Account*
+- `/users/{userId}` *Access the profile of a given user*
+- `/posts/{postId}` *Access and display a given post*
+- `/not-found` *self-explanatory (404 Errors)*
+- `/addpost` *self-explanatory (Post a new post)*
+
+What's' the store used for ?
+
+The store is used as a single source of reliable information that we need but also mainly to manage user related informations across the different components. Mostly the user authentication token and some user data needed during the time the user will spend on the application.
 
 ## Back-End
 
