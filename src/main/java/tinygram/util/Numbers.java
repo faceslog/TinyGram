@@ -3,7 +3,7 @@ package tinygram.util;
 import com.google.appengine.api.memcache.InvalidValueException;
 
 /**
- * Provides utility functions for manipulating nuùbers.
+ * Provides utility functions for manipulating numbers.
  */
 public final class Numbers {
 

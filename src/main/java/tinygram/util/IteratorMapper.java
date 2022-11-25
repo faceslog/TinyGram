@@ -5,9 +5,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * An iterator functor.
- *
- * Extracts values from another iterator before converting these.
+ * An iterator functor, extracting values from another iterator before converting these.
  *
  * @param <T> The input iterator value type.
  * @param <U> The output iterator value type.

@@ -38,6 +38,10 @@ class CounterEntityImpl extends TypedEntityImpl implements CounterEntity {
         final long baseShardCount = CounterEntity.getBaseShardCount(getValue());
         final long shardCount = getShardCount();
 
+        if (shardCount >= baseShardCount) {
+            return;
+        }
+
         for (long shardNumber = shardCount + 1l; shardNumber <= baseShardCount; ++shardNumber) {
             final CounterShardEntity shard = shardManager.register(shardNumber);
             addRelatedEntity(shard);
