@@ -8,9 +8,9 @@
 
 Made with VueJS, Vuex and Tailwind CSS, the front-end was designed to be responsive and user friendly as much as we could in the given period of time. It will help a user find every functionality he needs to communicate with his friends. 
 
-Here as the differents paths you can use to access the web app:
+Here are the differents paths you can use to access the web app:
 
-- `/` *Home page, where you can discover new users and the posts from people you are following.*
+- `/` *Home page, where you can discover new users and the posts from people you are following.* 
 - `/login` *The login page to access the web app you will need to be authenticated with your Google Account*
 - `/users/{userId}` *Access the profile of a given user*
 - `/posts/{postId}` *Access and display a given post*
@@ -20,6 +20,8 @@ Here as the differents paths you can use to access the web app:
 What's' the store used for ?
 
 The store is used as a single source of reliable information that we need but also mainly to manage user related informations across the different components. Mostly the user authentication token and some user data needed during the time the user will spend on the application.
+
+We decided to use Axios to send our requests to the back-end API as the library is well integrated with VueJS and can be easily reused with other frameworks.
 
 ## Back-End
 
@@ -88,7 +90,7 @@ API Route: `API_URL/benchmark/followers/100`
 
 *(Add or remove fake followers to reach the number of followers passed as argument here 100)*
 
-**More detailed results with the 30 measures are available in `./assets/benchmark.xlsx`**
+**More detailed results with the 30 measures are available in [./assets/benchmark.xlsx](assets/benchmark.xlsx)
 
 |              | 10    | 100     |   500   |
 |--------------|-------|---------|---------|
@@ -115,7 +117,7 @@ Even if we decide to deactivate the authentication, and fake a user key the link
 
 To perform that change we need to redo our entire model and make alot of changes.
 
-## Legacy
+## Improvements
 
 A short list of things we planned to do, but could not implement of finish designing with the given project timeline. Thanks to the additional project week, we managed to implement some improvements initially in this list, especially the logarithmic counter allocation and the introduction of a type-safe interface for entity properties ([`tinygram.datastore.Property`](src/main/java/tinygram/datastore/Property.java)).
 
@@ -125,3 +127,8 @@ A short list of things we planned to do, but could not implement of finish desig
     - an `EntityUpdater` with write-only operations, using delayed transaction operations with more functional interfaces.
 - Consider using entity groups to improve performance, mainly with counters and Like/Follow entities.
 - Find a way to make the benchmark API require specific identifiers, to prevent any logged-in user from using it.
+
+As for the front-end we could have 
+- Find a way to resize or crop images before displaying them in the feed
+- Create a wrapper to set the Authorization Token for some request without setting up the header parameter everytime and handling the differents errors.
+
