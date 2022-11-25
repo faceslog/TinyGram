@@ -16,14 +16,29 @@ import tinygram.datastore.UserEntityManager;
 import tinygram.datastore.util.TransactionContext;
 import tinygram.datastore.util.TransactionManager;
 
+/**
+ * The Tinygram user API.
+ */
 @ApiReference(InstApi.class)
 public class UserApi {
 
     private static final Logger logger = Logger.getLogger(UserApi.class.getName());
 
-    public static UserEntity getCurrentUser(TransactionContext context, User user) throws UnauthorizedException {
+    /**
+     * Gets the currently logged user data, ensuring credentials are valid.
+     *
+     * @param context The current transaction context.
+     * @param user    The Google user authentification credentials.
+     *
+     * @return The currently logged user entity.
+     *
+     * @throws UnauthorizedException If the given authentification credentials are invalid, or the
+     *                               user has not already been registered within the datastore.
+     */
+    public static UserEntity getCurrentUser(TransactionContext context, User user)
+                throws UnauthorizedException {
         if (user == null) {
-            throw new IllegalArgumentException("Missing user credentials.");
+            throw new UnauthorizedException("Missing user credentials.");
         }
 
         final UserEntityManager userManager = UserEntityManager.get(context);
@@ -32,7 +47,7 @@ public class UserApi {
         final UserEntity userEntity = userManager.find(user);
 
         if (userEntity == null) {
-            throw new IllegalArgumentException("Unregistered user.");
+            throw new UnauthorizedException("Unregistered user.");
         }
 
         logger.info("User data retrieved.");
@@ -45,7 +60,7 @@ public class UserApi {
         httpMethod = HttpMethod.POST)
     public UserResource postUser(User user, UserUpdater userUpdater) throws UnauthorizedException {
         if (user == null) {
-            throw new IllegalArgumentException("Missing user credentials.");
+            throw new UnauthorizedException("Missing user credentials.");
         }
 
         final TransactionManager transactionManager = TransactionManager.begin();
@@ -73,7 +88,9 @@ public class UserApi {
         name       = UserApiSchema.RESOURCE_NAME + ".get",
         path       = UserApiSchema.RELATIVE_PATH + UserApiSchema.KEY_ARGUMENT_SUFFIX,
         httpMethod = HttpMethod.GET)
-    public UserResource getUser(User user, @Named(UserApiSchema.KEY_ARGUMENT_NAME) String targetUserKey) throws EntityNotFoundException, UnauthorizedException {
+    public UserResource getUser(User user,
+                                @Named(UserApiSchema.KEY_ARGUMENT_NAME) String targetUserKey)
+                throws EntityNotFoundException, UnauthorizedException {
         final TransactionManager transactionManager = TransactionManager.beginReadOnly();
         final TransactionContext context = transactionManager.getContext();
         final UserEntityManager userManager = UserEntityManager.get(context);
@@ -93,7 +110,9 @@ public class UserApi {
         name       = UserApiSchema.RESOURCE_NAME + ".put",
         path       = UserApiSchema.RELATIVE_PATH + UserApiSchema.KEY_ARGUMENT_SUFFIX,
         httpMethod = HttpMethod.PUT)
-    public UserResource putUser(User user, @Named(UserApiSchema.KEY_ARGUMENT_NAME) String userKey, LoggedUserUpdater userUpdater) throws EntityNotFoundException, UnauthorizedException {
+    public UserResource putUser(User user, @Named(UserApiSchema.KEY_ARGUMENT_NAME) String userKey,
+                                LoggedUserUpdater userUpdater)
+                throws EntityNotFoundException, UnauthorizedException {
         final TransactionManager transactionManager = TransactionManager.begin();
         final TransactionContext context = transactionManager.getContext();
         final UserEntityManager userManager = UserEntityManager.get(context);

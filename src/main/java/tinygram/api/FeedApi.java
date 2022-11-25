@@ -16,6 +16,9 @@ import tinygram.datastore.UserEntity;
 import tinygram.datastore.util.TransactionContext;
 import tinygram.datastore.util.TransactionManager;
 
+/**
+ * The Tinygram feed API.
+ */
 @ApiReference(InstApi.class)
 public class FeedApi {
 
@@ -59,7 +62,9 @@ public class FeedApi {
         name       = FeedApiSchema.RESOURCE_NAME + ".get.followed",
         path       = FeedApiSchema.RELATIVE_FOLLOWED_PATH + FeedApiSchema.PAGE_ARGUMENT_SUFFIX,
         httpMethod = HttpMethod.GET)
-    public FeedResource followedPagedFeed(User user, @Named(FeedApiSchema.PAGE_ARGUMENT_NAME) String page) throws UnauthorizedException {
+    public FeedResource followedPagedFeed(User user,
+                                          @Named(FeedApiSchema.PAGE_ARGUMENT_NAME) String page)
+                throws UnauthorizedException {
         final TransactionManager transactionManager = TransactionManager.beginReadOnly();
         final TransactionContext context = transactionManager.getContext();
         final FeedNodeEntityManager feedManager = FeedNodeEntityManager.get(context);
@@ -85,9 +90,11 @@ public class FeedApi {
 
     @ApiMethod(
         name       = FeedApiSchema.RESOURCE_NAME + ".get.from",
-        path       = FeedApiSchema.RELATIVE_FROM_PATH + UserApiSchema.KEY_ARGUMENT_SUFFIX + FeedApiSchema.PAGE_ARGUMENT_SUFFIX,
+        path       = FeedApiSchema.RELATIVE_FROM_PATH + UserApiSchema.KEY_ARGUMENT_SUFFIX +
+                     FeedApiSchema.PAGE_ARGUMENT_SUFFIX,
         httpMethod = HttpMethod.GET)
-    public FeedResource fromPagedFeed(@Named(UserApiSchema.KEY_ARGUMENT_NAME) String userKey, @Named(FeedApiSchema.PAGE_ARGUMENT_NAME) String page) {
+    public FeedResource fromPagedFeed(@Named(UserApiSchema.KEY_ARGUMENT_NAME) String userKey,
+                                      @Named(FeedApiSchema.PAGE_ARGUMENT_NAME) String page) {
         final TransactionManager transactionManager = TransactionManager.beginReadOnly();
         final TransactionContext context = transactionManager.getContext();
         final FeedNodeEntityManager feedManager = FeedNodeEntityManager.get(context);

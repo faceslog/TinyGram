@@ -4,6 +4,9 @@ import tinygram.api.util.ResourceResponse;
 import tinygram.api.util.ResourceTransformer;
 import tinygram.datastore.PostEntity;
 
+/**
+ * An interface to convert a {@link PostResource} to an encapsulated {@link PostResponse}.
+ */
 public class PostTransformer implements ResourceTransformer<PostResource, PostResponse> {
 
     @Override

@@ -19,6 +19,16 @@ import tinygram.datastore.util.TransactionContext;
 import tinygram.datastore.util.TransactionManager;
 import tinygram.util.Randomizer;
 
+/**
+ * The Tinygram benchmark API.
+ *
+ * <p> <b>Warning:</b> Operations provided by this API may cause severe performance issues. Reminder
+ * that the datastore does not allow adding, updating or removing more than 500 entities during the
+ * same transaction, a limit that can easily be reached with any of these operations. Going past
+ * this limit will allow transactions to commit, without modifying everything they should have,
+ * breaking the invariant of existing entities and potentially breaking the entire Tinygram API.
+ * Please use these operations with a lot of care.
+ */
 @ApiReference(InstApi.class)
 public class BenchmarkApi {
 
@@ -101,22 +111,34 @@ public class BenchmarkApi {
         path       = "benchmark/publisher/{postCount}",
         httpMethod = HttpMethod.POST)
     public UserEntity makePublisher(User user, @Named("postCount") int postCount) throws UnauthorizedException {
-        final TransactionManager transactionManager = TransactionManager.begin();
-        final TransactionContext context = transactionManager.getContext();
+        TransactionManager transactionManager = TransactionManager.begin();
+        TransactionContext context = transactionManager.getContext();
         final UserEntityManager userManager = UserEntityManager.get(context);
-        final FollowEntityManager followManager = FollowEntityManager.get(context);
-        final PostEntityManager postManager = PostEntityManager.get(context);
-
-        final UserEntity currentUser = UserApi.getCurrentUser(context, user);
 
         final String publisherId = Randomizer.randomize(Randomizer.ALPHANUMERIC, 16);
         final User publisher = getPublisher(publisherId);
 
         logger.info("Registering publisher...");
         final UserEntity publisherEntity = userManager.register(publisher, getPublisherName(publisherId), "");
-        final FollowEntity followEntity = followManager.register(currentUser, publisherEntity);
+        publisherEntity.persistUsing(context);
 
+        transactionManager.commit();
+
+        transactionManager = TransactionManager.begin();
+        context = transactionManager.getContext();
+        final FollowEntityManager followManager = FollowEntityManager.get(context);
+
+        final UserEntity currentUser = UserApi.getCurrentUser(context, user);
+
+        final FollowEntity followEntity = followManager.register(currentUser, publisherEntity);
         followEntity.persistUsing(context);
+
+        transactionManager.commit();
+
+        transactionManager = TransactionManager.begin();
+        context = transactionManager.getContext();
+        final PostEntityManager postManager = PostEntityManager.get(context);
+
         logger.info("Publisher successfully registered.");
 
         for (int i = 1; i <= postCount; ++i) {

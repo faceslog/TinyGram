@@ -17,6 +17,9 @@ import tinygram.datastore.UserEntity;
 import tinygram.datastore.util.TransactionContext;
 import tinygram.datastore.util.TransactionManager;
 
+/**
+ * The Tinygram post API.
+ */
 @ApiReference(InstApi.class)
 public class PostApi {
 
@@ -48,7 +51,8 @@ public class PostApi {
         name       = PostApiSchema.RESOURCE_NAME + ".get",
         path       = PostApiSchema.RELATIVE_PATH + PostApiSchema.KEY_ARGUMENT_SUFFIX,
         httpMethod = HttpMethod.GET)
-    public PostResource getPost(User user, @Named(PostApiSchema.KEY_ARGUMENT_NAME) String postKey) throws EntityNotFoundException, UnauthorizedException {
+    public PostResource getPost(User user, @Named(PostApiSchema.KEY_ARGUMENT_NAME) String postKey)
+                throws EntityNotFoundException, UnauthorizedException {
         final TransactionManager transactionManager = TransactionManager.beginReadOnly();
         final TransactionContext context = transactionManager.getContext();
         final PostEntityManager postManager = PostEntityManager.get(context);
@@ -68,7 +72,9 @@ public class PostApi {
         name       = PostApiSchema.RESOURCE_NAME + ".put",
         path       = PostApiSchema.RELATIVE_PATH + PostApiSchema.KEY_ARGUMENT_SUFFIX,
         httpMethod = HttpMethod.PUT)
-    public PostResource putPost(User user, @Named(PostApiSchema.KEY_ARGUMENT_NAME) String postKey, LoggedPostUpdater postUpdater) throws EntityNotFoundException, UnauthorizedException {
+    public PostResource putPost(User user, @Named(PostApiSchema.KEY_ARGUMENT_NAME) String postKey,
+                                LoggedPostUpdater postUpdater)
+                throws EntityNotFoundException, UnauthorizedException {
         final TransactionManager transactionManager = TransactionManager.begin();
         final TransactionContext context = transactionManager.getContext();
         final PostEntityManager postManager = PostEntityManager.get(context);

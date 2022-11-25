@@ -52,7 +52,7 @@ public class FeedImpl implements Feed {
      *
      * @param entityBuilder The function to extract post entity keys from fetched entities.
      * @param results       The fetched entities from the datastore.
-     * @param userKey       The key if the user entity the feed is about
+     * @param userKey       The key of the user entity the feed is about.
      */
     public FeedImpl(Function<Entity, Key> entityBuilder, QueryResultList<Entity> results,
                     Key userKey) {
@@ -64,7 +64,7 @@ public class FeedImpl implements Feed {
      *
      * @param entityBuilder The function to extract post entity keys from fetched entities.
      * @param results       The fetched entities from the datastore.
-     * @param userKey       The key if the user entity the feed is about.
+     * @param userKey       The key of the user entity the feed is about.
      * @param aboutFollowed Whether the feed is about posts from followed users of the user or not.
      */
     public FeedImpl(Function<Entity, Key> entityBuilder, QueryResultList<Entity> results,
