@@ -26,20 +26,34 @@ The general back-end problem has been split into two distinct problems, with eac
 
 After several refactorings, we went through different data representations and chose to distinguish the data seen from the front-end, manageable using the API, which we call *resources*, and the data stored internally within the datastore, which we call entities. E.g. the front-end may access and alter [*User*](src/main/java/tinygram/api/UserResource.java) resources using the API, resources mapped to [*User*](src/main/java/tinygram/datastore/UserEntity.java) and [*Follow*](src/main/java/tinygram/datastore/FollowEntity.java) entities within the datastore management.
 
-### API
+## API
 
 <!-- TODO -->
 
-### Datastore
+## Datastore
 
 <!-- TODO -->
 
 
+## Small Benchmark
 
-## Benchmark
+We started by evaluating the time elapsed when posting a message if followed by 10, 100, and 500 followers. (30 measures each)
 
-<!-- TODO: Benchmark presentation and results. -->
+To perform the benchmark without having to create 10 to 500 accounts we added in our API methods to create fake entities. 
+These fake entities are stored and are processed by the back-end API as a real follower. Allowing us to test our code like it 
+was already in production.
 
+
+API Route: `API_URL/benchmark/followers/100` 
+*(Add or remove fake followers to reach the number of followers passed as argument here 100)*
+
+**Results:**
+
+|              | 10    | 100     |   500   |
+|--------------|-------|---------|---------|
+| front-end    | 329ms | 1245ms  | 5421ms  |
+| back-end     | 294ms | 1202ms  | 5388ms  |
+| mean         | 311ms | 1224ms  | 5405ms  |
 
 
 ## Legacy
@@ -52,5 +66,3 @@ A short list of things we planned to do, but could not implement of finish desig
     - an `EntityUpdater` with write-only operations, using delayed transaction operations with more functional interfaces.
 - Consider using entity groups to improve performance, mainly with counters and Like/Follow entities.
 - Find a way to make the benchmark API require specific identifiers, to prevent any logged-in user from using it.
-
-<!-- TODO: Front-end ideas? -->
