@@ -10,10 +10,22 @@ import com.google.appengine.api.datastore.KeyFactory;
 import tinygram.datastore.util.TransactionContext;
 import tinygram.util.IteratorUtils;
 
+/**
+ * An implementation of the {@link CounterShardManager} interface.
+ */
 class CounterShardManagerImpl implements CounterShardManager {
 
+    /**
+     * The current transaction context.
+     */
     private final TransactionContext context;
+    /**
+     * The counter entity.
+     */
     private final CounterEntity counter;
+    /**
+     * The counter shard type identifier.
+     */
     private final String kind;
 
     public CounterShardManagerImpl(TransactionContext context, CounterEntity counter) {

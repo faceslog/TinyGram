@@ -86,17 +86,56 @@ public interface FeedNodeEntityManager extends TypedEntityManager<FeedNodeEntity
      */
     Iterator<FeedNodeEntity> findAllOfPost(Key postKey);
 
+    /**
+     * Fetches the global post feed.
+     *
+     * @param page The feed page token.
+     *
+     * @return The fetched post feed.
+     */
     Feed findPaged(String page);
 
+    /**
+     * Fetches a user post feed.
+     *
+     * @param user The user entity.
+     * @param page The feed page token.
+     *
+     * @return The fetched post feed.
+     */
     default Feed findPaged(UserEntity user, String page) {
         return findPaged(user.getKey(), page);
     }
 
+    /**
+     * Fetches a user post feed.
+     *
+     * @param userKey The key of the associated user entity.
+     * @param page    The feed page token.
+     *
+     * @return The fetched post feed.
+     */
     Feed findPaged(Key userKey, String page);
 
+    /**
+     * Fetches the post feed of posts written by a user.
+     *
+     * @param user The user entity.
+     * @param page The feed page token.
+     *
+     * @return The fetched post feed.
+     */
     default Feed findPagedFrom(UserEntity user, String page) {
         return findPagedFrom(user.getKey(), page);
     }
 
+    /**
+     * Fetches the post feed of posts written by a user.
+     *
+     * @param userKey The key of the associated user entity.
+     * @param page    The feed page token.
+     *
+     * @return The fetched post feed.
+     */
     Feed findPagedFrom(Key userKey, String page);
 }

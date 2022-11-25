@@ -9,10 +9,22 @@ import tinygram.datastore.util.TransactionContext;
 import tinygram.datastore.util.TypedEntityImpl;
 import tinygram.util.FoldSum;
 
+/**
+ * An implementation of the {@link CounterEntity} interface.
+ */
 class CounterEntityImpl extends TypedEntityImpl implements CounterEntity {
 
+    /**
+     * The interface to manage counter shards for this specific counter.
+     */
     private final CounterShardManager shardManager;
 
+    /**
+     * Creates a counter entity, not already added to the datastore.
+     *
+     * @param kind The counter type identifier.
+     * @param name The counter name.
+     */
     public CounterEntityImpl(String kind, String name) {
         super(CounterEntity.KIND(kind), name);
 
@@ -23,6 +35,11 @@ class CounterEntityImpl extends TypedEntityImpl implements CounterEntity {
         checkShardCount();
     }
 
+    /**
+     * Encapsulates an already existing counter entity.
+     *
+     * @param raw The raw entity.
+     */
     public CounterEntityImpl(String kind, Entity raw) {
         super(CounterEntity.KIND(kind), raw);
 
@@ -34,6 +51,9 @@ class CounterEntityImpl extends TypedEntityImpl implements CounterEntity {
         return getProperty(PROPERTY_SHARD_COUNT);
     }
 
+    /**
+     * Ensures the number of counter shards does not fall below the minimal associated value.
+     */
     private void checkShardCount() {
         final long baseShardCount = CounterEntity.getBaseShardCount(getValue());
         final long shardCount = getShardCount();
@@ -50,6 +70,12 @@ class CounterEntityImpl extends TypedEntityImpl implements CounterEntity {
         setProperty(PROPERTY_SHARD_COUNT, baseShardCount);
     }
 
+    /**
+     * Fetches a random shard of the counter from the datastore.
+     *
+     * @return A random counter shard, assuming the minimal number of counter shards cannot be lower
+     *         than 1.
+     */
     private CounterShardEntity getRandomShard() {
         final long number = ThreadLocalRandom.current().nextLong(getShardCount()) + 1l;
         try {

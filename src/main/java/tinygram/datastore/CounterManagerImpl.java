@@ -6,11 +6,26 @@ import com.google.appengine.api.datastore.KeyFactory;
 
 import tinygram.datastore.util.TransactionContext;
 
+/**
+ * An implementation of the {@link CounterManager} interface.
+ */
 class CounterManagerImpl implements CounterManager {
 
+    /**
+     * The current transaction context.
+     */
     private final TransactionContext context;
+    /**
+     * The counter type identifier.
+     */
     private final String kind;
 
+    /**
+     * Creates a counter entity interface.
+     *
+     * @param context The transaction context.
+     * @param kind    The counter type identifier.
+     */
     public CounterManagerImpl(TransactionContext context, String kind) {
         this.context = context;
         this.kind = kind;

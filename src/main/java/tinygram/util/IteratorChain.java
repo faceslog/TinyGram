@@ -14,13 +14,13 @@ class IteratorChain<T> implements Iterator<T> {
     /**
      * The currently read iterator.
      *
-     * <p> <b>Invariant:</b> {@code !iterator.hasNext() => !remainingIterators.hasNext()}
+     * <p> <b>Invariant:</b> {@code !iterator.hasNext() ==> !remainingIterators.hasNext()}
      */
     private Iterator<? extends T> iterator;
     /**
      * The following iterators.
      *
-     * <p> <b>Invariant:</b> {@code remainingIterators.hasNext() => iterator.hasNext()}
+     * <p> <b>Invariant:</b> {@code remainingIterators.hasNext() ==> iterator.hasNext()}
      */
     private final Iterator<? extends Iterator<? extends T>> remainingIterators;
 

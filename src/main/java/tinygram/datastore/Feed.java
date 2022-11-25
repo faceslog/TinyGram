@@ -24,9 +24,9 @@ public interface Feed {
     String getNextPage();
 
     /**
-     * Indicates whether the feed is about posts from followed users of a user.
+     * Indicates whether the feed is about posts from followed users of a user or not.
      *
-     * <p> <b>Invariant:</b> {@code isAboutFollowed() => (getUser() != null)}
+     * <p> <b>Invariant:</b> {@code isAboutFollowed() ==> (getUser() != null)}
      *
      * @return {@code true} if the feed is about posts from followed users, {@code false} otherwise.
      */
@@ -34,6 +34,8 @@ public interface Feed {
 
     /**
      * Gets the user the feed is about if there is one.
+     *
+     * <p> <b>Invariant:</b> {@code (getUser() == null) ==> !isAboutFollowed()}
      *
      * @return The key of the user entity the feed is about if there is one, {@code null} otherwise.
      */

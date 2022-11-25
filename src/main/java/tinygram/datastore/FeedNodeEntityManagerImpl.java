@@ -1,6 +1,5 @@
 package tinygram.datastore;
 
-import java.util.Arrays;
 import java.util.Iterator;
 
 import com.google.appengine.api.datastore.Cursor;
