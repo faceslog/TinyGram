@@ -8,12 +8,12 @@ public final class Config {
     /**
      * The deployment website root URL.
      */
-    public static final String WEBSITE_ROOT = "https://tinyinsta-366314.nw.r.appspot.com";
+    public static final String WEBSITE_ROOT = "https://tinygram-369720.nw.r.appspot.com";
 
     /**
      * The API token, used to generate OAuth login identifiers on the client.
      */
-    public static final String ID_TOKEN = "666928071557-7tupn0nhb8v6cg13vsjtlreg61b6akob.apps.googleusercontent.com";
+    public static final String ID_TOKEN = "187194623723-7ifp7rf55768iigbooraqj9d6o6eqm69.apps.googleusercontent.com";
 
     /**
      * The maximum number of posts to retrieve with each feed API requet.
