@@ -30,15 +30,6 @@ The general back-end problem has been split into two distinct problems, with eac
 
 After several refactorings, we went through different data representations and chose to distinguish the data seen from the front-end, manageable using the API, which we call *resources*, and the data stored internally within the datastore, which we call entities. E.g. the front-end may access and alter [*User*](src/main/java/tinygram/api/UserResource.java) resources using the API, resources mapped to [*User*](src/main/java/tinygram/datastore/UserEntity.java) and [*Follow*](src/main/java/tinygram/datastore/FollowEntity.java) entities within the datastore management.
 
-## API
-
-<!-- TODO -->
-
-## Datastore
-
-<!-- TODO -->
-
-
 ## Small Benchmark
 
 We started by evaluating the time elapsed when posting a message if followed by 10, 100, and 500 followers. (30 measures each)
@@ -46,7 +37,6 @@ We started by evaluating the time elapsed when posting a message if followed by 
 To perform the benchmark without having to create 10 to 500 accounts we added in our API methods to create fake entities. 
 These fake entities are stored and are processed by the back-end API as a real follower. Allowing us to test our code like it 
 was already in production.
-
 
 API Route: `API_URL/benchmark/followers/100` 
 
@@ -60,11 +50,13 @@ API Route: `API_URL/benchmark/followers/100`
 | back-end     | 294ms | 1202ms  | 5388ms  |
 | mean         | 311ms | 1224ms  | 5405ms  |
 
-
 Then we evaluated the time required to load 10, 100 and 500 posts at the same time via the API. 
 We decided to load posts 6 by 6 when a user is scrolling. It should be fine for the user experience.
 A user wont be able to load and see more than 6 posts at the same time. So he should not expect any latency.
 However for the benchmark it increases the time required to retrieve the 10, 100, 500 posts.
+
+API Route: `API_URL/benchmark/publisher/100` create a fake user, automatically follow him and create X fake posts
+for the benchmark. (X values in our case: 10, 100, 500)
 
 |              | 10    | 100     |   500   |
 |--------------|-------|---------|---------|

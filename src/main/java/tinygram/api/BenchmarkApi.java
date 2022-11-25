@@ -32,7 +32,7 @@ import tinygram.util.Randomizer;
 @ApiReference(InstApi.class)
 public class BenchmarkApi {
 
-    private static final String DEFAULT_POST_IMAGE = "https://cdn0.matrimonio.com.co/usr/2/1/0/2/cfb_315540.jpg";
+    private static final String DEFAULT_POST_IMAGE = "https://i.pinimg.com/originals/2b/d9/91/2bd991b5f196840f2cb2dd36810e3304.jpg";
 
     private static final Logger logger = Logger.getLogger(PostApi.class.getName());
 
